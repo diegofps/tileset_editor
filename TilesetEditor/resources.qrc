@@ -1,0 +1,11 @@
+<RCC>
+    <qresource prefix="/">
+        <file>icons/folder-solid.svg</file>
+        <file>icons/eraser-solid.svg</file>
+        <file>icons/link-slash-solid.svg</file>
+        <file>icons/link-solid.svg</file>
+        <file>icons/pencil-solid.svg</file>
+        <file>icons/search-solid.svg</file>
+        <file>icons/table-cells-large-solid.svg</file>
+    </qresource>
+</RCC>
