@@ -116,10 +116,10 @@ QPushButton:checked {
           <string>Original</string>
          </property>
          <property name="checkable">
-          <bool>true</bool>
+          <bool>false</bool>
          </property>
          <property name="checked">
-          <bool>true</bool>
+          <bool>false</bool>
          </property>
          <property name="autoDefault">
           <bool>true</bool>
@@ -162,7 +162,7 @@ QPushButton:checked {
           <string>HD</string>
          </property>
          <property name="checkable">
-          <bool>true</bool>
+          <bool>false</bool>
          </property>
          <property name="default">
           <bool>false</bool>
