@@ -11,6 +11,7 @@ CONFIG += c++17
 SOURCES += \
     app.cpp \
     appstate.cpp \
+    appstyles.cpp \
     fragmentcontextclosed.cpp \
     fragmentcontextopen.cpp \
     fragmenteditor.cpp \
@@ -29,6 +30,7 @@ SOURCES += \
 HEADERS += \
     app.h \
     appstate.h \
+    appstyles.h \
     fragmentcontextclosed.h \
     fragmentcontextopen.h \
     fragmenteditor.h \

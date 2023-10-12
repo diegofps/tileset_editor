@@ -2,12 +2,14 @@
 #define APP_H
 
 #include "appstate.h"
+#include "appstyles.h"
 
 class App
 {
 private:
 
     static AppState * appState;
+    static AppStyles * appStyles;
 
 public:
 
@@ -20,6 +22,12 @@ public:
         return *appState;
     }
 
+    static AppStyles * getStyles()
+    {
+        if (appStyles == nullptr)
+            appStyles = new AppStyles();
+        return appStyles;
+    }
 };
 
 #endif // APP_H

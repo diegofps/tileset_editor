@@ -98,24 +98,6 @@ padding: 4px;</string>
          <layout class="QHBoxLayout" name="horizontalLayout">
           <item>
            <widget class="QPushButton" name="btNew">
-            <property name="styleSheet">
-             <string notr="true">QPushButton {
-    background-color: rgb(21, 21, 21);
-    color: white;
-    border-width: 0px;
-    border-radius: 10px;
-    font: bold 12px;
-    padding: 4px;
-}
-
-QPushButton#evilButton:pressed {
-    background-color: rgb(9, 36, 78);
-}
-
-QPushButton#evilButton:checked {
-    background-color: rgb(86, 145, 236);
-}</string>
-            </property>
             <property name="text">
              <string>New</string>
             </property>
@@ -138,24 +120,6 @@ QPushButton#evilButton:checked {
           </item>
           <item>
            <widget class="QPushButton" name="btRemove">
-            <property name="styleSheet">
-             <string notr="true">QPushButton {
-    background-color: rgb(21, 21, 21);
-    color: white;
-    border-width: 0px;
-    border-radius: 10px;
-    font: bold 12px;
-    padding: 4px;
-}
-
-QPushButton#evilButton:pressed {
-    background-color: rgb(9, 36, 78);
-}
-
-QPushButton#evilButton:checked {
-    background-color: rgb(86, 145, 236);
-}</string>
-            </property>
             <property name="text">
              <string>Remove</string>
             </property>

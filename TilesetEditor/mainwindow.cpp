@@ -14,17 +14,13 @@ MainWindow::MainWindow(QWidget *parent)
 
     setCentralWidget(getFragmentContextClosed());
 
-    connect(&App::getState(), &AppState::onContextFolderChanged, this, [&](QString & value)
+    connect(&App::getState(), &AppState::onContextFolderChanged, this, [&](QString const & value)
     {
         if (value.isEmpty())
             setCentralWidget(getFragmentContextClosed());
         else
             setCentralWidget(getFragmentContextOpen());
-
-        qDebug("Layout has %d items", layout()->count());
     });
-
-    qDebug("Layout has %d items", layout()->count());
 }
 
 MainWindow::~MainWindow()

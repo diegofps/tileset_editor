@@ -75,6 +75,7 @@ QMenu::item:selected {
     <addaction name="actionReload_dump"/>
     <addaction name="actionBuild_tilesets"/>
     <addaction name="actionPipelines"/>
+    <addaction name="actionBreak_Tilesets"/>
     <addaction name="actionEncode_HD_tiles"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
@@ -113,7 +114,7 @@ QMenu::item:selected {
   </action>
   <action name="actionReload_dump">
    <property name="text">
-    <string>Reload dump</string>
+    <string>Reload Dump</string>
    </property>
    <property name="shortcut">
     <string>F5</string>
@@ -121,7 +122,7 @@ QMenu::item:selected {
   </action>
   <action name="actionBuild_tilesets">
    <property name="text">
-    <string>Build tilesets</string>
+    <string>Build Tilesets</string>
    </property>
    <property name="shortcut">
     <string>F6</string>
@@ -137,7 +138,7 @@ QMenu::item:selected {
   </action>
   <action name="actionEncode_HD_tiles">
    <property name="text">
-    <string>Encode HD tiles</string>
+    <string>Encode HD Tiles</string>
    </property>
    <property name="shortcut">
     <string>F8</string>
@@ -149,6 +150,11 @@ QMenu::item:selected {
    </property>
    <property name="shortcut">
     <string>F1</string>
+   </property>
+  </action>
+  <action name="actionBreak_Tilesets">
+   <property name="text">
+    <string>Break HD Tilesets</string>
    </property>
   </action>
  </widget>

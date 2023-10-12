@@ -65,14 +65,14 @@
          <widget class="QPushButton" name="btPencil">
           <property name="minimumSize">
            <size>
-            <width>32</width>
-            <height>32</height>
+            <width>20</width>
+            <height>20</height>
            </size>
           </property>
           <property name="maximumSize">
            <size>
-            <width>32</width>
-            <height>32</height>
+            <width>20</width>
+            <height>20</height>
            </size>
           </property>
           <property name="font">
@@ -106,8 +106,14 @@ QPushButton#evilButton:checked {
           </property>
           <property name="icon">
            <iconset>
-            <normalon>:/style/pencil-solid.svg</normalon>
+            <normalon>:/icons/pencil-solid.svg</normalon>
            </iconset>
+          </property>
+          <property name="iconSize">
+           <size>
+            <width>10</width>
+            <height>10</height>
+           </size>
           </property>
           <property name="checkable">
            <bool>true</bool>
@@ -121,14 +127,14 @@ QPushButton#evilButton:checked {
          <widget class="QPushButton" name="btEraser">
           <property name="minimumSize">
            <size>
-            <width>32</width>
-            <height>32</height>
+            <width>20</width>
+            <height>20</height>
            </size>
           </property>
           <property name="maximumSize">
            <size>
-            <width>32</width>
-            <height>32</height>
+            <width>20</width>
+            <height>20</height>
            </size>
           </property>
           <property name="styleSheet">
@@ -154,8 +160,14 @@ QPushButton#evilButton:checked {
           </property>
           <property name="icon">
            <iconset>
-            <normalon>:/style/eraser-solid.svg</normalon>
+            <normalon>:/icons/eraser-solid.svg</normalon>
            </iconset>
+          </property>
+          <property name="iconSize">
+           <size>
+            <width>13</width>
+            <height>13</height>
+           </size>
           </property>
           <property name="checkable">
            <bool>true</bool>
@@ -166,14 +178,14 @@ QPushButton#evilButton:checked {
          <widget class="QPushButton" name="btLinker">
           <property name="minimumSize">
            <size>
-            <width>32</width>
-            <height>32</height>
+            <width>20</width>
+            <height>20</height>
            </size>
           </property>
           <property name="maximumSize">
            <size>
-            <width>32</width>
-            <height>32</height>
+            <width>20</width>
+            <height>20</height>
            </size>
           </property>
           <property name="styleSheet">
@@ -199,8 +211,14 @@ QPushButton#evilButton:checked {
           </property>
           <property name="icon">
            <iconset>
-            <normalon>:/style/link-solid.svg</normalon>
+            <normalon>:/icons/link-solid.svg</normalon>
            </iconset>
+          </property>
+          <property name="iconSize">
+           <size>
+            <width>13</width>
+            <height>13</height>
+           </size>
           </property>
          </widget>
         </item>
@@ -227,14 +245,14 @@ QPushButton#evilButton:checked {
          <widget class="QPushButton" name="btShowNext">
           <property name="minimumSize">
            <size>
-            <width>32</width>
-            <height>32</height>
+            <width>20</width>
+            <height>20</height>
            </size>
           </property>
           <property name="maximumSize">
            <size>
-            <width>32</width>
-            <height>32</height>
+            <width>20</width>
+            <height>20</height>
            </size>
           </property>
           <property name="styleSheet">
@@ -260,8 +278,14 @@ QPushButton#evilButton:checked {
           </property>
           <property name="icon">
            <iconset>
-            <normalon>:/style/search-solid.svg</normalon>
+            <normalon>:/icons/search-solid.svg</normalon>
            </iconset>
+          </property>
+          <property name="iconSize">
+           <size>
+            <width>10</width>
+            <height>10</height>
+           </size>
           </property>
           <property name="checkable">
            <bool>true</bool>
@@ -272,14 +296,14 @@ QPushButton#evilButton:checked {
          <widget class="QPushButton" name="btShowLinkedTiles">
           <property name="minimumSize">
            <size>
-            <width>32</width>
-            <height>32</height>
+            <width>20</width>
+            <height>20</height>
            </size>
           </property>
           <property name="maximumSize">
            <size>
-            <width>32</width>
-            <height>32</height>
+            <width>20</width>
+            <height>20</height>
            </size>
           </property>
           <property name="styleSheet">
@@ -305,8 +329,14 @@ QPushButton#evilButton:checked {
           </property>
           <property name="icon">
            <iconset>
-            <normalon>:/style/link-solid.svg</normalon>
+            <normalon>:/icons/link-solid.svg</normalon>
            </iconset>
+          </property>
+          <property name="iconSize">
+           <size>
+            <width>13</width>
+            <height>13</height>
+           </size>
           </property>
           <property name="checkable">
            <bool>true</bool>
@@ -317,14 +347,14 @@ QPushButton#evilButton:checked {
          <widget class="QPushButton" name="btShowUnlinkedTiles">
           <property name="minimumSize">
            <size>
-            <width>32</width>
-            <height>32</height>
+            <width>20</width>
+            <height>20</height>
            </size>
           </property>
           <property name="maximumSize">
            <size>
-            <width>32</width>
-            <height>32</height>
+            <width>20</width>
+            <height>20</height>
            </size>
           </property>
           <property name="styleSheet">
@@ -350,8 +380,14 @@ QPushButton#evilButton:checked {
           </property>
           <property name="icon">
            <iconset>
-            <normalon>:/style/link-slash-solid.svg</normalon>
+            <normalon>:/icons/link-slash-solid.svg</normalon>
            </iconset>
+          </property>
+          <property name="iconSize">
+           <size>
+            <width>13</width>
+            <height>13</height>
+           </size>
           </property>
           <property name="checkable">
            <bool>true</bool>
@@ -362,15 +398,24 @@ QPushButton#evilButton:checked {
          <widget class="QPushButton" name="btShowGrid">
           <property name="minimumSize">
            <size>
-            <width>32</width>
-            <height>32</height>
+            <width>20</width>
+            <height>20</height>
            </size>
           </property>
           <property name="maximumSize">
            <size>
-            <width>32</width>
-            <height>32</height>
+            <width>20</width>
+            <height>20</height>
            </size>
+          </property>
+          <property name="toolTip">
+           <string/>
+          </property>
+          <property name="statusTip">
+           <string/>
+          </property>
+          <property name="whatsThis">
+           <string/>
           </property>
           <property name="styleSheet">
            <string notr="true">QPushButton {
@@ -395,8 +440,14 @@ QPushButton#evilButton:checked {
           </property>
           <property name="icon">
            <iconset>
-            <normalon>:/style/table-cells-large-solid.svg</normalon>
+            <normalon>:/icons/table-cells-large-solid.svg</normalon>
            </iconset>
+          </property>
+          <property name="iconSize">
+           <size>
+            <width>11</width>
+            <height>11</height>
+           </size>
           </property>
           <property name="checkable">
            <bool>true</bool>

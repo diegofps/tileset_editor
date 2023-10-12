@@ -2,10 +2,12 @@
 
 AppState::AppState()
 {
-
+    _tilesShow = "all";
+    _palettesShow = "all";
+    _tilePreviewShow = "original";
 }
 
-// Commands
+// Context Folder
 
 void AppState::setContextFolder(QString value)
 {
@@ -107,3 +109,53 @@ void AppState::setPreviewPage(int value)
         emit onPreviewPageChanged(value);
     }
 }
+
+// Tiles
+
+void AppState::setTilesShow(QString const & value)
+{
+    if (value != _tilesShow)
+    {
+        _tilesShow = value;
+        emit onTilesShowChanged(value);
+    }
+}
+
+const QString &AppState::tilesShow() const
+{
+    return _tilesShow;
+}
+
+// Palettes
+
+void AppState::setPalettesShow(QString const & value)
+{
+    if (value != _palettesShow)
+    {
+        _palettesShow = value;
+        emit onPalettesShowChanged(value);
+    }
+}
+
+const QString &AppState::palettesShow() const
+{
+    return _palettesShow;
+}
+
+
+// TilePreview
+
+void AppState::setTilePreviewShow(QString const & value)
+{
+    if (value != _tilePreviewShow)
+    {
+        _tilePreviewShow = value;
+        emit onTilePreviewShowChanged(value);
+    }
+}
+
+const QString &AppState::tilePreviewShow() const
+{
+    return _tilePreviewShow;
+}
+

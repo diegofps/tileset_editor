@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>318</width>
-    <height>140</height>
+    <width>485</width>
+    <height>190</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -119,32 +119,14 @@ padding: 4px;</string>
          <layout class="QHBoxLayout" name="horizontalLayout_2">
           <item>
            <widget class="QPushButton" name="btOriginal">
-            <property name="styleSheet">
-             <string notr="true">QPushButton {
-    background-color: rgb(21, 21, 21);
-    color: white;
-    border-width: 0px;
-    border-radius: 10px;
-    font: bold 12px;
-    padding: 4px;
-}
-
-QPushButton#evilButton:pressed {
-    background-color: rgb(9, 36, 78);
-}
-
-QPushButton#evilButton:checked {
-    background-color: rgb(86, 145, 236);
-}</string>
-            </property>
             <property name="text">
              <string>Original</string>
             </property>
             <property name="checkable">
-             <bool>true</bool>
+             <bool>false</bool>
             </property>
             <property name="checked">
-             <bool>true</bool>
+             <bool>false</bool>
             </property>
             <property name="autoDefault">
              <bool>true</bool>
@@ -159,29 +141,11 @@ QPushButton#evilButton:checked {
           </item>
           <item>
            <widget class="QPushButton" name="btHD">
-            <property name="styleSheet">
-             <string notr="true">QPushButton {
-    background-color: rgb(21, 21, 21);
-    color: white;
-    border-width: 0px;
-    border-radius: 10px;
-    font: bold 12px;
-    padding: 4px;
-}
-
-QPushButton#evilButton:pressed {
-    background-color: rgb(9, 36, 78);
-}
-
-QPushButton#evilButton:checked {
-    background-color: rgb(86, 145, 236);
-}</string>
-            </property>
             <property name="text">
              <string>HD</string>
             </property>
             <property name="checkable">
-             <bool>true</bool>
+             <bool>false</bool>
             </property>
             <property name="default">
              <bool>false</bool>
