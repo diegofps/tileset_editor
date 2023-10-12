@@ -14,11 +14,9 @@ SOURCES += \
     fragmentcontextclosed.cpp \
     fragmentcontextopen.cpp \
     fragmenteditor.cpp \
-    fragmenteditortoolbar.cpp \
     fragmentpalettes.cpp \
     fragmentpreview.cpp \
     fragmentreferences.cpp \
-    fragmentreferencestoolbar.cpp \
     fragmenttilepreview.cpp \
     fragmenttiles.cpp \
     fragmenttilesetproperties.cpp \
@@ -34,11 +32,9 @@ HEADERS += \
     fragmentcontextclosed.h \
     fragmentcontextopen.h \
     fragmenteditor.h \
-    fragmenteditortoolbar.h \
     fragmentpalettes.h \
     fragmentpreview.h \
     fragmentreferences.h \
-    fragmentreferencestoolbar.h \
     fragmenttilepreview.h \
     fragmenttiles.h \
     fragmenttilesetproperties.h \
@@ -51,11 +47,9 @@ FORMS += \
     fragmentcontextclosed.ui \
     fragmentcontextopen.ui \
     fragmenteditor.ui \
-    fragmenteditortoolbar.ui \
     fragmentpalettes.ui \
     fragmentpreview.ui \
     fragmentreferences.ui \
-    fragmentreferencestoolbar.ui \
     fragmenttilepreview.ui \
     fragmenttiles.ui \
     fragmenttilesetproperties.ui \
