@@ -9,12 +9,12 @@ FragmentTilePreview::FragmentTilePreview(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    if (App::getState().tilePreviewShow() == "original")
+    if (App::getState()->tilePreviewShow() == "original")
     {
         ui->btOriginal->setStyleSheet(App::getStyles()->get("button_checked"));
         ui->btHD->setStyleSheet(App::getStyles()->get("button_unchecked"));
     }
-    else if (App::getState().tilePreviewShow() == "hd")
+    else if (App::getState()->tilePreviewShow() == "hd")
     {
         ui->btOriginal->setStyleSheet(App::getStyles()->get("button_unchecked"));
         ui->btHD->setStyleSheet(App::getStyles()->get("button_checked"));
@@ -25,10 +25,10 @@ FragmentTilePreview::FragmentTilePreview(QWidget *parent) :
         ui->btHD->setStyleSheet(App::getStyles()->get("button_unchecked"));
     }
 
-    connect(ui->btOriginal, &QPushButton::clicked, [&](){ App::getState().setTilePreviewShow("original"); });
-    connect(ui->btHD, &QPushButton::clicked, [&](){ App::getState().setTilePreviewShow("hd"); });
+    connect(ui->btOriginal, &QPushButton::clicked, this, [&](){ App::getState()->setTilePreviewShow("original"); });
+    connect(ui->btHD, &QPushButton::clicked, this, [&](){ App::getState()->setTilePreviewShow("hd"); });
 
-    connect(&App::getState(), &AppState::onTilePreviewShowChanged, [&](QString const & value) {
+    connect(App::getState(), &AppState::onTilePreviewShowChanged, this, [&](QString const & value) {
         if (value == "original")
         {
             ui->btOriginal->setStyleSheet(App::getStyles()->get("button_checked"));

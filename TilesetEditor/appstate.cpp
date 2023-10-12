@@ -5,6 +5,7 @@ AppState::AppState()
     _tilesShow = "all";
     _palettesShow = "all";
     _tilePreviewShow = "original";
+    _previewPage = "editor";
 }
 
 // Context Folder
@@ -101,13 +102,20 @@ void AppState::setReferenceHighlightPosition(bool value)
     }
 }
 
-void AppState::setPreviewPage(int value)
+// Preview
+
+void AppState::setPreviewPage(QString value)
 {
     if (value != _previewPage)
     {
         _previewPage = value;
         emit onPreviewPageChanged(value);
     }
+}
+
+const QString & AppState::previewPage() const
+{
+    return _previewPage;
 }
 
 // Tiles
@@ -121,7 +129,7 @@ void AppState::setTilesShow(QString const & value)
     }
 }
 
-const QString &AppState::tilesShow() const
+const QString & AppState::tilesShow() const
 {
     return _tilesShow;
 }

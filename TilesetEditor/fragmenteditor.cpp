@@ -9,29 +9,29 @@ FragmentEditor::FragmentEditor(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    connect(ui->btPencil, &QPushButton::clicked, [&]() { App::getState().setEditorTool(PENCIL); });
-    connect(ui->btEraser, &QPushButton::clicked, [&]() { App::getState().setEditorTool(ERASER); });
-    connect(ui->btLinker, &QPushButton::clicked, [&]() { App::getState().setEditorTool(LINKER); });
+    connect(ui->btPencil, &QPushButton::clicked, this, [&]() { App::getState()->setEditorTool(PENCIL); });
+    connect(ui->btEraser, &QPushButton::clicked, this, [&]() { App::getState()->setEditorTool(ERASER); });
+    connect(ui->btLinker, &QPushButton::clicked, this, [&]() { App::getState()->setEditorTool(LINKER); });
 
-    connect(ui->btShowNext, &QPushButton::clicked, [&]() {
+    connect(ui->btShowNext, &QPushButton::clicked, this, [&]() {
         // TODO: Show next tile appearance
     });
 
-    connect(ui->btShowLinkedTiles, &QPushButton::clicked, [&]() {
-        App::getState().setEditorShowLinkedTiles(!App::getState().editorShowLinkedTiles());
+    connect(ui->btShowLinkedTiles, &QPushButton::clicked, this, [&]() {
+        App::getState()->setEditorShowLinkedTiles(!App::getState()->editorShowLinkedTiles());
     });
 
-    connect(ui->btShowUnlinkedTiles, &QPushButton::clicked, [&]() {
-        App::getState().setEditorShowUnlinkedTiles(!App::getState().editorShowUnlinkedTiles());
+    connect(ui->btShowUnlinkedTiles, &QPushButton::clicked, this, [&]() {
+        App::getState()->setEditorShowUnlinkedTiles(!App::getState()->editorShowUnlinkedTiles());
     });
 
-    connect(ui->btShowGrid, &QPushButton::clicked, [&]() {
-        App::getState().setEditorShowGrid(!App::getState().editorShowGrid());
+    connect(ui->btShowGrid, &QPushButton::clicked, this, [&]() {
+        App::getState()->setEditorShowGrid(!App::getState()->editorShowGrid());
     });
 
     // Listen to signals
 
-    connect(&App::getState(), &AppState::onEditorToolChanged, [&](EditorTool value)
+    connect(App::getState(), &AppState::onEditorToolChanged, this, [&](EditorTool value)
     {
         if (value == PENCIL)
         {
@@ -53,15 +53,15 @@ FragmentEditor::FragmentEditor(QWidget *parent) :
         }
     });
 
-    connect(&App::getState(), &AppState::onEditorShowLinkedTilesChanged, [&](bool value) {
+    connect(App::getState(), &AppState::onEditorShowLinkedTilesChanged, this, [&](bool value) {
         ui->btShowLinkedTiles->setChecked(value);
     });
 
-    connect(&App::getState(), &AppState::onEditorShowUnlinkedTilesChanged, [&](bool value) {
+    connect(App::getState(), &AppState::onEditorShowUnlinkedTilesChanged, this, [&](bool value) {
         ui->btShowUnlinkedTiles->setChecked(value);
     });
 
-    connect(&App::getState(), &AppState::onEditorShowGridChanged, [&](bool value) {
+    connect(App::getState(), &AppState::onEditorShowGridChanged, this, [&](bool value) {
         ui->btShowGrid->setChecked(value);
     });
 

@@ -141,7 +141,7 @@ QMenu::item:selected {
     <string>Encode HD Tiles</string>
    </property>
    <property name="shortcut">
-    <string>F8</string>
+    <string>F9</string>
    </property>
   </action>
   <action name="actionAbout">
@@ -155,6 +155,9 @@ QMenu::item:selected {
   <action name="actionBreak_Tilesets">
    <property name="text">
     <string>Break HD Tilesets</string>
+   </property>
+   <property name="shortcut">
+    <string>F8</string>
    </property>
   </action>
  </widget>

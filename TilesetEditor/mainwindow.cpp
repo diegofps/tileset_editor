@@ -14,7 +14,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     setCentralWidget(getFragmentContextClosed());
 
-    connect(&App::getState(), &AppState::onContextFolderChanged, this, [&](QString const & value)
+    connect(App::getState(), &AppState::onContextFolderChanged, this, [&](QString const & value)
     {
         if (value.isEmpty())
             setCentralWidget(getFragmentContextClosed());
@@ -61,11 +61,11 @@ void MainWindow::on_actionOpen_triggered()
     QWidget * fragment = layout()->itemAt(0)->widget();
 
     if (fragment->inherits(FragmentContextOpen::staticMetaObject.className()))
-        App::getState().setContextFolder("");
+        App::getState()->setContextFolder("");
     else if (fragment->inherits(FragmentContextClosed::staticMetaObject.className()))
-        App::getState().setContextFolder("/long/path/to/rom.context");
+        App::getState()->setContextFolder("/long/path/to/rom.context");
     else
-        App::getState().setContextFolder("/unknown_path");
+        App::getState()->setContextFolder("/unknown_path");
 }
 
 

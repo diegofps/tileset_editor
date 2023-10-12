@@ -15,11 +15,11 @@ public:
 
     App();
 
-    static AppState & getState()
+    static AppState * getState()
     {
         if (appState == nullptr)
             appState = new AppState();
-        return *appState;
+        return appState;
     }
 
     static AppStyles * getStyles()

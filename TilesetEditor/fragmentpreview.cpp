@@ -24,7 +24,6 @@ FragmentPreview::FragmentPreview(QWidget *parent) :
     pagesRow->addWidget(btReferences);
     pagesRow->setContentsMargins(9,0,9,0);
 
-
     auto pageControlsLayout = new QVBoxLayout(this);
     pageControlsLayout->addLayout(pagesRow);
     pageControlsLayout->addStretch();
@@ -40,7 +39,6 @@ FragmentPreview::FragmentPreview(QWidget *parent) :
     pageContentLayout->setContentsMargins(0,0,0,0);
 
     pageContent = new QFrame(this);
-//    pageContent->setStyleSheet("background-color: green");
     pageContent->setLayout(pageContentLayout);
 
     auto stackedLayout = new QStackedLayout(this);
@@ -52,26 +50,54 @@ FragmentPreview::FragmentPreview(QWidget *parent) :
 
     ui->stackedFrame->setLayout(stackedLayout);
 
-    connect(btEditor, &QPushButton::clicked, [&](){ App::getState().setPreviewPage(0); });
-    connect(btReferences, &QPushButton::clicked, [&](){ App::getState().setPreviewPage(1); });
+    // Configure Editor and References page buttons
 
-    connect(&App::getState(), &AppState::onPreviewPageChanged, [&](int page)
+    if (App::getState()->previewPage() == "editor")
     {
-        if (page == 0)
+        btEditor->setStyleSheet(App::getStyles()->get("button_checked"));
+        btReferences->setStyleSheet(App::getStyles()->get("button_unchecked"));
+    }
+    else if (App::getState()->previewPage() == "references")
+    {
+        btEditor->setStyleSheet(App::getStyles()->get("button_unchecked"));
+        btReferences->setStyleSheet(App::getStyles()->get("button_checked"));
+    }
+    else
+    {
+        btEditor->setStyleSheet(App::getStyles()->get("button_unchecked"));
+        btReferences->setStyleSheet(App::getStyles()->get("button_unchecked"));
+    }
+
+    connect(btEditor, &QPushButton::clicked, this, [&](){ App::getState()->setPreviewPage("editor"); });
+    connect(btReferences, &QPushButton::clicked, this, [&](){ App::getState()->setPreviewPage("references"); });
+
+    connect(App::getState(), &AppState::onPreviewPageChanged, this, [&](QString const & page)
+    {
+        if (page == "editor")
         {
+            btEditor->setStyleSheet(App::getStyles()->get("button_checked"));
+            btReferences->setStyleSheet(App::getStyles()->get("button_unchecked"));
+
             pageContent->layout()->replaceWidget(
                         pageContent->layout()->itemAt(0)->widget(),
                         new FragmentEditor(this));
         }
-        else
+        else if (page == "references")
         {
+            btEditor->setStyleSheet(App::getStyles()->get("button_unchecked"));
+            btReferences->setStyleSheet(App::getStyles()->get("button_checked"));
+
             pageContent->layout()->replaceWidget(
                         pageContent->layout()->itemAt(0)->widget(),
                         new FragmentReferences(this));
         }
+        else
+        {
+            btEditor->setStyleSheet(App::getStyles()->get("button_unchecked"));
+            btReferences->setStyleSheet(App::getStyles()->get("button_unchecked"));
+        }
 
-        qDebug("Layout has %d widgets", pageContent->layout()->count());
-        pageContent->update();
+//        pageContent->update();
     });
 
 }

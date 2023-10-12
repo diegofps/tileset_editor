@@ -9,12 +9,12 @@ FragmentPalettes::FragmentPalettes(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    if (App::getState().palettesShow() == "all")
+    if (App::getState()->palettesShow() == "all")
     {
         ui->btAll->setStyleSheet(App::getStyles()->get("button_checked"));
         ui->btUsedWithTile->setStyleSheet(App::getStyles()->get("button_unchecked"));
     }
-    else if (App::getState().palettesShow() == "used")
+    else if (App::getState()->palettesShow() == "used")
     {
         ui->btAll->setStyleSheet(App::getStyles()->get("button_unchecked"));
         ui->btUsedWithTile->setStyleSheet(App::getStyles()->get("button_checked"));
@@ -25,10 +25,10 @@ FragmentPalettes::FragmentPalettes(QWidget *parent) :
         ui->btUsedWithTile->setStyleSheet(App::getStyles()->get("button_unchecked"));
     }
 
-    connect(ui->btAll, &QPushButton::clicked, [&](){ App::getState().setPalettesShow("all"); });
-    connect(ui->btUsedWithTile, &QPushButton::clicked, [&](){ App::getState().setPalettesShow("used"); });
+    connect(ui->btAll, &QPushButton::clicked, this, [&](){ App::getState()->setPalettesShow("all"); });
+    connect(ui->btUsedWithTile, &QPushButton::clicked, this, [&](){ App::getState()->setPalettesShow("used"); });
 
-    connect(&App::getState(), &AppState::onPalettesShowChanged, [&](QString const & value) {
+    connect(App::getState(), &AppState::onPalettesShowChanged, this, [&](QString const & value) {
         if (value == "all")
         {
             ui->btAll->setStyleSheet(App::getStyles()->get("button_checked"));

@@ -9,12 +9,12 @@ FragmentTiles::FragmentTiles(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    if (App::getState().tilesShow() == "all")
+    if (App::getState()->tilesShow() == "all")
     {
         ui->btAll->setStyleSheet(App::getStyles()->get("button_checked"));
         ui->btUnlinked->setStyleSheet(App::getStyles()->get("button_unchecked"));
     }
-    else if (App::getState().tilesShow() == "unlinked")
+    else if (App::getState()->tilesShow() == "unlinked")
     {
         ui->btAll->setStyleSheet(App::getStyles()->get("button_unchecked"));
         ui->btUnlinked->setStyleSheet(App::getStyles()->get("button_checked"));
@@ -25,10 +25,10 @@ FragmentTiles::FragmentTiles(QWidget *parent) :
         ui->btUnlinked->setStyleSheet(App::getStyles()->get("button_unchecked"));
     }
 
-    connect(ui->btAll, &QPushButton::clicked, [&](){ App::getState().setTilesShow("all"); });
-    connect(ui->btUnlinked, &QPushButton::clicked, [&](){ App::getState().setTilesShow("unlinked"); });
+    connect(ui->btAll, &QPushButton::clicked, this, [&](){ App::getState()->setTilesShow("all"); });
+    connect(ui->btUnlinked, &QPushButton::clicked, this, [&](){ App::getState()->setTilesShow("unlinked"); });
 
-    connect(&App::getState(), &AppState::onTilesShowChanged, [&](QString const & value) {
+    connect(App::getState(), &AppState::onTilesShowChanged, this, [&](QString const & value) {
         if (value == "all")
         {
             ui->btAll->setStyleSheet(App::getStyles()->get("button_checked"));

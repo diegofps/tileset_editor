@@ -30,7 +30,7 @@ private:
     bool _referenceHighlightPosition;
 
     // Preview
-    int _previewPage;
+    QString _previewPage;
 
     // Tiles
     QString _tilesShow;
@@ -65,7 +65,8 @@ public:
     void setReferenceHighlightPosition(bool value);
 
     // Preview
-    void setPreviewPage(int value);
+    const QString & previewPage() const;
+    void setPreviewPage(QString value);
 
     // Tiles
     const QString & tilesShow() const;
@@ -95,7 +96,7 @@ signals:
     void onReferenceHighlightPositionChanged(bool const value);
 
     // Preview
-    void onPreviewPageChanged(int const value);
+    void onPreviewPageChanged(QString const & value);
 
     // Tiles
     void onTilesShowChanged(QString const & value);
