@@ -98,3 +98,12 @@ void AppState::setReferenceHighlightPosition(bool value)
         emit onReferenceHighlightPositionChanged(value);
     }
 }
+
+void AppState::setPreviewPage(int value)
+{
+    if (value != _previewPage)
+    {
+        _previewPage = value;
+        emit onPreviewPageChanged(value);
+    }
+}

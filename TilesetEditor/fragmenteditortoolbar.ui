@@ -59,7 +59,7 @@ QPushButton#evilButton:checked {
      </property>
      <property name="icon">
       <iconset>
-       <normalon>:/icons/pencil-solid.svg</normalon>
+       <normalon>:/style/pencil-solid.svg</normalon>
       </iconset>
      </property>
      <property name="checkable">
@@ -107,7 +107,7 @@ QPushButton#evilButton:checked {
      </property>
      <property name="icon">
       <iconset>
-       <normalon>:/icons/eraser-solid.svg</normalon>
+       <normalon>:/style/eraser-solid.svg</normalon>
       </iconset>
      </property>
      <property name="checkable">
@@ -152,7 +152,7 @@ QPushButton#evilButton:checked {
      </property>
      <property name="icon">
       <iconset>
-       <normalon>:/icons/link-solid.svg</normalon>
+       <normalon>:/style/link-solid.svg</normalon>
       </iconset>
      </property>
     </widget>
@@ -213,7 +213,7 @@ QPushButton#evilButton:checked {
      </property>
      <property name="icon">
       <iconset>
-       <normalon>:/icons/search-solid.svg</normalon>
+       <normalon>:/style/search-solid.svg</normalon>
       </iconset>
      </property>
      <property name="checkable">
@@ -258,7 +258,7 @@ QPushButton#evilButton:checked {
      </property>
      <property name="icon">
       <iconset>
-       <normalon>:/icons/link-solid.svg</normalon>
+       <normalon>:/style/link-solid.svg</normalon>
       </iconset>
      </property>
      <property name="checkable">
@@ -303,7 +303,7 @@ QPushButton#evilButton:checked {
      </property>
      <property name="icon">
       <iconset>
-       <normalon>:/icons/link-slash-solid.svg</normalon>
+       <normalon>:/style/link-slash-solid.svg</normalon>
       </iconset>
      </property>
      <property name="checkable">
@@ -348,7 +348,7 @@ QPushButton#evilButton:checked {
      </property>
      <property name="icon">
       <iconset>
-       <normalon>:/icons/table-cells-large-solid.svg</normalon>
+       <normalon>:/style/table-cells-large-solid.svg</normalon>
       </iconset>
      </property>
      <property name="checkable">

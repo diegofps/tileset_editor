@@ -1,11 +1,12 @@
 <RCC>
     <qresource prefix="/">
-        <file>icons/folder-solid.svg</file>
-        <file>icons/eraser-solid.svg</file>
-        <file>icons/link-slash-solid.svg</file>
-        <file>icons/link-solid.svg</file>
-        <file>icons/pencil-solid.svg</file>
-        <file>icons/search-solid.svg</file>
-        <file>icons/table-cells-large-solid.svg</file>
+        <file>style/folder-solid.svg</file>
+        <file>style/eraser-solid.svg</file>
+        <file>style/link-slash-solid.svg</file>
+        <file>style/link-solid.svg</file>
+        <file>style/pencil-solid.svg</file>
+        <file>style/search-solid.svg</file>
+        <file>style/table-cells-large-solid.svg</file>
+        <file>style/stylesheet.qss</file>
     </qresource>
 </RCC>

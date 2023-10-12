@@ -198,7 +198,7 @@ QPushButton#evilButton:checked {
      </property>
      <property name="icon">
       <iconset>
-       <normalon>:/icons/table-cells-large-solid.svg</normalon>
+       <normalon>:/style/table-cells-large-solid.svg</normalon>
       </iconset>
      </property>
      <property name="checkable">

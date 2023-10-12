@@ -29,39 +29,36 @@
     </rect>
    </property>
    <property name="styleSheet">
-    <string notr="true">QMenuBar { /* Default style with no interaction with the user */
-	background-color: rgb(52, 66, 74);
-    spacing: 15px; /* spacing between menu bar items */
+    <string notr="true">
+QMenuBar {
+    background-color: rgb(52, 66, 74);
+    spacing: 15px;
 }
 
 QMenuBar::item {
     background: transparent;
 }
 
-QMenuBar::item:selected { /* when mouse or keyboard is hovering */
-	background: #41515c;
+QMenuBar::item:selected {
+     background: #41515c;
 }
 
-QMenuBar::item:pressed { /* When the menu is pressed and open */
+QMenuBar::item:pressed {
     background: rgb(86, 145, 236);
 }
 
-
-/* Menu items */
-
 QMenu {
-    background-color: #34424a; /* sets background of the menu */
+    background-color: #34424a;
 }
 
 QMenu::item {
-    /* sets background of menu item. set this to something non-transparent
-        if you want menu color and menu item color to be different */
     background: transparent;
 }
 
-QMenu::item:selected { /* when user selects item using mouse or keyboard */
+QMenu::item:selected {
     background: #41515c;
-}</string>
+}
+</string>
    </property>
    <widget class="QMenu" name="menuFile">
     <property name="title">

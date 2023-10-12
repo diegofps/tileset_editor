@@ -8,6 +8,7 @@
 #include "qlayout.h"
 #include "ui_fragmentcontextopen.h"
 
+#include <QFile>
 #include <QSplitter>
 
 FragmentContextOpen::FragmentContextOpen(QWidget *parent) :
@@ -16,9 +17,15 @@ FragmentContextOpen::FragmentContextOpen(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    QString splitterStylesheet = "QSplitter::handle{image: null;}";
+
     QSplitter * splitterH = new QSplitter(this);
     QSplitter * splitterVL = new QSplitter(splitterH);
     QSplitter * splitterVR = new QSplitter(splitterH);
+
+    splitterH->setStyleSheet(splitterStylesheet);
+    splitterVL->setStyleSheet(splitterStylesheet);
+    splitterVR->setStyleSheet(splitterStylesheet);
 
     splitterVL->setOrientation(Qt::Vertical);
     splitterVR->setOrientation(Qt::Vertical);
@@ -51,7 +58,6 @@ FragmentContextOpen::FragmentContextOpen(QWidget *parent) :
            << 0.8 * sizeHint().height()
            << 0.1 * sizeHint().height();
     splitterH->setSizes(sizesH);
-//    splitterH->update();
 }
 
 FragmentContextOpen::~FragmentContextOpen()

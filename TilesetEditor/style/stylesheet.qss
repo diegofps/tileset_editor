@@ -1,0 +1,8 @@
+*[cssClass="frame"] {
+    background-color: #34424a;
+}
+
+*[cssClass="title"] {
+    background-color: #151515;
+    color: #ffffff;
+}

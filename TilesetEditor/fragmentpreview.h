@@ -1,6 +1,8 @@
 #ifndef FRAGMENTPREVIEW_H
 #define FRAGMENTPREVIEW_H
 
+#include <QFrame>
+#include <QPushButton>
 #include <QWidget>
 
 namespace Ui {
@@ -17,6 +19,9 @@ public:
 
 private:
     Ui::FragmentPreview *ui;
+    QPushButton * btEditor;
+    QPushButton * btReferences;
+    QFrame * pageContent;
 };
 
 #endif // FRAGMENTPREVIEW_H

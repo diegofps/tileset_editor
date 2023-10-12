@@ -30,6 +30,10 @@ private:
     int _referenceScreenshot;
     bool _referenceHighlightPosition;
 
+    // Preview
+
+    int _previewPage;
+
 public:
 
     AppState();
@@ -54,6 +58,10 @@ public:
     void setReferenceScreenshot(int value);
     void setReferenceHighlightPosition(bool value);
 
+    // Preview
+
+    void setPreviewPage(int value);
+
 signals:
 
     void onContextFolderChanged(QString & value);
@@ -69,6 +77,10 @@ signals:
 
     void onReferenceScreenshotChanged(int value);
     void onReferenceHighlightPositionChanged(bool value);
+
+    // Preview
+
+    void onPreviewPageChanged(int value);
 
 };
 
