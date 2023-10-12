@@ -16,6 +16,10 @@ public:
     ~FragmentReferences();
 
 private:
+    void styleScreenshotButtons(const int value);
+    void styleHighlightPositionButton(const bool value);
+
+private:
     Ui::FragmentReferences *ui;
 };
 

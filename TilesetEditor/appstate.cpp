@@ -6,6 +6,12 @@ AppState::AppState()
     _palettesShow = "all";
     _tilePreviewShow = "original";
     _previewPage = "editor";
+    _referenceScreenshot = 0;
+    _referenceHighlightPosition = true;
+    _editorTool = PENCIL;
+    _editorShowLinkedTiles = true;
+    _editorShowUnlinkedTiles = true;
+    _editorShowGrid = true;
 }
 
 // Context Folder
@@ -26,7 +32,7 @@ const QString &AppState::contextFolder() const
 
 // Editor Toolbox
 
-void AppState::setEditorTool(EditorTool value)
+void AppState::setEditorTool(EditorTool const value)
 {
     if (value != _editorTool)
     {
@@ -83,6 +89,16 @@ bool AppState::editorShowGrid() const
 }
 
 // References Toolbox
+
+int AppState::referenceScreenshot() const
+{
+    return _referenceScreenshot;
+}
+
+bool AppState::referenceHighlightPosition() const
+{
+    return _referenceHighlightPosition;
+}
 
 void AppState::setReferenceScreenshot(int value)
 {

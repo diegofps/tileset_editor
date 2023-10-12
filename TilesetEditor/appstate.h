@@ -55,12 +55,14 @@ public:
     bool editorShowUnlinkedTiles() const;
     bool editorShowGrid() const;
 
-    void setEditorTool(EditorTool value);
+    void setEditorTool(EditorTool const value);
     void setEditorShowLinkedTiles(bool value);
     void setEditorShowUnlinkedTiles(bool value);
     void setEditorShowGrid(bool value);
 
     // References Toolbox
+    int referenceScreenshot() const;
+    bool referenceHighlightPosition() const;
     void setReferenceScreenshot(int value);
     void setReferenceHighlightPosition(bool value);
 

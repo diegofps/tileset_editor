@@ -3,11 +3,50 @@
 #include "fragmenteditor.h"
 #include "ui_fragmenteditor.h"
 
+void FragmentEditor::styleToolButtons(EditorTool const value)
+{
+    if (value == PENCIL)
+    {
+        ui->btPencil->setStyleSheet(App::getStyles()->get("button_checked"));
+        ui->btEraser->setStyleSheet(App::getStyles()->get("button_unchecked"));
+        ui->btLinker->setStyleSheet(App::getStyles()->get("button_unchecked"));
+    }
+    else if (value == ERASER)
+    {
+        ui->btPencil->setStyleSheet(App::getStyles()->get("button_unchecked"));
+        ui->btEraser->setStyleSheet(App::getStyles()->get("button_checked"));
+        ui->btLinker->setStyleSheet(App::getStyles()->get("button_unchecked"));
+    }
+    else if (value == LINKER)
+    {
+        ui->btPencil->setStyleSheet(App::getStyles()->get("button_unchecked"));
+        ui->btEraser->setStyleSheet(App::getStyles()->get("button_unchecked"));
+        ui->btLinker->setStyleSheet(App::getStyles()->get("button_checked"));
+    }
+    else
+    {
+        ui->btPencil->setStyleSheet(App::getStyles()->get("button_unchecked"));
+        ui->btEraser->setStyleSheet(App::getStyles()->get("button_unchecked"));
+        ui->btLinker->setStyleSheet(App::getStyles()->get("button_unchecked"));
+    }
+}
+
+void FragmentEditor::styleButton(bool const value, QPushButton * const button)
+{
+    button->setStyleSheet(App::getStyles()->get(value ? "button_checked" : "button_unchecked"));
+}
+
 FragmentEditor::FragmentEditor(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::FragmentEditor)
 {
     ui->setupUi(this);
+
+    styleToolButtons(App::getState()->editorTool());
+    styleButton(false, ui->btShowNext);
+    styleButton(App::getState()->editorShowLinkedTiles(), ui->btShowLinkedTiles);
+    styleButton(App::getState()->editorShowUnlinkedTiles(), ui->btShowUnlinkedTiles);
+    styleButton(App::getState()->editorShowGrid(), ui->btShowGrid);
 
     connect(ui->btPencil, &QPushButton::clicked, this, [&]() { App::getState()->setEditorTool(PENCIL); });
     connect(ui->btEraser, &QPushButton::clicked, this, [&]() { App::getState()->setEditorTool(ERASER); });
@@ -31,40 +70,10 @@ FragmentEditor::FragmentEditor(QWidget *parent) :
 
     // Listen to signals
 
-    connect(App::getState(), &AppState::onEditorToolChanged, this, [&](EditorTool value)
-    {
-        if (value == PENCIL)
-        {
-            ui->btPencil->setChecked(true);
-            ui->btEraser->setChecked(false);
-            ui->btLinker->setChecked(false);
-        }
-        else if (value == ERASER)
-        {
-            ui->btPencil->setChecked(false);
-            ui->btEraser->setChecked(true);
-            ui->btLinker->setChecked(false);
-        }
-        else
-        {
-            ui->btPencil->setChecked(false);
-            ui->btEraser->setChecked(false);
-            ui->btLinker->setChecked(true);
-        }
-    });
-
-    connect(App::getState(), &AppState::onEditorShowLinkedTilesChanged, this, [&](bool value) {
-        ui->btShowLinkedTiles->setChecked(value);
-    });
-
-    connect(App::getState(), &AppState::onEditorShowUnlinkedTilesChanged, this, [&](bool value) {
-        ui->btShowUnlinkedTiles->setChecked(value);
-    });
-
-    connect(App::getState(), &AppState::onEditorShowGridChanged, this, [&](bool value) {
-        ui->btShowGrid->setChecked(value);
-    });
-
+    connect(App::getState(), &AppState::onEditorToolChanged, this, [&](EditorTool value) { styleToolButtons(value); });
+    connect(App::getState(), &AppState::onEditorShowLinkedTilesChanged, this, [&](bool value) { styleButton(value, ui->btShowLinkedTiles); });
+    connect(App::getState(), &AppState::onEditorShowUnlinkedTilesChanged, this, [&](bool value) { styleButton(value, ui->btShowUnlinkedTiles); });
+    connect(App::getState(), &AppState::onEditorShowGridChanged, this, [&](bool value) { styleButton(value, ui->btShowGrid); });
 }
 
 FragmentEditor::~FragmentEditor()

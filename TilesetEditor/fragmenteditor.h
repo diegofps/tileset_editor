@@ -1,6 +1,8 @@
 #ifndef FRAGMENTEDITOR_H
 #define FRAGMENTEDITOR_H
 
+#include "appstate.h"
+#include <QPushButton>
 #include <QWidget>
 
 namespace Ui {
@@ -14,6 +16,10 @@ class FragmentEditor : public QWidget
 public:
     explicit FragmentEditor(QWidget *parent = nullptr);
     ~FragmentEditor();
+
+private:
+    void styleToolButtons(const EditorTool value);
+    void styleButton(bool const value, QPushButton * const button);
 
 private:
     Ui::FragmentEditor *ui;
