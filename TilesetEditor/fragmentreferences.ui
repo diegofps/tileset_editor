@@ -184,7 +184,7 @@
           </property>
           <property name="icon">
            <iconset>
-            <normalon>:/icons/table-cells-large-solid.svg</normalon>
+            <normalon>:/icons/highlight-position-solid.svg</normalon>
            </iconset>
           </property>
           <property name="iconSize">

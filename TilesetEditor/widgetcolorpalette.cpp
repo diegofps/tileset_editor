@@ -5,3 +5,8 @@ WidgetColorPalette::WidgetColorPalette(QWidget *parent)
 {
 
 }
+
+void WidgetColorPalette::paintEvent(QPaintEvent *event)
+{
+
+}

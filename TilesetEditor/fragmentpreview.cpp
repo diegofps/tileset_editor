@@ -2,7 +2,7 @@
 #include "fragmenteditor.h"
 #include "fragmentpreview.h"
 #include "fragmentreferences.h"
-#include "qabsolutelayout.h"
+#include "layoutabsolute.h"
 #include "ui_fragmentpreview.h"
 
 #include <QStackedLayout>
@@ -57,7 +57,7 @@ FragmentPreview::FragmentPreview(QWidget *parent) :
     pageContent = new QFrame(this);
     pageContent->setLayout(pageContentLayout);
 
-    auto stackedLayout = new QAbsoluteLayout();
+    auto stackedLayout = new LayoutAbsolute();
     stackedLayout->setContentsMargins(0,0,0,0);
 
     stackedLayout->addWidget(pageContent, QRect(0,0,-1,-1));

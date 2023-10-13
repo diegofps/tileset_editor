@@ -22,9 +22,9 @@ SOURCES += \
     fragmenttiles.cpp \
     fragmenttilesetproperties.cpp \
     fragmenttilesets.cpp \
+    layoutabsolute.cpp \
     main.cpp \
     mainwindow.cpp \
-    qabsolutelayout.cpp \
     tilesgridlist.cpp \
     widgetcolorpalette.cpp
 
@@ -42,8 +42,8 @@ HEADERS += \
     fragmenttiles.h \
     fragmenttilesetproperties.h \
     fragmenttilesets.h \
+    layoutabsolute.h \
     mainwindow.h \
-    qabsolutelayout.h \
     tilesgridlist.h \
     widgetcolorpalette.h
 

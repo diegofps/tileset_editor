@@ -11,6 +11,8 @@ public:
 
 signals:
 
+protected:
+    void paintEvent(QPaintEvent *event);
 };
 
 #endif // WIDGETCOLORPALETTE_H
