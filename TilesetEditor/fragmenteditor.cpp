@@ -42,6 +42,10 @@ FragmentEditor::FragmentEditor(QWidget *parent) :
 {
     ui->setupUi(this);
 
+//    ui->btPencil->setToolTip("Draws the selected Tile to the Tileset");
+//    ui->btEraser->setToolTip("Erase Tiles from the Tileset");
+//    ui->btLinker->setToolTip("Mark Tiles that link their original image to its HD version");
+
     styleToolButtons(App::getState()->editorTool());
     styleButton(false, ui->btShowNext);
     styleButton(App::getState()->editorShowLinkedTiles(), ui->btShowLinkedTiles);

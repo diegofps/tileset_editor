@@ -21,11 +21,15 @@ public:
 private slots:
     void onActionOpen();
     void onActionQuit();
+    void onActionViewEditor();
+    void onActionViewReferences();
+    void onActionViewResetLayout();
 
 private:
     FragmentContextOpen * getFragmentContextOpen();
     FragmentContextClosed * getFragmentContextClosed();
     void prepareUIForContext(QString value);
+
 
 private:
     Ui::MainWindow *ui;
@@ -33,4 +37,5 @@ private:
     FragmentContextClosed * _fragmentContextClosed;
 
 };
+
 #endif // MAINWINDOW_H

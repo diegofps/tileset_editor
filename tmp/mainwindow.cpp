@@ -16,8 +16,10 @@ MainWindow::MainWindow(QWidget *parent)
 
     connect(App::getState(), &AppState::onContextFolderChanged, this, [&](QString const & value) { prepareUIForContext(value); });
 
-    connect(ui->actionOpen, &QAction::triggered, this, &MainWindow::onActionOpen);
     connect(ui->actionQuit, &QAction::triggered, this, &MainWindow::onActionQuit);
+    connect(ui->actionOpen, &QAction::triggered, this, &MainWindow::onActionOpen);
+    connect(ui->actionOpen, &QAction::triggered, this, &MainWindow::onActionOpen);
+
 }
 
 MainWindow::~MainWindow()
@@ -101,3 +103,18 @@ void MainWindow::onActionQuit()
     close();
 }
 
+
+void MainWindow::onActionViewEditor()
+{
+    App::getState()->setPreviewPage("editor");
+}
+
+void MainWindow::onActionViewReferences()
+{
+    App::getState()->setPreviewPage("references");
+}
+
+void MainWindow::onActionViewResetLayout()
+{
+
+}

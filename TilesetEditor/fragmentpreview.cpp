@@ -18,13 +18,13 @@ FragmentPreview::FragmentPreview(QWidget *parent) :
     btReferences = new QPushButton(this);
     btReferences->setText("References");
 
-    auto pagesRow = new QHBoxLayout(this);
+    auto pagesRow = new QHBoxLayout();
     pagesRow->addStretch();
     pagesRow->addWidget(btEditor);
     pagesRow->addWidget(btReferences);
     pagesRow->setContentsMargins(9,0,9,0);
 
-    auto pageControlsLayout = new QVBoxLayout(this);
+    auto pageControlsLayout = new QVBoxLayout();
     pageControlsLayout->addLayout(pagesRow);
     pageControlsLayout->addStretch();
     pageControlsLayout->setContentsMargins(0,0,0,0);
@@ -41,7 +41,7 @@ FragmentPreview::FragmentPreview(QWidget *parent) :
     pageContent = new QFrame(this);
     pageContent->setLayout(pageContentLayout);
 
-    auto stackedLayout = new QStackedLayout(this);
+    auto stackedLayout = new QStackedLayout();
     stackedLayout->setStackingMode(QStackedLayout::StackAll);
     stackedLayout->setContentsMargins(0,0,0,0);
 
