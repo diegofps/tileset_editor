@@ -25,7 +25,6 @@ SOURCES += \
     main.cpp \
     mainwindow.cpp \
     qabsolutelayout.cpp \
-    qframelayout.cpp \
     tilesgridlist.cpp \
     widgetcolorpalette.cpp
 
@@ -45,7 +44,6 @@ HEADERS += \
     fragmenttilesets.h \
     mainwindow.h \
     qabsolutelayout.h \
-    qframelayout.h \
     tilesgridlist.h \
     widgetcolorpalette.h
 

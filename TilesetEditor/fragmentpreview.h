@@ -18,6 +18,9 @@ public:
     ~FragmentPreview();
 
 private:
+    void styleButtons(const QString &value);
+
+private:
     Ui::FragmentPreview *ui;
     QPushButton * btEditor;
     QPushButton * btReferences;
