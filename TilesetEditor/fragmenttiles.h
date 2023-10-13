@@ -17,6 +17,7 @@ public:
 
 private:
     Ui::FragmentTiles *ui;
+    void styleButtons(const QString &value);
 };
 
 #endif // FRAGMENTTILES_H

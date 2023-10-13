@@ -29,11 +29,16 @@ void FragmentReferences::styleScreenshotButtons(int const value)
         ui->btRef10->setStyleSheet(App::getStyles()->get("button_unchecked"));
         ui->btRef100->setStyleSheet(App::getStyles()->get("button_unchecked"));
     }
+
+    ui->btRef1->update();
+    ui->btRef10->update();
+    ui->btRef100->update();
 }
 
 void FragmentReferences::styleHighlightPositionButton(bool const value)
 {
     ui->btShowGrid->setStyleSheet(App::getStyles()->get(value ? "button_checked" : "button_unchecked"));
+    ui->btShowGrid->update();
 }
 
 FragmentReferences::FragmentReferences(QWidget *parent) :

@@ -17,6 +17,7 @@ public:
 
 private:
     Ui::FragmentPalettes *ui;
+    void styleButtons(const QString &value);
 };
 
 #endif // FRAGMENTPALETTES_H

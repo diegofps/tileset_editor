@@ -21,6 +21,7 @@ private:
     Ui::FragmentPreview *ui;
     QPushButton * btEditor;
     QPushButton * btReferences;
+    QFrame * pageControls;
     QFrame * pageContent;
 };
 

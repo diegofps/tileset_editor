@@ -9,8 +9,8 @@ FragmentTilesets::FragmentTilesets(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    ui->btNew->setStyleSheet(App::getStyles()->get("button_unchecked"));
-    ui->btRemove->setStyleSheet(App::getStyles()->get("button_unchecked"));
+    ui->btNew->setStyleSheet(App::getStyles()->get("button_click"));
+    ui->btRemove->setStyleSheet(App::getStyles()->get("button_click"));
 
     connect(ui->btNew, &QPushButton::clicked, [&](){
         // TODO

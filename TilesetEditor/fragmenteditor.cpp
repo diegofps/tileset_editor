@@ -29,11 +29,16 @@ void FragmentEditor::styleToolButtons(EditorTool const value)
         ui->btEraser->setStyleSheet(App::getStyles()->get("button_unchecked"));
         ui->btLinker->setStyleSheet(App::getStyles()->get("button_unchecked"));
     }
+
+    ui->btPencil->update();
+    ui->btEraser->update();
+    ui->btLinker->update();
 }
 
 void FragmentEditor::styleButton(bool const value, QPushButton * const button)
 {
     button->setStyleSheet(App::getStyles()->get(value ? "button_checked" : "button_unchecked"));
+    button->update();
 }
 
 FragmentEditor::FragmentEditor(QWidget *parent) :
@@ -47,7 +52,7 @@ FragmentEditor::FragmentEditor(QWidget *parent) :
 //    ui->btLinker->setToolTip("Mark Tiles that link their original image to its HD version");
 
     styleToolButtons(App::getState()->editorTool());
-    styleButton(false, ui->btShowNext);
+    ui->btShowNext->setStyleSheet(App::getStyles()->get("button_click"));
     styleButton(App::getState()->editorShowLinkedTiles(), ui->btShowLinkedTiles);
     styleButton(App::getState()->editorShowUnlinkedTiles(), ui->btShowUnlinkedTiles);
     styleButton(App::getState()->editorShowGrid(), ui->btShowGrid);

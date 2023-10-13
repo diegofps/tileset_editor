@@ -10,5 +10,6 @@
         <file>style/stylesheet.qss</file>
         <file>style/button_checked.qss</file>
         <file>style/button_unchecked.qss</file>
+        <file>style/button_click.qss</file>
     </qresource>
 </RCC>
