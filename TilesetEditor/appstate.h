@@ -1,6 +1,11 @@
 #ifndef APPSTATE_H
 #define APPSTATE_H
 
+#include "model/context.h"
+#include "model/tile.h"
+#include "model/palette.h"
+#include "model/tileset.h"
+
 #include <QObject>
 #include <string>
 
@@ -17,7 +22,11 @@ private:
     Q_OBJECT
 
     // Context Folder
+    Context * _context;
     QString _contextFolder;
+    QList<Tile*> * _contextTiles;
+    QList<Palette*> * _contextPalettes;
+    QList<Tileset*> * _contextTilesets;
 
     // Editor Toolbox
     EditorTool _editorTool;
@@ -46,8 +55,18 @@ public:
     AppState();
 
     // Context Folder
-    const QString & contextFolder() const;
+    Context * context() const;
+    QString const & contextFolder() const;
+    QList<Tile *> * contextTiles() const;
+    QList<Palette *> * contextPalettes() const;
+    QList<Tileset *> * contextTilesets() const;
+
+    void setContext(Context * value);
     void setContextFolder(QString value);
+    void setContextTiles(QList<Tile *> * value);
+    void setContextPalettes(QList<Palette *> * value);
+    void setContextTilesets(QList<Tileset *> * value);
+
 
     // Editor Toolbox
     EditorTool editorTool() const;
@@ -85,7 +104,11 @@ public:
 signals:
 
     // Context Folder
+    void onContextChanged(Context * value);
     void onContextFolderChanged(QString const & value);
+    void onContextTilesChanged(QList<Tile *> const * value);
+    void onContextPalettesChanged(QList<Palette *> const * value);
+    void onContextTilesetsChanged(QList<Tileset *> const * value);
 
     // Editor Toolbox
     void onEditorToolChanged(EditorTool const value);

@@ -12,9 +12,23 @@ AppState::AppState()
     _editorShowLinkedTiles = true;
     _editorShowUnlinkedTiles = true;
     _editorShowGrid = true;
+
+    _context = new Context();
+    _contextTiles = new QList<Tile*>();
+    _contextPalettes = new QList<Palette*>();
+    _contextTilesets = new QList<Tileset*>();
 }
 
 // Context Folder
+
+void AppState::setContext(Context * value)
+{
+    if (value != _context)
+    {
+        _context = value;
+        emit onContextChanged(value);
+    }
+}
 
 void AppState::setContextFolder(QString value)
 {
@@ -25,10 +39,58 @@ void AppState::setContextFolder(QString value)
     }
 }
 
-const QString &AppState::contextFolder() const
+void AppState::setContextTiles(QList<Tile *> *value)
+{
+    if (value != _contextTiles)
+    {
+        _contextTiles = value;
+        emit onContextTilesChanged(value);
+    }
+}
+
+void AppState::setContextPalettes(QList<Palette *> *value)
+{
+    if (value != _contextPalettes)
+    {
+        _contextPalettes = value;
+        emit onContextPalettesChanged(value);
+    }
+}
+
+void AppState::setContextTilesets(QList<Tileset *> *value)
+{
+    if (value != _contextTilesets)
+    {
+        _contextTilesets = value;
+        emit onContextTilesetsChanged(value);
+    }
+}
+
+Context * AppState::context() const
+{
+    return _context;
+}
+
+const QString & AppState::contextFolder() const
 {
     return _contextFolder;
 }
+
+QList<Tile *> * AppState::contextTiles() const
+{
+    return _contextTiles;
+}
+
+QList<Palette *> * AppState::contextPalettes() const
+{
+    return _contextPalettes;
+}
+
+QList<Tileset *> * AppState::contextTilesets() const
+{
+    return _contextTilesets;
+}
+
 
 // Editor Toolbox
 

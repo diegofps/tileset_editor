@@ -25,6 +25,12 @@ SOURCES += \
     layoutabsolute.cpp \
     main.cpp \
     mainwindow.cpp \
+    model/context.cpp \
+    model/palette.cpp \
+    model/refscreenshot.cpp \
+    model/tile.cpp \
+    model/tileset.cpp \
+    servicecontext.cpp \
     tilesgridlist.cpp \
     widgetcolorpalette.cpp
 
@@ -44,6 +50,12 @@ HEADERS += \
     fragmenttilesets.h \
     layoutabsolute.h \
     mainwindow.h \
+    model/context.h \
+    model/palette.h \
+    model/refscreenshot.h \
+    model/tile.h \
+    model/tileset.h \
+    servicecontext.h \
     tilesgridlist.h \
     widgetcolorpalette.h
 

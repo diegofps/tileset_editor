@@ -21,6 +21,7 @@ public:
 private slots:
     void onActionOpen();
     void onActionQuit();
+    void onActionClose();
 
 private:
     FragmentContextOpen * getFragmentContextOpen();

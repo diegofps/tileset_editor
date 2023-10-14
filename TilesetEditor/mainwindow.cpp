@@ -3,6 +3,8 @@
 #include "qlayout.h"
 #include "ui_mainwindow.h"
 
+#include <QFileDialog>
+
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
@@ -18,6 +20,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     connect(ui->actionOpen, &QAction::triggered, this, &MainWindow::onActionOpen);
     connect(ui->actionQuit, &QAction::triggered, this, &MainWindow::onActionQuit);
+    connect(ui->actionClose, &QAction::triggered, this, &MainWindow::onActionClose);
 }
 
 MainWindow::~MainWindow()
@@ -29,8 +32,10 @@ void MainWindow::prepareUIForContext(QString value)
 {
     if (value.isEmpty())
     {
+        setWindowTitle("TilesetEditor");
         setCentralWidget(getFragmentContextClosed());
         ui->actionSave->setEnabled(false);
+        ui->actionClose->setEnabled(false);
         ui->actionBreak_Tilesets->setEnabled(false);
         ui->actionBuild_tilesets->setEnabled(false);
         ui->actionEncode_HD_tiles->setEnabled(false);
@@ -42,8 +47,10 @@ void MainWindow::prepareUIForContext(QString value)
     }
     else
     {
+        setWindowTitle(value);
         setCentralWidget(getFragmentContextOpen());
         ui->actionSave->setEnabled(true);
+        ui->actionClose->setEnabled(true);
         ui->actionBreak_Tilesets->setEnabled(true);
         ui->actionBuild_tilesets->setEnabled(true);
         ui->actionEncode_HD_tiles->setEnabled(true);
@@ -85,19 +92,32 @@ FragmentContextClosed * MainWindow::getFragmentContextClosed()
 
 void MainWindow::onActionOpen()
 {
-    QWidget * fragment = layout()->itemAt(0)->widget();
+    QFileDialog dialog(this);
+    dialog.setFileMode(QFileDialog::Directory);
+    dialog.setViewMode(QFileDialog::Detail);
+    dialog.setOption(QFileDialog::ShowDirsOnly, true);
 
-    if (fragment->inherits(FragmentContextOpen::staticMetaObject.className()))
-        App::getState()->setContextFolder("");
-    else if (fragment->inherits(FragmentContextClosed::staticMetaObject.className()))
-        App::getState()->setContextFolder("/long/path/to/rom.context");
+    QStringList fileNames;
+
+    if (dialog.exec())
+    {
+        fileNames = dialog.selectedFiles();
+        App::getState()->setContextFolder(fileNames.first());
+    }
     else
-        App::getState()->setContextFolder("/unknown_path");
+    {
+        qDebug("ActionOpen canceled by the user");
+    }
 }
 
 
 void MainWindow::onActionQuit()
 {
     close();
+}
+
+void MainWindow::onActionClose()
+{
+    App::getState()->setContextFolder("");
 }
 
