@@ -16,6 +16,9 @@ private:
 public:
 
     Palette(QJsonObject data);
+    QJsonObject exportAsJson();
+    QString uniqueKey();
+    void import(Palette * other);
 
 };
 

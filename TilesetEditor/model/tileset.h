@@ -17,6 +17,9 @@ private:
 public:
 
     Tileset(QJsonObject data);
+    QJsonObject exportAsJson();
+    QString uniqueKey();
+    void import(Tileset * other);
 
 };
 

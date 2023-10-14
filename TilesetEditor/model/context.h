@@ -3,15 +3,15 @@
 
 #include <QJsonObject>
 
-
-
 class Context
 {
 public:
 
     Context();
 
-    Context(QJsonObject data);
+    void initFromJson(QJsonObject data);
+    QJsonObject exportAsJson();
+    void clear();
 
     // TODO: Save context info like state IDs (for tiles, tilesets, palettes, and screenshots) and splitter positions.
 };

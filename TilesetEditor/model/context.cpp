@@ -5,7 +5,17 @@ Context::Context()
 
 }
 
-Context::Context(QJsonObject data)
+void Context::initFromJson(QJsonObject data)
 {
 
 }
+
+void Context::clear()
+{
+
+}
+
+//Context::Context(QJsonObject data)
+//{
+
+//}

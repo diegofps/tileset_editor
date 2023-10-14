@@ -19,7 +19,9 @@ private:
 public:
 
     Tile(QJsonObject data);
-
+    QJsonObject exportAsJson();
+    QString uniqueKey();
+    void import(Tile * other);
 };
 
 #endif // TILE_H

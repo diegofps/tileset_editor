@@ -2,6 +2,7 @@
 #define REFSCREENSHOT_H
 
 #include <QString>
+#include <QJsonObject>
 
 class RefScreenshot
 {
@@ -23,6 +24,8 @@ private:
 public:
 
     RefScreenshot();
+    void initFromJson(QJsonObject data);
+    QJsonObject exportAsJson();
 
 };
 
