@@ -28,7 +28,6 @@ public:
     Reference();
     void initFromJson(QJsonObject & data);
     QJsonObject exportAsJson() const;
-//    void import(Reference const & other);
     void clear();
     bool isEmpty() const;
 

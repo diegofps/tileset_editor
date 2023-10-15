@@ -40,6 +40,15 @@ void AppState::setContextFolder(QString value)
     }
 }
 
+void AppState::setContextLastDumpFolder(QString value)
+{
+    if (value != _lastDumpFolder)
+    {
+        _lastDumpFolder = value;
+        emit onContextLastDumpFolderChanged(value);
+    }
+}
+
 void AppState::setContextTiles(QList<Tile *> *value)
 {
     if (value != _contextTiles)
@@ -84,6 +93,11 @@ Context * AppState::context() const
 const QString & AppState::contextFolder() const
 {
     return _contextFolder;
+}
+
+const QString &AppState::contextLastDumpFolder() const
+{
+    return _lastDumpFolder;
 }
 
 QList<Tile *> * AppState::contextTiles() const

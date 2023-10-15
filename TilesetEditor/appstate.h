@@ -27,6 +27,7 @@ private:
     // Context Folder
     Context * _context;
     QString _contextFolder;
+    QString _lastDumpFolder;
     QList<Tile*> * _contextTiles;
     QList<Palette*> * _contextPalettes;
     QList<Tileset*> * _contextTilesets;
@@ -62,6 +63,7 @@ public:
     // Context Folder
     Context * context() const;
     QString const & contextFolder() const;
+    QString const & contextLastDumpFolder() const;
     QList<Tile *> * contextTiles() const;
     QList<Palette *> * contextPalettes() const;
     QList<Tileset *> * contextTilesets() const;
@@ -70,6 +72,7 @@ public:
 
     void setContext(Context * value);
     void setContextFolder(QString value);
+    void setContextLastDumpFolder(QString value);
     void setContextTiles(QList<Tile *> * value);
     void setContextPalettes(QList<Palette *> * value);
     void setContextTilesets(QList<Tileset *> * value);
@@ -114,6 +117,7 @@ signals:
     // Context Folder
     void onContextChanged(Context * value);
     void onContextFolderChanged(QString const & value);
+    void onContextLastDumpFolderChanged(QString const & value);
     void onContextTilesChanged(QList<Tile *> const * value);
     void onContextPalettesChanged(QList<Palette *> const * value);
     void onContextTilesetsChanged(QList<Tileset *> const * value);

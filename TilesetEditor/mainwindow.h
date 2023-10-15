@@ -19,14 +19,18 @@ public:
     ~MainWindow();
 
 private slots:
-    void onActionOpen();
-    void onActionQuit();
-    void onActionClose();
+    void onAction_File_NewProject();
+    void onAction_File_OpenProject();
+    void onAction_File_SaveProject();
+    void onAction_File_CloseProject();
+    void onAction_File_LoadDump();
+    void onAction_File_ReloadDump();
+    void onAction_File_QuitProject();
 
 private:
-    FragmentContextOpen * getFragmentContextOpen();
-    FragmentContextClosed * getFragmentContextClosed();
     void prepareUIForContext(QString value);
+    FragmentContextOpen * createFragmentContextOpen();
+    FragmentContextClosed * createFragmentContextClosed();
 
 private:
     Ui::MainWindow *ui;

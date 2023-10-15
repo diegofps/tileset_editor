@@ -17,6 +17,7 @@ public:
 
     ServiceContext();
 
+    static void create(QString const & folderpath);
     static void close();
     static void load(QString const & folderpath);
     static void save();
@@ -36,6 +37,7 @@ private:
     static void loadEmptyPalettes(QList<Palette*> * palettes);
     static void loadEmptyTilesets(QList<Tileset*> * tilesets);
     static void loadEmptyReferences(QList<Reference*> * references);
+    static void loadEmptyScreenshots(QList<Screenshot*> * screenshots);
 
     static bool saveContext(QDir contextDir, Context * context);
     static bool saveTiles(QDir contextDir, QList<Tile*> * tiles);

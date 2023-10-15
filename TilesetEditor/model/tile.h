@@ -24,7 +24,7 @@ public:
     Tile(QJsonObject & data);
     QJsonObject exportAsJson();
     QByteArray & uniqueKey();
-    void import(Tile * other);
+//    void import(Tile * other);
 
 };
 

@@ -20,6 +20,28 @@ ServiceContext::ServiceContext()
 
 }
 
+void ServiceContext::create(const QString & folderpath)
+{
+    App::getState()->setContextFolder(folderpath);
+    QDir baseDir(folderpath);
+
+    auto context     = App::getState()->context();
+    auto tiles       = App::getState()->contextTiles();
+    auto tilesets    = App::getState()->contextTilesets();
+    auto palettes    = App::getState()->contextPalettes();
+    auto references  = App::getState()->contextReferences();
+    auto screenshots = App::getState()->contextScreenshots();
+
+    loadEmptyContext(context);
+    loadEmptyTiles(tiles);
+    loadEmptyTilesets(tilesets);
+    loadEmptyPalettes(palettes);
+    loadEmptyReferences(references);
+    loadEmptyScreenshots(screenshots);
+
+    save();
+}
+
 void ServiceContext::close()
 {
     App::getState()->setContextFolder("");
@@ -30,16 +52,12 @@ void ServiceContext::load(const QString & folderpath)
     App::getState()->setContextFolder(folderpath);
     QDir baseDir(folderpath);
 
-    if (!baseDir.exists("state"))
-        baseDir.mkdir("state");
-
-    baseDir.cd("state");
-
-    auto context    = App::getState()->context();
-    auto tiles      = App::getState()->contextTiles();
-    auto tilesets   = App::getState()->contextTilesets();
-    auto palettes   = App::getState()->contextPalettes();
-    auto references = App::getState()->contextReferences();
+    auto context     = App::getState()->context();
+    auto tiles       = App::getState()->contextTiles();
+    auto tilesets    = App::getState()->contextTilesets();
+    auto palettes    = App::getState()->contextPalettes();
+    auto references  = App::getState()->contextReferences();
+    auto screenshots = App::getState()->contextScreenshots();
 
     if (!loadContext(baseDir, context))
         loadEmptyContext(context);
@@ -55,11 +73,16 @@ void ServiceContext::load(const QString & folderpath)
 
     if (!loadReferences(baseDir, references))
         loadEmptyReferences(references);
+
+    loadEmptyScreenshots(screenshots);
 }
 
 void ServiceContext::save()
 {
     QDir contextDir(App::getState()->contextFolder());
+
+    if (!contextDir.exists())
+        contextDir.mkpath(".");
 
     if (saveContext(contextDir, App::getState()->context()) &&
         saveTiles(contextDir, App::getState()->contextTiles()) &&
@@ -72,18 +95,12 @@ void ServiceContext::save()
         qWarning("Context failed to save");
 }
 
-void ServiceContext::importDump()
+void ServiceContext::loadDump(QString const & folderpath)
 {
-    QDir dumpDir(App::getState()->contextFolder());
-    QDir screenshotsDir(App::getState()->contextFolder());
+    QDir dumpDir(folderpath);
+    QDir screenshotsDir(folderpath);
 
-    if (!dumpDir.cd("dump"))
-    {
-        qWarning() << "Can't access the dump folder";
-        return;
-    }
-
-    if (!screenshotsDir.cd("screenshotDump"))
+    if (!screenshotsDir.cd("screenshots"))
     {
         qWarning() << "Can't access the screenshot folder";
         return;
@@ -170,8 +187,14 @@ void ServiceContext::importDump()
     {
         if (screenshotsStateId.contains(dScreenshot->id))
         {
+            QFile file(screenshotsDir.filePath(dScreenshot->filename));
+
+            if (!file.open(QIODevice::ReadOnly))
+                qWarning() << "Failed to open required screenshot file: " << file.fileName();
+
             dScreenshot->id = screenshotsStateId[dScreenshot->id];
             dScreenshot->filename = QString("%1.png").arg(dScreenshot->id);
+            dScreenshot->data = file.readAll();
             App::getState()->contextScreenshots()->append(dScreenshot);
         }
         else
@@ -309,16 +332,7 @@ bool ServiceContext::loadScreenshots(QDir baseDir, QList<Screenshot*> * screensh
 
     for (QString & entry : baseDir.entryList())
     {
-        QFile file(baseDir.filePath(entry));
-
-        if (!file.open(QIODevice::ReadOnly))
-        {
-            qWarning() << "Failed to open screenshot: " << file.fileName();
-            continue;
-        }
-
         auto screenshot = new Screenshot();
-        screenshot->data = file.readAll();;
         screenshot->filename = entry;
         screenshot->id = QFileInfo(entry).baseName().toInt();
         screenshots->append(screenshot);
@@ -352,6 +366,26 @@ void ServiceContext::loadEmptyTilesets(QList<Tileset*> * data)
     data->clear();
 
     App::getState()->setContextTilesets(data);
+}
+
+void ServiceContext::loadEmptyReferences(QList<Reference*> * data)
+{
+    for (auto item : *data)
+        delete item;
+
+    data->clear();
+
+    App::getState()->setContextReferences(data);
+}
+
+void ServiceContext::loadEmptyScreenshots(QList<Screenshot *> * data)
+{
+    for (auto item : *data)
+        delete item;
+
+    data->clear();
+
+//    App::getState()->setContextScreenshots(data);
 }
 
 void ServiceContext::loadEmptyPalettes(QList<Palette*> * data)
@@ -420,6 +454,43 @@ bool ServiceContext::savePalettes(QDir contextDir, QList<Palette*> * palettes)
 bool ServiceContext::saveTilesets(QDir contextDir, QList<Tileset*> * tilesets)
 {
     return saveItems(contextDir, "tilesets", tilesets);
+}
+
+bool ServiceContext::saveReferences(QDir contextDir, QList<Reference*> * references)
+{
+    return saveItems(contextDir, "references", references);
+}
+
+bool ServiceContext::saveScreenshots(QDir contextDir, QList<Screenshot*> * screenshots)
+{
+    if (!contextDir.exists("screenshots") && !contextDir.mkdir("screenshots"))
+    {
+        qWarning() << "Save error, could not create screenshots folder.";
+        return false;
+    }
+
+    if  (!contextDir.cd("screenshots"))
+    {
+        qWarning() << "Save error, could not access the screenshots folder.";
+        return false;
+    }
+
+    for (auto screenshot : *screenshots)
+    {
+        QFile file = contextDir.filePath(screenshot->filename);
+
+        if (!file.open(QIODevice::WriteOnly))
+        {
+            qWarning() << "Save error, could not open the output screenshot file for " << screenshot->filename;
+            return false;
+        }
+
+        file.write(screenshot->data);
+    }
+
+    screenshots->clear();
+
+    return true;
 }
 
 // METHODS TO IMPORT AND MERGE DUMPED DATA
