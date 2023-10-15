@@ -73,7 +73,8 @@
         <property name="styleSheet">
          <string notr="true">background-color: #151515;
 color: #ffffff;
-padding: 4px;</string>
+padding: 4px;
+font: 9pt;</string>
         </property>
         <property name="text">
          <string>Tilesets</string>
