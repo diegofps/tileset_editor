@@ -17,6 +17,7 @@ AppState::AppState()
     _contextTiles = new QList<Tile*>();
     _contextPalettes = new QList<Palette*>();
     _contextTilesets = new QList<Tileset*>();
+    _contextReferences = new QList<Reference*>();
 }
 
 // Context Folder
@@ -57,6 +58,15 @@ void AppState::setContextPalettes(QList<Palette *> *value)
     }
 }
 
+void AppState::setContextReferences(QList<Reference *> *value)
+{
+    if (value != _contextReferences)
+    {
+        _contextReferences = value;
+        emit onContextReferencesChanged(value);
+    }
+}
+
 void AppState::setContextTilesets(QList<Tileset *> *value)
 {
     if (value != _contextTilesets)
@@ -84,6 +94,16 @@ QList<Tile *> * AppState::contextTiles() const
 QList<Palette *> * AppState::contextPalettes() const
 {
     return _contextPalettes;
+}
+
+QList<Reference *> * AppState::contextReferences() const
+{
+    return _contextReferences;
+}
+
+QList<Screenshot *> * AppState::contextScreenshots() const
+{
+    return _contextScreenshots;
 }
 
 QList<Tileset *> * AppState::contextTilesets() const

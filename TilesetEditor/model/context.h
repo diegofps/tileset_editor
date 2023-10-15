@@ -7,6 +7,12 @@ class Context
 {
 public:
 
+    int lastTileID;
+    int lastPaletteID;
+    int lastTilesetID;
+    int lastReferenceID;
+    int lastScreenshotID;
+
     Context();
 
     void initFromJson(QJsonObject data);

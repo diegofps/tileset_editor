@@ -18,8 +18,9 @@ public:
 
     Tileset(QJsonObject data);
     QJsonObject exportAsJson();
-    QString uniqueKey();
-    void import(Tileset * other);
+    QByteArray & uniqueKey();
+//    void import(Tileset * other);
+    void setId(int const id);
 
 };
 

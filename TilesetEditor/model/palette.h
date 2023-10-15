@@ -3,22 +3,27 @@
 
 #include <QJsonObject>
 #include <cstddef>
+#include <QColor>
 
 class Palette
 {
 private:
 
-    size_t _id;
-    int _colors[256];  // A copy of the first colorPalette used
-    int _size;         // The number of colors in this color palette (up to 256)
-    int _frequency;
+    QByteArray _uniqueKey;
 
 public:
 
-    Palette(QJsonObject data);
+    int id;
+    int size;         // The number of colors in this color palette (up to 256)
+    int frequency;
+    QColor colors[256];  // A copy of the first colorPalette used
+
+public:
+
+    Palette(QJsonObject & data);
     QJsonObject exportAsJson();
-    QString uniqueKey();
-    void import(Palette * other);
+    QByteArray & uniqueKey();
+//    void import(Palette * other);
 
 };
 

@@ -2,6 +2,8 @@
 #define APPSTATE_H
 
 #include "model/context.h"
+#include "model/reference.h"
+#include "model/screenshot.h"
 #include "model/tile.h"
 #include "model/palette.h"
 #include "model/tileset.h"
@@ -9,7 +11,8 @@
 #include <QObject>
 #include <string>
 
-enum EditorTool {
+enum EditorTool
+{
     PENCIL,
     ERASER,
     LINKER
@@ -27,6 +30,8 @@ private:
     QList<Tile*> * _contextTiles;
     QList<Palette*> * _contextPalettes;
     QList<Tileset*> * _contextTilesets;
+    QList<Reference*> * _contextReferences;
+    QList<Screenshot*> * _contextScreenshots;
 
     // Editor Toolbox
     EditorTool _editorTool;
@@ -60,12 +65,15 @@ public:
     QList<Tile *> * contextTiles() const;
     QList<Palette *> * contextPalettes() const;
     QList<Tileset *> * contextTilesets() const;
+    QList<Reference *> * contextReferences() const;
+    QList<Screenshot *> * contextScreenshots() const;
 
     void setContext(Context * value);
     void setContextFolder(QString value);
     void setContextTiles(QList<Tile *> * value);
     void setContextPalettes(QList<Palette *> * value);
     void setContextTilesets(QList<Tileset *> * value);
+    void setContextReferences(QList<Reference *> * value);
 
 
     // Editor Toolbox
@@ -109,6 +117,7 @@ signals:
     void onContextTilesChanged(QList<Tile *> const * value);
     void onContextPalettesChanged(QList<Palette *> const * value);
     void onContextTilesetsChanged(QList<Tileset *> const * value);
+    void onContextReferencesChanged(QList<Reference *> const * value);
 
     // Editor Toolbox
     void onEditorToolChanged(EditorTool const value);

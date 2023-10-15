@@ -27,7 +27,8 @@ SOURCES += \
     mainwindow.cpp \
     model/context.cpp \
     model/palette.cpp \
-    model/refscreenshot.cpp \
+    model/reference.cpp \
+    model/screenshot.cpp \
     model/tile.cpp \
     model/tileset.cpp \
     servicecontext.cpp \
@@ -38,6 +39,7 @@ HEADERS += \
     app.h \
     appstate.h \
     appstyles.h \
+    errors.h \
     fragmentcontextclosed.h \
     fragmentcontextopen.h \
     fragmenteditor.h \
@@ -52,7 +54,8 @@ HEADERS += \
     mainwindow.h \
     model/context.h \
     model/palette.h \
-    model/refscreenshot.h \
+    model/reference.h \
+    model/screenshot.h \
     model/tile.h \
     model/tileset.h \
     servicecontext.h \
