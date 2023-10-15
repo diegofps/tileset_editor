@@ -1,9 +1,9 @@
-#ifndef CONTEXT_H
-#define CONTEXT_H
+#ifndef PROJECT_H
+#define PROJECT_H
 
 #include <QJsonObject>
 
-class Context
+class Project
 {
 public:
 
@@ -13,13 +13,13 @@ public:
     int lastReferenceID;
     int lastScreenshotID;
 
-    Context();
+    Project();
 
-    void initFromJson(QJsonObject data);
+    bool initFromJson(QJsonObject data);
     QJsonObject exportAsJson();
     void clear();
 
     // TODO: Save context info like state IDs (for tiles, tilesets, palettes, and screenshots) and splitter positions.
 };
 
-#endif // CONTEXT_H
+#endif // PROJECT_H

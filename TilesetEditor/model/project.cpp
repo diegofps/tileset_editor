@@ -1,20 +1,21 @@
-#include "context.h"
+#include "project.h"
 
-Context::Context()
+Project::Project()
 {
     clear();
 }
 
-void Context::initFromJson(QJsonObject data)
+bool Project::initFromJson(QJsonObject data)
 {
     lastTileID = data["lastTileID"].toInt();
     lastPaletteID = data["lastPaletteID"].toInt();
     lastTilesetID = data["lastTilesetID"].toInt();
     lastReferenceID = data["lastReferenceID"].toInt();
     lastScreenshotID = data["lastScreenshotID"].toInt();
+    return true;
 }
 
-QJsonObject Context::exportAsJson()
+QJsonObject Project::exportAsJson()
 {
     QJsonObject data;
     data["lastTileID"] = lastTileID;
@@ -25,7 +26,7 @@ QJsonObject Context::exportAsJson()
     return data;
 }
 
-void Context::clear()
+void Project::clear()
 {
     lastTileID = 0;
     lastPaletteID = 0;

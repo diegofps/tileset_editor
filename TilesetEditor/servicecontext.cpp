@@ -20,102 +20,164 @@ ServiceContext::ServiceContext()
 
 }
 
-void ServiceContext::create(const QString & folderpath)
+void ServiceContext::create(const QString & folderpath, ContextReport * report)
 {
-    App::getState()->setContextFolder(folderpath);
+    Project* context = new Project();
+    QList<Tile*>* tiles = new QList<Tile*>();
+    QList<Tileset*>* tilesets = new QList<Tileset*>();
+    QList<Palette*>* palettes = new QList<Palette*>();
+    QList<Reference*>* references = new QList<Reference*>();
+    QList<Screenshot*>* screenshots = new QList<Screenshot*>();
+
+    App::getState()->setProjectFolder(folderpath);
+    App::getState()->setProject(context);
+    App::getState()->setProjectTiles(tiles);
+    App::getState()->setProjectTilesets(tilesets);
+    App::getState()->setProjectPalettes(palettes);
+    App::getState()->setProjectReferences(references);
+    App::getState()->setProjectScreenshots(screenshots);
+
+    save(report);
+}
+
+void ServiceContext::close(ContextReport * report)
+{
+    QString folderpath = App::getState()->projectFolder();
+
+    App::getState()->setProjectFolder("");
+    App::getState()->setProject(nullptr);
+    App::getState()->setProjectTiles(nullptr);
+    App::getState()->setProjectTilesets(nullptr);
+    App::getState()->setProjectPalettes(nullptr);
+    App::getState()->setProjectReferences(nullptr);
+    App::getState()->setProjectScreenshots(nullptr);
+
+    if (report != nullptr)
+        report->success(QString("Project %1 closed successfully").arg(folderpath));
+}
+
+void ServiceContext::load(const QString & folderpath, ContextReport * report)
+{
     QDir baseDir(folderpath);
 
-    auto context     = App::getState()->context();
-    auto tiles       = App::getState()->contextTiles();
-    auto tilesets    = App::getState()->contextTilesets();
-    auto palettes    = App::getState()->contextPalettes();
-    auto references  = App::getState()->contextReferences();
-    auto screenshots = App::getState()->contextScreenshots();
+    Project* context = new Project();
+    QList<Tile*>* tiles = new QList<Tile*>();
+    QList<Tileset*>* tilesets = new QList<Tileset*>();
+    QList<Palette*>* palettes = new QList<Palette*>();
+    QList<Reference*>* references = new QList<Reference*>();
+    QList<Screenshot*>* screenshots = new QList<Screenshot*>();
 
-    loadEmptyContext(context);
-    loadEmptyTiles(tiles);
-    loadEmptyTilesets(tilesets);
-    loadEmptyPalettes(palettes);
-    loadEmptyReferences(references);
-    loadEmptyScreenshots(screenshots);
+    if (loadContext(baseDir, context) &&
+        loadTiles(baseDir, tiles) &&
+        loadTilesets(baseDir, tilesets) &&
+        loadPalettes(baseDir, palettes) &&
+        loadReferences(baseDir, references)
+    )
+    {
+        App::getState()->setProjectFolder(folderpath);
+        App::getState()->setProject(context);
+        App::getState()->setProjectTiles(tiles);
+        App::getState()->setProjectTilesets(tilesets);
+        App::getState()->setProjectPalettes(palettes);
+        App::getState()->setProjectReferences(references);
+        App::getState()->setProjectScreenshots(screenshots);
 
-    save();
+        if (report != nullptr)
+            report->success(QString("Project loaded successfully: %1").arg(folderpath));
+    }
+    else
+    {
+        if (report != nullptr)
+            report->fail(QString("Failed to load project: %1").arg(folderpath));
+
+        for (auto item : *tiles)
+            delete item;
+
+        for (auto item : *tilesets)
+            delete item;
+
+        for (auto item : *palettes)
+            delete item;
+
+        for (auto item : *references)
+            delete item;
+
+        for (auto item : *screenshots)
+            delete item;
+
+        delete context;
+        delete tiles;
+        delete tilesets;
+        delete palettes;
+        delete references;
+        delete screenshots;
+    }
 }
 
-void ServiceContext::close()
+void ServiceContext::save(ContextReport * report)
 {
-    App::getState()->setContextFolder("");
-}
+    // TODO: Prevent partial save
 
-void ServiceContext::load(const QString & folderpath)
-{
-    App::getState()->setContextFolder(folderpath);
-    QDir baseDir(folderpath);
-
-    auto context     = App::getState()->context();
-    auto tiles       = App::getState()->contextTiles();
-    auto tilesets    = App::getState()->contextTilesets();
-    auto palettes    = App::getState()->contextPalettes();
-    auto references  = App::getState()->contextReferences();
-    auto screenshots = App::getState()->contextScreenshots();
-
-    if (!loadContext(baseDir, context))
-        loadEmptyContext(context);
-
-    if (!loadTiles(baseDir, tiles))
-        loadEmptyTiles(tiles);
-
-    if (!loadTilesets(baseDir, tilesets))
-        loadEmptyTilesets(tilesets);
-
-    if (!loadPalettes(baseDir, palettes))
-        loadEmptyPalettes(palettes);
-
-    if (!loadReferences(baseDir, references))
-        loadEmptyReferences(references);
-
-    loadEmptyScreenshots(screenshots);
-}
-
-void ServiceContext::save()
-{
-    QDir contextDir(App::getState()->contextFolder());
+    QDir contextDir(App::getState()->projectFolder());
 
     if (!contextDir.exists())
         contextDir.mkpath(".");
 
-    if (saveContext(contextDir, App::getState()->context()) &&
-        saveTiles(contextDir, App::getState()->contextTiles()) &&
-        savePalettes(contextDir, App::getState()->contextPalettes()) &&
-        saveReferences(contextDir, App::getState()->contextReferences()) &&
-        saveTilesets(contextDir, App::getState()->contextTilesets()) &&
-        saveScreenshots(contextDir, App::getState()->contextScreenshots())
+    if (saveContext(contextDir, App::getState()->project()) &&
+        saveTiles(contextDir, App::getState()->projectTiles()) &&
+        savePalettes(contextDir, App::getState()->projectPalettes()) &&
+        saveReferences(contextDir, App::getState()->projectReferences()) &&
+        saveTilesets(contextDir, App::getState()->projectTilesets()) &&
+        saveScreenshots(contextDir, App::getState()->projectScreenshots())
     )
-        qInfo("Context saved successfully");
+    {
+        qInfo("Context saved successfully.");
+        if (report != nullptr)
+            report->success(QString("Project saved at %1").arg(contextDir.absolutePath()));
+    }
     else
+    {
         qWarning("Context failed to save");
+        if (report != nullptr)
+            report->fail("Failed to save context.");
+    }
 }
 
-void ServiceContext::loadDump(QString const & folderpath)
+void ServiceContext::importDump(QString const & folderpath, ContextReport * report)
 {
+    // TODO: Prevent partial save
+
     QDir dumpDir(folderpath);
     QDir screenshotsDir(folderpath);
 
     if (!screenshotsDir.cd("screenshots"))
     {
         qWarning() << "Can't access the screenshot folder";
+        if (report != nullptr)
+            report->fail("This is not a valid dump directory, missing screenshots folder.");
         return;
     }
+
+    int tilesImported = 0;
+    int palettesImported = 0;
+    int referencesImported = 0;
+    int screenshotsImported = 0;
 
     QList<Screenshot*> dumpedScreenshots;
     QList<Reference*> dumpedReferences;
     QList<Palette*> dumpedPalettes;
     QList<Tile*> dumpedTiles;
 
-    loadPalettes(dumpDir, &dumpedPalettes);
-    loadTiles(dumpDir, &dumpedTiles);
-    loadReferences(dumpDir, &dumpedReferences);
-    loadScreenshots(screenshotsDir, &dumpedScreenshots);
+    if (!loadPalettes(dumpDir, &dumpedPalettes) ||
+        !loadTiles(dumpDir, &dumpedTiles) ||
+        !loadReferences(dumpDir, &dumpedReferences) ||
+        !loadScreenshots(screenshotsDir, &dumpedScreenshots) )
+    {
+        qWarning() << "Can't load dumped files";
+        if (report != nullptr)
+            report->fail("This is not a valid dump directory, can't load dumped elements.");
+        return;
+    }
 
     QHash<QByteArray,Palette*> statePaletteByKey;
     QHash<QByteArray,Tile*> stateTileByKey;
@@ -124,13 +186,13 @@ void ServiceContext::loadDump(QString const & folderpath)
     QHash<int,int> stateTileNumReferencesById;
     QHash<int,int> screenshotsStateId;
 
-    for (auto item : *App::getState()->contextPalettes())
+    for (auto item : *App::getState()->projectPalettes())
         statePaletteByKey[item->uniqueKey()] = item;
 
-    for (auto item : *App::getState()->contextTiles())
+    for (auto item : *App::getState()->projectTiles())
         stateTileByKey[item->uniqueKey()] = item;
 
-    for (auto ref : *App::getState()->contextReferences())
+    for (auto ref : *App::getState()->projectReferences())
         ++stateTileNumReferencesById[ref->tileId];
 
     for (auto dPalette : dumpedPalettes)
@@ -142,10 +204,11 @@ void ServiceContext::loadDump(QString const & folderpath)
             continue;
         }
 
-        int const newID = ++App::getState()->context()->lastPaletteID;
-        App::getState()->contextPalettes()->append(dPalette);
+        int const newID = ++App::getState()->project()->lastPaletteID;
+        App::getState()->projectPalettes()->append(dPalette);
         paletteStateId[dPalette->id] = newID;
         dPalette->id = newID;
+        ++palettesImported;
     }
 
     for (auto dTile : dumpedTiles)
@@ -157,10 +220,11 @@ void ServiceContext::loadDump(QString const & folderpath)
             continue;
         }
 
-        int const newID = ++App::getState()->context()->lastTileID;
-        App::getState()->contextTiles()->append(dTile);
+        int const newID = ++App::getState()->project()->lastTileID;
+        App::getState()->projectTiles()->append(dTile);
         tileStateId[dTile->id] = newID;
         dTile->id = newID;
+        ++tilesImported;
 
         for (int i=0;i!=dTile->palettesUsed.size();++i)
             dTile->palettesUsed[i] = paletteStateId[dTile->palettesUsed[i]];
@@ -177,12 +241,14 @@ void ServiceContext::loadDump(QString const & folderpath)
         ++stateTileNumReferencesById[tileStateId[dReference->tileId]];
 
         if (!screenshotsStateId.contains(dReference->screenshotId))
-            screenshotsStateId[dReference->screenshotId] = ++App::getState()->context()->lastScreenshotID;
+            screenshotsStateId[dReference->screenshotId] = ++App::getState()->project()->lastScreenshotID;
 
-        dReference->id = ++App::getState()->context()->lastReferenceID;
+        dReference->id = ++App::getState()->project()->lastReferenceID;
         dReference->screenshotId = screenshotsStateId[dReference->screenshotId];
         dReference->tileId = tileStateId[dReference->tileId];
-        App::getState()->contextReferences()->append(dReference);
+        ++referencesImported;
+
+        App::getState()->projectReferences()->append(dReference);
     }
 
     for (auto dScreenshot : dumpedScreenshots)
@@ -197,13 +263,19 @@ void ServiceContext::loadDump(QString const & folderpath)
             dScreenshot->id = screenshotsStateId[dScreenshot->id];
             dScreenshot->filename = QString::number(dScreenshot->id).rightJustified(6, '0') + ".png";
             dScreenshot->data = file.readAll();
-            App::getState()->contextScreenshots()->append(dScreenshot);
+            ++screenshotsImported;
+
+            App::getState()->projectScreenshots()->append(dScreenshot);
         }
         else
         {
             delete dScreenshot;
         }
     }
+
+    if (report != nullptr)
+        report->success(QString("Dump imported, new items: tiles=%1, palettes=%2, references=%3, screenshots=%4.")
+                        .arg(tilesImported).arg(palettesImported).arg(referencesImported).arg(screenshotsImported));
 }
 
 
@@ -214,7 +286,7 @@ void ServiceContext::loadDump(QString const & folderpath)
 
 // METHODS TO LOAD THE DATA FROM JSON FILES
 
-bool ServiceContext::loadContext(QDir contextDir, Context * context)
+bool ServiceContext::loadContext(QDir contextDir, Project * context)
 {
     QString filename = "context.json";
 
@@ -228,7 +300,7 @@ bool ServiceContext::loadContext(QDir contextDir, Context * context)
 
     if (!file.open(QIODevice::ReadOnly|QIODevice::Text))
     {
-        qWarning() << "Failed to open json file: " << file.fileName();
+        qWarning() << "Failed to open context file: " << file.fileName();
         return false;
     }
 
@@ -238,17 +310,22 @@ bool ServiceContext::loadContext(QDir contextDir, Context * context)
 
     if (doc.isNull())
     {
-        qWarning() << "Failed to parse context: " << file.fileName();
+        qWarning() << "Failed to parse context file: " << file.fileName();
         return false;
     }
 
     if (!doc.isObject())
     {
-        qWarning() << "Json document does not start with an object: " << file.fileName();
+        qWarning() << "Context file does not start with an object: " << file.fileName();
         return false;
     }
 
-    context->initFromJson(doc.object());
+    if (!context->initFromJson(doc.object()))
+    {
+        qWarning() << "Context is not valid: " << file.fileName();
+        return false;
+    }
+
     return true;
 }
 
@@ -348,66 +425,9 @@ bool ServiceContext::loadScreenshots(QDir baseDir, QList<Screenshot*> * screensh
     return true;
 }
 
-// METHODS TO INITIALIZE EMPTY STRUCTURES
-
-void ServiceContext::loadEmptyContext(Context * context)
-{
-    context->clear();
-    App::getState()->setContext(context);
-}
-
-void ServiceContext::loadEmptyTiles(QList<Tile*> * data)
-{
-    for (auto tile : *data)
-        delete tile;
-
-    data->clear();
-    App::getState()->setContextTiles(data);
-}
-
-void ServiceContext::loadEmptyTilesets(QList<Tileset*> * data)
-{
-    for (auto tile : *data)
-        delete tile;
-
-    data->clear();
-
-    App::getState()->setContextTilesets(data);
-}
-
-void ServiceContext::loadEmptyReferences(QList<Reference*> * data)
-{
-    for (auto item : *data)
-        delete item;
-
-    data->clear();
-
-    App::getState()->setContextReferences(data);
-}
-
-void ServiceContext::loadEmptyScreenshots(QList<Screenshot *> * data)
-{
-    for (auto item : *data)
-        delete item;
-
-    data->clear();
-
-//    App::getState()->setContextScreenshots(data);
-}
-
-void ServiceContext::loadEmptyPalettes(QList<Palette*> * data)
-{
-    for (auto tile : *data)
-        delete tile;
-
-    data->clear();
-
-    App::getState()->setContextPalettes(data);
-}
-
 // METHODS TO SAVE THE DATA BACK AS JSON
 
-bool ServiceContext::saveContext(QDir contextFolder, Context * context)
+bool ServiceContext::saveContext(QDir contextFolder, Project * context)
 {
     QString const filename = "context.json";
     QFile file = contextFolder.filePath(filename);
@@ -500,83 +520,28 @@ bool ServiceContext::saveScreenshots(QDir contextDir, QList<Screenshot*> * scree
     return true;
 }
 
-// METHODS TO IMPORT AND MERGE DUMPED DATA
 
-//template <typename ITEM>
-//void importItems(QDir contextDir,
-//                 QString name,
-//                 QList<ITEM*> * items,
-//                 bool(*itemsLoader)(QDir, QList<ITEM*>*),
-//                 int & lastId)
-//{
-//    QList<ITEM*> dumpedItems;
+// CONTEXT_REPORT
 
-//    if (!itemsLoader(contextDir, &dumpedItems))
-//    {
-//        qInfo() << "The are no " << name << " dumped in this context.";
-//        return;
-//    }
 
-//    QHash<QByteArray, ITEM*> idToItem;
+void ContextReport::success(QString const message)
+{
+    _success = true;
+    _message = message;
+}
 
-//    for (auto item : * items)
-//        idToItem[item->uniqueKey()] = item;
+void ContextReport::fail(QString const message)
+{
+    _success = false;
+    _message = message;
+}
 
-//    for (auto * dumpedItem : dumpedItems)
-//    {
-//        if (idToItem.contains(dumpedItem->uniqueKey()))
-//        {
-//            idToItem[dumpedItem->uniqueKey()]->import(dumpedItem);
-//            delete dumpedItem;
-//        }
-//        else
-//        {
-//            dumpedItem->setId(++lastId);
-//            items->append(dumpedItem);
-//            idToItem[dumpedItem->uniqueKey()] = dumpedItem;
-//        }
-//    }
-//}
+bool ContextReport::success() const
+{
+    return _success;
+}
 
-//void ServiceContext::importDumpedTiles(QDir contextDir,
-//                                       QList<Tile*> * items,
-//                                       QHash<int, int> & oldPaletteID2NewPaletteID,
-//                                       QHash<int, int> & oldReferenceID2NewReferenceID)
-//{
-//    QList<Tile*> dumpedItems;
-
-//    if (!loadTiles(contextDir, &dumpedItems))
-//    {
-//        qInfo() << "There are no tiles dumped in this context.";
-//        return;
-//    }
-
-//    QHash<QByteArray, Tile*> idToItem;
-
-//    for (auto item : * items)
-//        idToItem[item->uniqueKey()] = item;
-
-//    for (auto * dumpedItem : dumpedItems)
-//    {
-//        if (idToItem.contains(dumpedItem->uniqueKey()))
-//        {
-//            idToItem[dumpedItem->uniqueKey()]->import(dumpedItem, oldPaletteID2NewPaletteID, oldReferenceID2NewReferenceID);
-//            delete dumpedItem;
-//        }
-//        else
-//        {
-//            items->append(dumpedItem);
-//            idToItem[dumpedItem->uniqueKey()] = dumpedItem;
-//        }
-//    }
-//}
-
-//void ServiceContext::importDumpedPalettes(QDir contextDir, QList<Palette*> * palettes)
-//{
-//    importItems(contextDir, "palettes", palettes, loadPalettes, App::getState()->context()->lastPaletteID);
-//}
-
-//void ServiceContext::importDumpedTilesets(QDir contextDir, QList<Tileset*> * tilesets)
-//{
-//    importItems(contextDir, "tilesets", tilesets, loadTilesets, App::getState()->context()->lastTilesetID);
-//}
+const QString &ContextReport::message() const
+{
+    return _message;
+}

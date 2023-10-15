@@ -13,117 +13,128 @@ AppState::AppState()
     _editorShowUnlinkedTiles = true;
     _editorShowGrid = true;
 
-    _context = new Context();
-    _contextTiles = new QList<Tile*>();
-    _contextPalettes = new QList<Palette*>();
-    _contextTilesets = new QList<Tileset*>();
-    _contextReferences = new QList<Reference*>();
-    _contextScreenshots = new QList<Screenshot*>();
+    _project = nullptr;
+    _projectTiles = nullptr;
+    _projectPalettes = nullptr;
+    _projectTilesets = nullptr;
+    _projectReferences = nullptr;
+    _projectScreenshots = nullptr;
 }
 
 // Context Folder
 
-void AppState::setContext(Context * value)
+template <typename ITEM>
+void deleteItemsAndQListIfNotNullptr(QList<ITEM*> * list)
 {
-    if (value != _context)
+    if (list == nullptr)
+        return;
+
+    for (ITEM * v : *list)
+        delete v;
+
+    delete list;
+}
+
+void AppState::setProject(Project * value)
+{
+    if (_project != nullptr)
+        delete _project;
+
+    _project = value;
+    emit onProjectChanged(value);
+}
+
+void AppState::setProjectFolder(QString value)
+{
+    if (value != _projectFolder)
     {
-        _context = value;
-        emit onContextChanged(value);
+        _projectFolder = value;
+        emit onProjectFolderChanged(value);
     }
 }
 
-void AppState::setContextFolder(QString value)
+void AppState::setProjectLastDumpFolder(QString value)
 {
-    if (value != _contextFolder)
+    if (value != _projectLastDumpFolder)
     {
-        _contextFolder = value;
-        emit onContextFolderChanged(value);
+        _projectLastDumpFolder = value;
+        emit onProjectLastDumpFolderChanged(value);
     }
 }
 
-void AppState::setContextLastDumpFolder(QString value)
+void AppState::setProjectTiles(QList<Tile *> *value)
 {
-    if (value != _lastDumpFolder)
-    {
-        _lastDumpFolder = value;
-        emit onContextLastDumpFolderChanged(value);
-    }
+    deleteItemsAndQListIfNotNullptr(_projectTiles);
+    _projectTiles = value;
+    emit onProjectTilesChanged(value);
 }
 
-void AppState::setContextTiles(QList<Tile *> *value)
+void AppState::setProjectPalettes(QList<Palette *> *value)
 {
-    if (value != _contextTiles)
-    {
-        _contextTiles = value;
-        emit onContextTilesChanged(value);
-    }
+    deleteItemsAndQListIfNotNullptr(_projectPalettes);
+    _projectPalettes = value;
+    emit onProjectPalettesChanged(value);
 }
 
-void AppState::setContextPalettes(QList<Palette *> *value)
+void AppState::setProjectReferences(QList<Reference *> *value)
 {
-    if (value != _contextPalettes)
-    {
-        _contextPalettes = value;
-        emit onContextPalettesChanged(value);
-    }
+    deleteItemsAndQListIfNotNullptr(_projectReferences);
+    _projectReferences = value;
+    emit onProjectReferencesChanged(value);
 }
 
-void AppState::setContextReferences(QList<Reference *> *value)
+void AppState::setProjectTilesets(QList<Tileset *> *value)
 {
-    if (value != _contextReferences)
-    {
-        _contextReferences = value;
-        emit onContextReferencesChanged(value);
-    }
+    deleteItemsAndQListIfNotNullptr(_projectTilesets);
+    _projectTilesets = value;
+    emit onProjectTilesetsChanged(value);
 }
 
-void AppState::setContextTilesets(QList<Tileset *> *value)
+void AppState::setProjectScreenshots(QList<Screenshot*> *value)
 {
-    if (value != _contextTilesets)
-    {
-        _contextTilesets = value;
-        emit onContextTilesetsChanged(value);
-    }
+    deleteItemsAndQListIfNotNullptr(_projectScreenshots);
+    _projectScreenshots = value;
+    emit onProjectScreenshotsChanged(value);
 }
 
-Context * AppState::context() const
+Project * AppState::project() const
 {
-    return _context;
+    return _project;
 }
 
-const QString & AppState::contextFolder() const
+const QString & AppState::projectFolder() const
 {
-    return _contextFolder;
+    return _projectFolder;
 }
 
-const QString &AppState::contextLastDumpFolder() const
+const QString &AppState::projectLastDumpFolder() const
 {
-    return _lastDumpFolder;
+    return _projectLastDumpFolder;
 }
 
-QList<Tile *> * AppState::contextTiles() const
+QList<Tile *> * AppState::projectTiles() const
 {
-    return _contextTiles;
+    return _projectTiles;
 }
 
-QList<Palette *> * AppState::contextPalettes() const
+QList<Palette *> * AppState::projectPalettes() const
 {
-    return _contextPalettes;
+    return _projectPalettes;
 }
 
-QList<Reference *> * AppState::contextReferences() const
+QList<Reference *> * AppState::projectReferences() const
 {
-    return _contextReferences;
+    return _projectReferences;
 }
 
-QList<Screenshot *> * AppState::contextScreenshots() const
+QList<Screenshot *> * AppState::projectScreenshots() const
 {
-    return _contextScreenshots;
+    return _projectScreenshots;
 }
 
-QList<Tileset *> * AppState::contextTilesets() const
+QList<Tileset *> * AppState::projectTilesets() const
 {
-    return _contextTilesets;
+    return _projectTilesets;
 }
 
 

@@ -1,7 +1,7 @@
 #ifndef APPSTATE_H
 #define APPSTATE_H
 
-#include "model/context.h"
+#include "model/project.h"
 #include "model/reference.h"
 #include "model/screenshot.h"
 #include "model/tile.h"
@@ -25,14 +25,14 @@ private:
     Q_OBJECT
 
     // Context Folder
-    Context * _context;
-    QString _contextFolder;
-    QString _lastDumpFolder;
-    QList<Tile*> * _contextTiles;
-    QList<Palette*> * _contextPalettes;
-    QList<Tileset*> * _contextTilesets;
-    QList<Reference*> * _contextReferences;
-    QList<Screenshot*> * _contextScreenshots;
+    Project * _project;
+    QString _projectFolder; // TODO: Move to Project?
+    QString _projectLastDumpFolder;
+    QList<Tile*> * _projectTiles;
+    QList<Palette*> * _projectPalettes;
+    QList<Tileset*> * _projectTilesets;
+    QList<Reference*> * _projectReferences;
+    QList<Screenshot*> * _projectScreenshots;
 
     // Editor Toolbox
     EditorTool _editorTool;
@@ -61,23 +61,23 @@ public:
     AppState();
 
     // Context Folder
-    Context * context() const;
-    QString const & contextFolder() const;
-    QString const & contextLastDumpFolder() const;
-    QList<Tile *> * contextTiles() const;
-    QList<Palette *> * contextPalettes() const;
-    QList<Tileset *> * contextTilesets() const;
-    QList<Reference *> * contextReferences() const;
-    QList<Screenshot *> * contextScreenshots() const;
+    Project * project() const;
+    QString const & projectFolder() const;
+    QString const & projectLastDumpFolder() const;
+    QList<Tile *> * projectTiles() const;
+    QList<Palette *> * projectPalettes() const;
+    QList<Tileset *> * projectTilesets() const;
+    QList<Reference *> * projectReferences() const;
+    QList<Screenshot *> * projectScreenshots() const;
 
-    void setContext(Context * value);
-    void setContextFolder(QString value);
-    void setContextLastDumpFolder(QString value);
-    void setContextTiles(QList<Tile *> * value);
-    void setContextPalettes(QList<Palette *> * value);
-    void setContextTilesets(QList<Tileset *> * value);
-    void setContextReferences(QList<Reference *> * value);
-
+    void setProject(Project * value);
+    void setProjectFolder(QString value);
+    void setProjectLastDumpFolder(QString value);
+    void setProjectTiles(QList<Tile *> * value);
+    void setProjectPalettes(QList<Palette *> * value);
+    void setProjectTilesets(QList<Tileset *> * value);
+    void setProjectReferences(QList<Reference *> * value);
+    void setProjectScreenshots(QList<Screenshot *> * value);
 
     // Editor Toolbox
     EditorTool editorTool() const;
@@ -115,13 +115,14 @@ public:
 signals:
 
     // Context Folder
-    void onContextChanged(Context * value);
-    void onContextFolderChanged(QString const & value);
-    void onContextLastDumpFolderChanged(QString const & value);
-    void onContextTilesChanged(QList<Tile *> const * value);
-    void onContextPalettesChanged(QList<Palette *> const * value);
-    void onContextTilesetsChanged(QList<Tileset *> const * value);
-    void onContextReferencesChanged(QList<Reference *> const * value);
+    void onProjectChanged(Project * value);
+    void onProjectFolderChanged(QString const & value);
+    void onProjectLastDumpFolderChanged(QString const & value);
+    void onProjectTilesChanged(QList<Tile *> const * value);
+    void onProjectPalettesChanged(QList<Palette *> const * value);
+    void onProjectTilesetsChanged(QList<Tileset *> const * value);
+    void onProjectReferencesChanged(QList<Reference *> const * value);
+    void onProjectScreenshotsChanged(QList<Screenshot*> const * value);
 
     // Editor Toolbox
     void onEditorToolChanged(EditorTool const value);
@@ -148,3 +149,4 @@ signals:
 };
 
 #endif // APPSTATE_H
+

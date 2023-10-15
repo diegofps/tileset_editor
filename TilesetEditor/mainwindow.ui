@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1074</width>
-    <height>600</height>
+    <width>902</width>
+    <height>563</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -24,7 +24,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1074</width>
+     <width>902</width>
      <height>22</height>
     </rect>
    </property>
@@ -101,6 +101,12 @@ QMenu::item:selected {
    <addaction name="menuView"/>
    <addaction name="menuExecute"/>
    <addaction name="menuHelp"/>
+  </widget>
+  <widget class="QStatusBar" name="statusBar">
+   <property name="styleSheet">
+    <string notr="true">background-color: rgb(52, 66, 74);
+color: rgb(255, 255, 255);</string>
+   </property>
   </widget>
   <action name="action_File_OpenProject">
    <property name="text">

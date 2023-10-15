@@ -17,11 +17,11 @@ MainWindow::MainWindow(QWidget *parent)
 
     prepareUIForContext("");
 
-    connect(App::getState(), &AppState::onContextFolderChanged, this, [&](QString const & value) {
+    connect(App::getState(), &AppState::onProjectFolderChanged, this, [&](QString const & value) {
         prepareUIForContext(value);
     });
 
-    connect(App::getState(), &AppState::onContextLastDumpFolderChanged, this, [&](QString const & value) {
+    connect(App::getState(), &AppState::onProjectLastDumpFolderChanged, this, [&](QString const & value) {
         ui->action_File_ReloadDump->setEnabled(!value.isEmpty());
     });
 
@@ -61,8 +61,10 @@ void MainWindow::onAction_File_NewProject()
 
     if (dialog.exec())
     {
+        ContextReport report;
         fileNames = dialog.selectedFiles();
-        ServiceContext::create(fileNames.first());
+        ServiceContext::create(fileNames.first(), &report);
+        ui->statusBar->showMessage(report.message());
 //        App::getState()->setContextFolder(fileNames.first());
     }
     else
@@ -82,8 +84,10 @@ void MainWindow::onAction_File_OpenProject()
 
     if (dialog.exec())
     {
+        ContextReport report;
         fileNames = dialog.selectedFiles();
-        ServiceContext::load(fileNames.first());
+        ServiceContext::load(fileNames.first(), &report);
+        ui->statusBar->showMessage(report.message());
 //        App::getState()->setContextFolder(fileNames.first());
     }
     else
@@ -94,13 +98,17 @@ void MainWindow::onAction_File_OpenProject()
 
 void MainWindow::onAction_File_SaveProject()
 {
-    ServiceContext::save();
+    ContextReport report;
+    ServiceContext::save(&report);
+    ui->statusBar->showMessage(report.message());
 }
 
 void MainWindow::onAction_File_CloseProject()
 {
 //    App::getState()->setContextFolder("");
-    ServiceContext::close();
+    ContextReport report;
+    ServiceContext::close(&report);
+    ui->statusBar->showMessage(report.message());
 }
 
 void MainWindow::onAction_File_LoadDump()
@@ -114,9 +122,11 @@ void MainWindow::onAction_File_LoadDump()
 
     if (dialog.exec())
     {
+        ContextReport report;
         fileNames = dialog.selectedFiles();
-        ServiceContext::loadDump(fileNames.first());
-        App::getState()->setContextLastDumpFolder(fileNames.first());
+        ServiceContext::importDump(fileNames.first(), &report);
+        App::getState()->setProjectLastDumpFolder(fileNames.first());
+        ui->statusBar->showMessage(report.message());
 //        App::getState()->setContextFolder(fileNames.first());
     }
     else
@@ -127,7 +137,9 @@ void MainWindow::onAction_File_LoadDump()
 
 void MainWindow::onAction_File_ReloadDump()
 {
-    ServiceContext::loadDump(App::getState()->contextLastDumpFolder());
+    ContextReport report;
+    ServiceContext::importDump(App::getState()->projectLastDumpFolder(), &report);
+    ui->statusBar->showMessage(report.message());
 }
 
 void MainWindow::onAction_File_QuitProject()

@@ -4,12 +4,24 @@
 #include <QString>
 #include <QDir>
 
-#include "model/context.h"
+#include "model/project.h"
 #include "model/reference.h"
 #include "model/screenshot.h"
 #include "model/tile.h"
 #include "model/palette.h"
 #include "model/tileset.h"
+
+class ContextReport
+{
+private:
+    bool _success;
+    QString _message;
+public:
+    void success(QString message);
+    void fail(QString message);
+    bool success() const;
+    const QString &message() const;
+};
 
 class ServiceContext
 {
@@ -17,40 +29,27 @@ public:
 
     ServiceContext();
 
-    static void create(QString const & folderpath);
-    static void close();
-    static void load(QString const & folderpath);
-    static void save();
-    static void loadDump(QString const & folderpath);
+    static void create(QString const & folderpath, ContextReport * report = nullptr);
+    static void close(ContextReport * report = nullptr);
+    static void load(QString const & folderpath, ContextReport * report = nullptr);
+    static void save(ContextReport * report = nullptr);
+    static void importDump(QString const & folderpath, ContextReport * report = nullptr);
 
 private:
 
-    static bool loadContext(QDir contextDir, Context * context);
+    static bool loadContext(QDir contextDir, Project * context);
     static bool loadTiles(QDir contextDir, QList<Tile*> * tiles);
     static bool loadPalettes(QDir contextDir, QList<Palette*> * palettes);
     static bool loadTilesets(QDir contextDir, QList<Tileset*> * tilesets);
     static bool loadScreenshots(QDir baseDir, QList<Screenshot*> * screenshots);
     static bool loadReferences(QDir baseDir, QList<Reference*> * references);
 
-    static void loadEmptyContext(Context * context);
-    static void loadEmptyTiles(QList<Tile*> * tiles);
-    static void loadEmptyPalettes(QList<Palette*> * palettes);
-    static void loadEmptyTilesets(QList<Tileset*> * tilesets);
-    static void loadEmptyReferences(QList<Reference*> * references);
-    static void loadEmptyScreenshots(QList<Screenshot*> * screenshots);
-
-    static bool saveContext(QDir contextDir, Context * context);
+    static bool saveContext(QDir contextDir, Project * context);
     static bool saveTiles(QDir contextDir, QList<Tile*> * tiles);
     static bool savePalettes(QDir contextDir, QList<Palette*> * palettes);
     static bool saveTilesets(QDir contextDir, QList<Tileset*> * tilesets);
     static bool saveReferences(QDir contextDir, QList<Reference*> * references);
     static bool saveScreenshots(QDir contextDir, QList<Screenshot*> * screenshots);
-
-    static void importDumpedTiles(QDir contextDir, QList<Tile*> * tiles);
-    static void importDumpedPalettes(QDir contextDir, QList<Palette*> * palettes);
-    static void importDumpedTilesets(QDir contextDir, QList<Tileset*> * tilesets);
-    static void importDumpedReferences(QDir contextDir, QList<Reference*> * references);
-//    static void importDumpedRefScreenshots(QDir contextDir); // This will be performed during importDumpedTiles, as we won't import all of them
 
 };
 

@@ -25,8 +25,8 @@ SOURCES += \
     layoutabsolute.cpp \
     main.cpp \
     mainwindow.cpp \
-    model/context.cpp \
     model/palette.cpp \
+    model/project.cpp \
     model/reference.cpp \
     model/screenshot.cpp \
     model/tile.cpp \
@@ -52,8 +52,8 @@ HEADERS += \
     fragmenttilesets.h \
     layoutabsolute.h \
     mainwindow.h \
-    model/context.h \
     model/palette.h \
+    model/project.h \
     model/reference.h \
     model/screenshot.h \
     model/tile.h \
