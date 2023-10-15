@@ -10,6 +10,7 @@ public:
     QString path;
     bool hasChanges;
 
+    int dbVersion;
     int lastTileID;
     int lastPaletteID;
     int lastTilesetID;

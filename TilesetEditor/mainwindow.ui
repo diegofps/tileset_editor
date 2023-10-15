@@ -185,7 +185,7 @@ color: rgb(255, 255, 255);</string>
     <string>&amp;Editor</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl+1</string>
+    <string>E</string>
    </property>
   </action>
   <action name="action_View_References">
@@ -193,7 +193,7 @@ color: rgb(255, 255, 255);</string>
     <string>&amp;References</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl+2</string>
+    <string>R</string>
    </property>
   </action>
   <action name="action_View_ResetLayout">
@@ -201,7 +201,7 @@ color: rgb(255, 255, 255);</string>
     <string>Reset &amp;Layout</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl+0</string>
+    <string>0</string>
    </property>
   </action>
   <action name="action_File_CloseProject">

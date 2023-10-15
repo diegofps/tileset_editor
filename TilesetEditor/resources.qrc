@@ -12,5 +12,11 @@
         <file>style/button_unchecked.qss</file>
         <file>style/button_click.qss</file>
         <file>icons/highlight-position-solid.svg</file>
+        <file>icons/angle-down-solid.svg</file>
+        <file>icons/angle-up-solid.svg</file>
+        <file>icons/lightbulb-solid.svg</file>
+        <file>icons/plus-solid.svg</file>
+        <file>icons/trash-solid.svg</file>
+        <file>icons/message-solid.svg</file>
     </qresource>
 </RCC>

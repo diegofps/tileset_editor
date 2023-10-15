@@ -38,6 +38,8 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->action_File_Quit, &QAction::triggered, this, &MainWindow::onAction_File_QuitProject);
 
     // View menu
+    connect(ui->action_View_Editor, &QAction::triggered, this, &MainWindow::onAction_View_Editor);
+    connect(ui->action_View_References, &QAction::triggered, this, &MainWindow::onAction_View_References);
 
     // Execute menu
 
@@ -65,7 +67,6 @@ void MainWindow::onAction_File_NewProject()
         fileNames = dialog.selectedFiles();
         ServiceContext::create(fileNames.first(), &report);
         ui->statusBar->showMessage(report.message());
-//        App::getState()->setContextFolder(fileNames.first());
     }
     else
     {
@@ -88,7 +89,6 @@ void MainWindow::onAction_File_OpenProject()
         fileNames = dialog.selectedFiles();
         ServiceContext::load(fileNames.first(), &report);
         ui->statusBar->showMessage(report.message());
-//        App::getState()->setContextFolder(fileNames.first());
     }
     else
     {
@@ -105,7 +105,6 @@ void MainWindow::onAction_File_SaveProject()
 
 void MainWindow::onAction_File_CloseProject()
 {
-//    App::getState()->setContextFolder("");
     ContextReport report;
     ServiceContext::close(&report);
     ui->statusBar->showMessage(report.message());
@@ -127,7 +126,6 @@ void MainWindow::onAction_File_LoadDump()
         ServiceContext::importDump(fileNames.first(), &report);
         App::getState()->setProjectLastDumpFolder(fileNames.first());
         ui->statusBar->showMessage(report.message());
-//        App::getState()->setContextFolder(fileNames.first());
     }
     else
     {
@@ -145,6 +143,16 @@ void MainWindow::onAction_File_ReloadDump()
 void MainWindow::onAction_File_QuitProject()
 {
     close();
+}
+
+void MainWindow::onAction_View_Editor()
+{
+    App::getState()->setPreviewPage("editor");
+}
+
+void MainWindow::onAction_View_References()
+{
+    App::getState()->setPreviewPage("references");
 }
 
 void MainWindow::prepareUIForProject(Project * value)

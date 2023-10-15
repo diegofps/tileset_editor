@@ -7,6 +7,7 @@ Project::Project()
 
 bool Project::initFromJson(QJsonObject data)
 {
+    dbVersion = data["DBVersion"].toInt(1);
     lastTileID = data["lastTileID"].toInt();
     lastPaletteID = data["lastPaletteID"].toInt();
     lastTilesetID = data["lastTilesetID"].toInt();
@@ -19,6 +20,7 @@ bool Project::initFromJson(QJsonObject data)
 QJsonObject Project::exportAsJson()
 {
     QJsonObject data;
+    data["DBVersion"] = dbVersion;
     data["lastTileID"] = lastTileID;
     data["lastPaletteID"] = lastPaletteID;
     data["lastTilesetID"] = lastTilesetID;
@@ -30,6 +32,7 @@ QJsonObject Project::exportAsJson()
 
 void Project::clear()
 {
+    dbVersion = 1;
     lastTileID = 0;
     lastPaletteID = 0;
     lastTilesetID = 0;
@@ -37,8 +40,3 @@ void Project::clear()
     lastScreenshotID = 0;
     hasChanges = false;
 }
-
-//Context::Context(QJsonObject data)
-//{
-
-//}

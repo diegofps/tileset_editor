@@ -88,12 +88,12 @@ void ServiceContext::load(const QString & folderpath, ContextReport * report)
         loadReferences(baseDir, references)
     )
     {
-        App::getState()->setProject(context);
         App::getState()->setProjectTiles(tiles);
         App::getState()->setProjectTilesets(tilesets);
         App::getState()->setProjectPalettes(palettes);
         App::getState()->setProjectReferences(references);
         App::getState()->setProjectScreenshots(screenshots);
+        App::getState()->setProject(context);
 
         if (report != nullptr)
             report->success(QString("Project loaded successfully: %1").arg(folderpath));

@@ -55,21 +55,21 @@
        </property>
        <property name="minimumSize">
         <size>
-         <width>64</width>
-         <height>63</height>
+         <width>50</width>
+         <height>50</height>
         </size>
        </property>
        <property name="maximumSize">
         <size>
-         <width>64</width>
-         <height>64</height>
+         <width>50</width>
+         <height>50</height>
         </size>
        </property>
        <property name="text">
         <string/>
        </property>
        <property name="pixmap">
-        <pixmap resource="resources.qrc">:/icons/folder-solid.svg</pixmap>
+        <pixmap resource="resources.qrc">:/icons/message-solid.svg</pixmap>
        </property>
        <property name="scaledContents">
         <bool>true</bool>
@@ -100,7 +100,8 @@
       </sizepolicy>
      </property>
      <property name="text">
-      <string>Click File / Open to open a context folder.</string>
+      <string>Click &quot;File&quot; / &quot;New Project&quot; to create a new project and
+&quot;File&quot; / &quot;Load Dump&quot; to import tiles and palettes.</string>
      </property>
      <property name="alignment">
       <set>Qt::AlignCenter</set>

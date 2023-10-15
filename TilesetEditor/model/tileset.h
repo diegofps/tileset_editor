@@ -7,20 +7,20 @@
 
 class Tileset
 {
-private:
+public:
 
-    size_t _id;
-    int _gridW;
-    int _gridH;
-    QColor _bgColor;
+    int id;
+    QString name;
+    QColor bgColor;
+    int gridW;
+    int gridH;
 
 public:
 
+    Tileset();
     Tileset(QJsonObject data);
     QJsonObject exportAsJson();
-    QByteArray & uniqueKey();
-//    void import(Tileset * other);
-    void setId(int const id);
+//    QByteArray & uniqueKey();
 
 };
 

@@ -100,7 +100,12 @@ font: 9pt;</string>
           <item>
            <widget class="QPushButton" name="btNew">
             <property name="text">
-             <string>New</string>
+             <string/>
+            </property>
+            <property name="icon">
+             <iconset>
+              <normalon>:/icons/plus-solid.svg</normalon>
+             </iconset>
             </property>
             <property name="checkable">
              <bool>true</bool>
@@ -122,7 +127,18 @@ font: 9pt;</string>
           <item>
            <widget class="QPushButton" name="btRemove">
             <property name="text">
-             <string>Remove</string>
+             <string/>
+            </property>
+            <property name="icon">
+             <iconset>
+              <normalon>:/icons/trash-solid.svg</normalon>
+             </iconset>
+            </property>
+            <property name="iconSize">
+             <size>
+              <width>14</width>
+              <height>14</height>
+             </size>
             </property>
             <property name="checkable">
              <bool>true</bool>
@@ -132,10 +148,56 @@ font: 9pt;</string>
             </property>
            </widget>
           </item>
+          <item>
+           <widget class="QPushButton" name="btMoveUp">
+            <property name="text">
+             <string/>
+            </property>
+            <property name="icon">
+             <iconset>
+              <normalon>:/icons/angle-up-solid.svg</normalon>
+             </iconset>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="btMoveDown">
+            <property name="text">
+             <string/>
+            </property>
+            <property name="icon">
+             <iconset>
+              <normalon>:/icons/angle-down-solid.svg</normalon>
+             </iconset>
+            </property>
+           </widget>
+          </item>
          </layout>
         </item>
         <item>
-         <widget class="QListView" name="listView">
+         <widget class="QListWidget" name="listTilesets">
+          <property name="styleSheet">
+           <string notr="true">QListView {
+    show-decoration-selected: 1; /* make the selection span the entire width of the view */
+	alternate-background-color: #34424a;
+}
+
+QListView::item:alternate {
+    background: #34424a;
+}
+
+QListView::item:selected {
+    background: #5691ec;
+}
+
+QListView::item:hover {
+    background: #41515c;
+}
+
+QListView::item:selected:hover {
+    background: #85aff1;
+}</string>
+          </property>
           <property name="frameShape">
            <enum>QFrame::NoFrame</enum>
           </property>
