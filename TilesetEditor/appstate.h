@@ -26,7 +26,7 @@ private:
 
     // Context Folder
     Project * _project;
-    QString _projectFolder; // TODO: Move to Project?
+//    QString _projectFolder; // TODO: Move to Project?
     QString _projectLastDumpFolder;
     QList<Tile*> * _projectTiles;
     QList<Palette*> * _projectPalettes;
@@ -62,7 +62,7 @@ public:
 
     // Context Folder
     Project * project() const;
-    QString const & projectFolder() const;
+//    QString const & projectFolder() const;
     QString const & projectLastDumpFolder() const;
     QList<Tile *> * projectTiles() const;
     QList<Palette *> * projectPalettes() const;
@@ -71,7 +71,7 @@ public:
     QList<Screenshot *> * projectScreenshots() const;
 
     void setProject(Project * value);
-    void setProjectFolder(QString value);
+//    void setProjectFolder(QString value);
     void setProjectLastDumpFolder(QString value);
     void setProjectTiles(QList<Tile *> * value);
     void setProjectPalettes(QList<Palette *> * value);
@@ -116,7 +116,7 @@ signals:
 
     // Context Folder
     void onProjectChanged(Project * value);
-    void onProjectFolderChanged(QString const & value);
+//    void onProjectFolderChanged(QString const & value);
     void onProjectLastDumpFolderChanged(QString const & value);
     void onProjectTilesChanged(QList<Tile *> const * value);
     void onProjectPalettesChanged(QList<Palette *> const * value);

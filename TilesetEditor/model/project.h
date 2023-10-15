@@ -7,6 +7,9 @@ class Project
 {
 public:
 
+    QString path;
+    bool hasChanges;
+
     int lastTileID;
     int lastPaletteID;
     int lastTilesetID;

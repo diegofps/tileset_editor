@@ -24,33 +24,27 @@ AppState::AppState()
 // Context Folder
 
 template <typename ITEM>
-void deleteItemsAndQListIfNotNullptr(QList<ITEM*> * list)
+void deleteItemsAndQListIfNotNullptr(QList<ITEM*> * oldList, QList<ITEM*> * newList)
 {
-    if (list == nullptr)
+    if (oldList == nullptr)
         return;
 
-    for (ITEM * v : *list)
+    if (newList == oldList)
+        return;
+
+    for (ITEM * v : *oldList)
         delete v;
 
-    delete list;
+    delete oldList;
 }
 
 void AppState::setProject(Project * value)
 {
-    if (_project != nullptr)
+    if (_project != nullptr && value != _project)
         delete _project;
 
     _project = value;
     emit onProjectChanged(value);
-}
-
-void AppState::setProjectFolder(QString value)
-{
-    if (value != _projectFolder)
-    {
-        _projectFolder = value;
-        emit onProjectFolderChanged(value);
-    }
 }
 
 void AppState::setProjectLastDumpFolder(QString value)
@@ -64,35 +58,35 @@ void AppState::setProjectLastDumpFolder(QString value)
 
 void AppState::setProjectTiles(QList<Tile *> *value)
 {
-    deleteItemsAndQListIfNotNullptr(_projectTiles);
+    deleteItemsAndQListIfNotNullptr(_projectTiles, value);
     _projectTiles = value;
     emit onProjectTilesChanged(value);
 }
 
 void AppState::setProjectPalettes(QList<Palette *> *value)
 {
-    deleteItemsAndQListIfNotNullptr(_projectPalettes);
+    deleteItemsAndQListIfNotNullptr(_projectPalettes, value);
     _projectPalettes = value;
     emit onProjectPalettesChanged(value);
 }
 
 void AppState::setProjectReferences(QList<Reference *> *value)
 {
-    deleteItemsAndQListIfNotNullptr(_projectReferences);
+    deleteItemsAndQListIfNotNullptr(_projectReferences, value);
     _projectReferences = value;
     emit onProjectReferencesChanged(value);
 }
 
 void AppState::setProjectTilesets(QList<Tileset *> *value)
 {
-    deleteItemsAndQListIfNotNullptr(_projectTilesets);
+    deleteItemsAndQListIfNotNullptr(_projectTilesets, value);
     _projectTilesets = value;
     emit onProjectTilesetsChanged(value);
 }
 
 void AppState::setProjectScreenshots(QList<Screenshot*> *value)
 {
-    deleteItemsAndQListIfNotNullptr(_projectScreenshots);
+    deleteItemsAndQListIfNotNullptr(_projectScreenshots, value);
     _projectScreenshots = value;
     emit onProjectScreenshotsChanged(value);
 }
@@ -102,10 +96,10 @@ Project * AppState::project() const
     return _project;
 }
 
-const QString & AppState::projectFolder() const
-{
-    return _projectFolder;
-}
+//const QString & AppState::projectFolder() const
+//{
+//    return _projectFolder;
+//}
 
 const QString &AppState::projectLastDumpFolder() const
 {

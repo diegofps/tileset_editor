@@ -15,10 +15,10 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
-    prepareUIForContext("");
+    prepareUIForProject(nullptr);
 
-    connect(App::getState(), &AppState::onProjectFolderChanged, this, [&](QString const & value) {
-        prepareUIForContext(value);
+    connect(App::getState(), &AppState::onProjectChanged, this, [&](Project * value) {
+        prepareUIForProject(value);
     });
 
     connect(App::getState(), &AppState::onProjectLastDumpFolderChanged, this, [&](QString const & value) {
@@ -147,13 +147,13 @@ void MainWindow::onAction_File_QuitProject()
     close();
 }
 
-void MainWindow::prepareUIForContext(QString value)
+void MainWindow::prepareUIForProject(Project * value)
 {
-    bool const hasContext = !value.isEmpty();
+    bool const hasProject = value != nullptr;
 
-    if (hasContext)
+    if (hasProject)
     {
-        setWindowTitle(value);
+        setWindowTitle((value->hasChanges ? "*" : "") + value->path);
         setCentralWidget(createFragmentContextOpen());
     }
     else
@@ -162,19 +162,19 @@ void MainWindow::prepareUIForContext(QString value)
         setCentralWidget(createFragmentContextClosed());
     }
 
-    ui->action_File_SaveProject->setEnabled(hasContext);
-    ui->action_File_CloseProject->setEnabled(hasContext);
-    ui->action_File_LoadDump->setEnabled(hasContext);
-    ui->action_File_ReloadDump->setEnabled(hasContext);
+    ui->action_File_SaveProject->setEnabled(hasProject);
+    ui->action_File_CloseProject->setEnabled(hasProject);
+    ui->action_File_LoadDump->setEnabled(hasProject);
+    ui->action_File_ReloadDump->setEnabled(hasProject);
 
-    ui->action_Execute_BreakTilesets->setEnabled(hasContext);
-    ui->action_Execute_BuildTilesets->setEnabled(hasContext);
-    ui->action_Execute_EncodeHDTiles->setEnabled(hasContext);
-    ui->action_Execute_Pipelines->setEnabled(hasContext);
+    ui->action_Execute_BreakTilesets->setEnabled(hasProject);
+    ui->action_Execute_BuildTilesets->setEnabled(hasProject);
+    ui->action_Execute_EncodeHDTiles->setEnabled(hasProject);
+    ui->action_Execute_Pipelines->setEnabled(hasProject);
 
-    ui->action_View_References->setEnabled(hasContext);
-    ui->action_View_Editor->setEnabled(hasContext);
-    ui->action_View_ResetLayout->setEnabled(hasContext);
+    ui->action_View_References->setEnabled(hasProject);
+    ui->action_View_Editor->setEnabled(hasProject);
+    ui->action_View_ResetLayout->setEnabled(hasProject);
 }
 
 FragmentContextOpen * MainWindow::createFragmentContextOpen()

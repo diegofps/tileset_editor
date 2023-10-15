@@ -22,15 +22,17 @@ ServiceContext::ServiceContext()
 
 void ServiceContext::create(const QString & folderpath, ContextReport * report)
 {
-    Project* context = new Project();
+    qInfo() << "Creating project";
+    Project* project = new Project();
     QList<Tile*>* tiles = new QList<Tile*>();
     QList<Tileset*>* tilesets = new QList<Tileset*>();
     QList<Palette*>* palettes = new QList<Palette*>();
     QList<Reference*>* references = new QList<Reference*>();
     QList<Screenshot*>* screenshots = new QList<Screenshot*>();
 
-    App::getState()->setProjectFolder(folderpath);
-    App::getState()->setProject(context);
+    project->path = folderpath;
+
+    App::getState()->setProject(project);
     App::getState()->setProjectTiles(tiles);
     App::getState()->setProjectTilesets(tilesets);
     App::getState()->setProjectPalettes(palettes);
@@ -42,9 +44,20 @@ void ServiceContext::create(const QString & folderpath, ContextReport * report)
 
 void ServiceContext::close(ContextReport * report)
 {
-    QString folderpath = App::getState()->projectFolder();
+    qInfo() << "Closing project";
 
-    App::getState()->setProjectFolder("");
+    auto project = App::getState()->project();
+
+    if (project == nullptr)
+    {
+        qWarning() << "Project is already closed";
+        if (report != nullptr)
+            report->fail("Project is already closed");
+        return;
+    }
+
+    QString path = project->path;
+
     App::getState()->setProject(nullptr);
     App::getState()->setProjectTiles(nullptr);
     App::getState()->setProjectTilesets(nullptr);
@@ -53,11 +66,12 @@ void ServiceContext::close(ContextReport * report)
     App::getState()->setProjectScreenshots(nullptr);
 
     if (report != nullptr)
-        report->success(QString("Project %1 closed successfully").arg(folderpath));
+        report->success(QString("Project %1 closed successfully").arg(path));
 }
 
 void ServiceContext::load(const QString & folderpath, ContextReport * report)
 {
+    qInfo() << "Loading project";
     QDir baseDir(folderpath);
 
     Project* context = new Project();
@@ -74,7 +88,6 @@ void ServiceContext::load(const QString & folderpath, ContextReport * report)
         loadReferences(baseDir, references)
     )
     {
-        App::getState()->setProjectFolder(folderpath);
         App::getState()->setProject(context);
         App::getState()->setProjectTiles(tiles);
         App::getState()->setProjectTilesets(tilesets);
@@ -116,9 +129,10 @@ void ServiceContext::load(const QString & folderpath, ContextReport * report)
 
 void ServiceContext::save(ContextReport * report)
 {
+    qInfo() << "Saving project";
     // TODO: Prevent partial save
 
-    QDir contextDir(App::getState()->projectFolder());
+    QDir contextDir(App::getState()->project()->path);
 
     if (!contextDir.exists())
         contextDir.mkpath(".");
@@ -128,9 +142,12 @@ void ServiceContext::save(ContextReport * report)
         savePalettes(contextDir, App::getState()->projectPalettes()) &&
         saveReferences(contextDir, App::getState()->projectReferences()) &&
         saveTilesets(contextDir, App::getState()->projectTilesets()) &&
-        saveScreenshots(contextDir, App::getState()->projectScreenshots())
-    )
+        saveScreenshots(contextDir, App::getState()->projectScreenshots()) )
     {
+        auto project = App::getState()->project();
+        project->hasChanges = false;
+        App::getState()->setProject(project);
+
         qInfo("Context saved successfully.");
         if (report != nullptr)
             report->success(QString("Project saved at %1").arg(contextDir.absolutePath()));
@@ -145,7 +162,8 @@ void ServiceContext::save(ContextReport * report)
 
 void ServiceContext::importDump(QString const & folderpath, ContextReport * report)
 {
-    // TODO: Prevent partial save
+    qInfo() << "Importing dump";
+    // TODO: Prevent partial save?
 
     QDir dumpDir(folderpath);
     QDir screenshotsDir(folderpath);
@@ -178,6 +196,11 @@ void ServiceContext::importDump(QString const & folderpath, ContextReport * repo
             report->fail("This is not a valid dump directory, can't load dumped elements.");
         return;
     }
+
+    qInfo() << "Dumped folder has" << dumpedTiles.size() << "tiles,"
+            << dumpedPalettes.size() << "palettes,"
+            << dumpedReferences.size() << "references, and"
+            << dumpedScreenshots.size() << "screenshots.";
 
     QHash<QByteArray,Palette*> statePaletteByKey;
     QHash<QByteArray,Tile*> stateTileByKey;
@@ -273,6 +296,10 @@ void ServiceContext::importDump(QString const & folderpath, ContextReport * repo
         }
     }
 
+    auto project = App::getState()->project();
+    project->hasChanges = true;
+    App::getState()->setProject(project);
+
     if (report != nullptr)
         report->success(QString("Dump imported, new items: tiles=%1, palettes=%2, references=%3, screenshots=%4.")
                         .arg(tilesImported).arg(palettesImported).arg(referencesImported).arg(screenshotsImported));
@@ -288,6 +315,8 @@ void ServiceContext::importDump(QString const & folderpath, ContextReport * repo
 
 bool ServiceContext::loadContext(QDir contextDir, Project * context)
 {
+    context->path = contextDir.absolutePath();
+
     QString filename = "context.json";
 
     if (!contextDir.exists(filename))
@@ -380,7 +409,7 @@ bool loadItems(QDir baseDir, QString name, QList<ITEM*> * items)
         items->append(new ITEM(jItem));
     }
 
-    qDebug() << "Loaded " << items->size() << " " << name;
+//    qDebug() << "Loaded " << items->size() << " " << name;
 
     return true;
 }
@@ -526,12 +555,14 @@ bool ServiceContext::saveScreenshots(QDir contextDir, QList<Screenshot*> * scree
 
 void ContextReport::success(QString const message)
 {
+//    qInfo() << message;
     _success = true;
     _message = message;
 }
 
 void ContextReport::fail(QString const message)
 {
+//    qWarning() << message;
     _success = false;
     _message = message;
 }

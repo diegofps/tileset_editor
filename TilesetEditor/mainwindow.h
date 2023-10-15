@@ -3,6 +3,7 @@
 
 #include "fragmentcontextclosed.h"
 #include "fragmentcontextopen.h"
+#include "model/project.h"
 
 #include <QMainWindow>
 
@@ -28,7 +29,7 @@ private slots:
     void onAction_File_QuitProject();
 
 private:
-    void prepareUIForContext(QString value);
+    void prepareUIForProject(Project * value);
     FragmentContextOpen * createFragmentContextOpen();
     FragmentContextClosed * createFragmentContextClosed();
 
