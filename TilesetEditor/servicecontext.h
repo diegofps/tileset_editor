@@ -21,7 +21,7 @@ public:
     static void close();
     static void load(QString const & folderpath);
     static void save();
-    static void importDump();
+    static void loadDump(QString const & folderpath);
 
 private:
 

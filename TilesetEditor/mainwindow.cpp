@@ -55,6 +55,7 @@ void MainWindow::onAction_File_NewProject()
     dialog.setFileMode(QFileDialog::Directory);
     dialog.setViewMode(QFileDialog::Detail);
     dialog.setOption(QFileDialog::ShowDirsOnly, true);
+    dialog.setAcceptMode(QFileDialog::AcceptSave);
 
     QStringList fileNames;
 

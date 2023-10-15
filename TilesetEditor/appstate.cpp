@@ -18,6 +18,7 @@ AppState::AppState()
     _contextPalettes = new QList<Palette*>();
     _contextTilesets = new QList<Tileset*>();
     _contextReferences = new QList<Reference*>();
+    _contextScreenshots = new QList<Screenshot*>();
 }
 
 // Context Folder

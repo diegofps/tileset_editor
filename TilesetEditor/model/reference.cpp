@@ -1,11 +1,6 @@
 #include "reference.h"
 
-Reference::Reference()
-{
-
-}
-
-void Reference::initFromJson(QJsonObject & data)
+Reference::Reference(QJsonObject & data)
 {
     id = data["ID"].toInt();
     tileId = data["TileID"].toInt();

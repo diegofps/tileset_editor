@@ -87,6 +87,7 @@ void ServiceContext::save()
     if (saveContext(contextDir, App::getState()->context()) &&
         saveTiles(contextDir, App::getState()->contextTiles()) &&
         savePalettes(contextDir, App::getState()->contextPalettes()) &&
+        saveReferences(contextDir, App::getState()->contextReferences()) &&
         saveTilesets(contextDir, App::getState()->contextTilesets()) &&
         saveScreenshots(contextDir, App::getState()->contextScreenshots())
     )
@@ -178,6 +179,7 @@ void ServiceContext::loadDump(QString const & folderpath)
         if (!screenshotsStateId.contains(dReference->screenshotId))
             screenshotsStateId[dReference->screenshotId] = ++App::getState()->context()->lastScreenshotID;
 
+        dReference->id = ++App::getState()->context()->lastReferenceID;
         dReference->screenshotId = screenshotsStateId[dReference->screenshotId];
         dReference->tileId = tileStateId[dReference->tileId];
         App::getState()->contextReferences()->append(dReference);
@@ -193,7 +195,7 @@ void ServiceContext::loadDump(QString const & folderpath)
                 qWarning() << "Failed to open required screenshot file: " << file.fileName();
 
             dScreenshot->id = screenshotsStateId[dScreenshot->id];
-            dScreenshot->filename = QString("%1.png").arg(dScreenshot->id);
+            dScreenshot->filename = QString::number(dScreenshot->id).rightJustified(6, '0') + ".png";
             dScreenshot->data = file.readAll();
             App::getState()->contextScreenshots()->append(dScreenshot);
         }
@@ -314,6 +316,11 @@ bool ServiceContext::loadTiles(QDir baseDir, QList<Tile*> * tiles)
 bool ServiceContext::loadPalettes(QDir baseDir, QList<Palette*> * palettes)
 {
     return loadItems(baseDir, "palettes", palettes);
+}
+
+bool ServiceContext::loadReferences(QDir baseDir, QList<Reference*> * references)
+{
+    return loadItems(baseDir, "references", references);
 }
 
 bool ServiceContext::loadTilesets(QDir baseDir, QList<Tileset*> * tilesets)

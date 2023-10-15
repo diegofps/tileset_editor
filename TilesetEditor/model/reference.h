@@ -25,8 +25,8 @@ public:
 
 public:
 
-    Reference();
-    void initFromJson(QJsonObject & data);
+    Reference(QJsonObject & data);
+//    void initFromJson(QJsonObject & data);
     QJsonObject exportAsJson() const;
     void clear();
     bool isEmpty() const;

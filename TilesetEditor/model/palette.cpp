@@ -29,7 +29,7 @@ Palette::Palette(QJsonObject & data)
 
         QJsonArray jColor = jValue.toArray();
 
-        if (jColor.size() != size)
+        if (jColor.size() != 3)
             throw ContextError("A Palette color must be an array with 3 values");
 
         colors[i] = QColor(
