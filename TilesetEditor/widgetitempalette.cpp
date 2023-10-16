@@ -15,6 +15,14 @@ WidgetItemPalette::~WidgetItemPalette()
 
 void WidgetItemPalette::setPalette(Palette * palette)
 {
-    ui->lbID->setText(QString::number(palette->id));
-    ui->palette->setPalette(palette->colors, palette->size);
+    if (palette == nullptr)
+    {
+        ui->lbID->setText("");
+        ui->palette->setPalette(nullptr, 0);
+    }
+    else
+    {
+        ui->lbID->setText(QString::number(palette->id));
+        ui->palette->setPalette(palette->colors, palette->size);
+    }
 }

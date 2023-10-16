@@ -14,6 +14,7 @@ void WidgetPalette::setPalette(QColor colors[], int size)
     _size = size;
     for (int i=0;i!=size;++i)
         _colors[i] = colors[i];
+    update();
 }
 
 void WidgetPalette::paintEvent(QPaintEvent *event)

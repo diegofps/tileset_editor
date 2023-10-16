@@ -1,6 +1,7 @@
 #ifndef FRAGMENTTILEPREVIEW_H
 #define FRAGMENTTILEPREVIEW_H
 
+#include "model/palette.h"
 #include <QWidget>
 
 namespace Ui {
@@ -17,6 +18,7 @@ public:
 
 private:
     void styleButtons(QString const & value);
+    void loadPalette(Palette * value);
 
 private:
     Ui::FragmentTilePreview *ui;
