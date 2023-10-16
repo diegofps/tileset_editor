@@ -1,6 +1,7 @@
 #ifndef FRAGMENTPALETTES_H
 #define FRAGMENTPALETTES_H
 
+#include "model/palette.h"
 #include <QWidget>
 
 namespace Ui {
@@ -14,6 +15,9 @@ class FragmentPalettes : public QWidget
 public:
     explicit FragmentPalettes(QWidget *parent = nullptr);
     ~FragmentPalettes();
+
+private:
+    void loadPalettes(QList<Palette*> const * value);
 
 private:
     Ui::FragmentPalettes *ui;

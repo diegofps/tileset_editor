@@ -16,6 +16,9 @@ public:
     ~FragmentTilePreview();
 
 private:
+    void styleButtons(QString const & value);
+
+private:
     Ui::FragmentTilePreview *ui;
 };
 

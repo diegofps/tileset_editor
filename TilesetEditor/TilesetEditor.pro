@@ -33,7 +33,8 @@ SOURCES += \
     model/tileset.cpp \
     servicecontext.cpp \
     tilesgridlist.cpp \
-    widgetcolorpalette.cpp
+    widgetitempalette.cpp \
+    widgetpalette.cpp
 
 HEADERS += \
     app.h \
@@ -60,7 +61,8 @@ HEADERS += \
     model/tileset.h \
     servicecontext.h \
     tilesgridlist.h \
-    widgetcolorpalette.h
+    widgetitempalette.h \
+    widgetpalette.h
 
 FORMS += \
     fragmentcontextclosed.ui \
@@ -73,7 +75,8 @@ FORMS += \
     fragmenttiles.ui \
     fragmenttilesetproperties.ui \
     fragmenttilesets.ui \
-    mainwindow.ui
+    mainwindow.ui \
+    widgetitempalette.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

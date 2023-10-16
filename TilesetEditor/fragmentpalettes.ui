@@ -129,7 +129,7 @@ font: 9pt;</string>
          </layout>
         </item>
         <item>
-         <widget class="QListView" name="listView">
+         <widget class="QListWidget" name="listPalettes">
           <property name="frameShape">
            <enum>QFrame::NoFrame</enum>
           </property>

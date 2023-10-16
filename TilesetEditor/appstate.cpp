@@ -300,11 +300,21 @@ void AppState::setPalettesShow(QString const & value)
     }
 }
 
+void AppState::setPalettesSelectedItem(Palette * value)
+{
+    _palettesSelectedItem = value;
+    emit onPaletteSelectedItemChanged(value);
+}
+
 const QString &AppState::palettesShow() const
 {
     return _palettesShow;
 }
 
+Palette * AppState::palettesSelectedItem()
+{
+    return _palettesSelectedItem;
+}
 
 // TilePreview
 
@@ -317,7 +327,7 @@ void AppState::setTilePreviewShow(QString const & value)
     }
 }
 
-Tileset * AppState::tilesetSelectedItem() const
+Tileset * AppState::tilesetsSelectedItem() const
 {
     return _tilesetsSelectedItem;
 }

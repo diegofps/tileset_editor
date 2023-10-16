@@ -52,6 +52,7 @@ private:
 
     // Palettes
     QString _palettesShow;
+    Palette * _palettesSelectedItem;
 
     // Tile Preview
     QString _tilePreviewShow;
@@ -114,14 +115,16 @@ public:
 
     // Palettes
     const QString & palettesShow() const;
+    Palette * palettesSelectedItem();
     void setPalettesShow(QString const & value);
+    void setPalettesSelectedItem(Palette * value);
 
     // Tile Preview
     const QString & tilePreviewShow() const;
     void setTilePreviewShow(QString const & value);
 
     // Tilesets
-    Tileset * tilesetSelectedItem() const;
+    Tileset * tilesetsSelectedItem() const;
     void setTilesetsSelectedItem(Tileset * value);
 
 signals:
@@ -158,6 +161,7 @@ signals:
 
     // Palettes
     void onPalettesShowChanged(QString const & value);
+    void onPaletteSelectedItemChanged(Palette * value);
 
     // Tile Preview
     void onTilePreviewShowChanged(QString const & value);

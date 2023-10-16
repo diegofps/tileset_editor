@@ -3,18 +3,14 @@
 
 #include "app.h"
 
-FragmentTilePreview::FragmentTilePreview(QWidget *parent) :
-    QWidget(parent),
-    ui(new Ui::FragmentTilePreview)
+void FragmentTilePreview::styleButtons(QString const & value)
 {
-    ui->setupUi(this);
-
-    if (App::getState()->tilePreviewShow() == "original")
+    if (value == "original")
     {
         ui->btOriginal->setStyleSheet(App::getStyles()->get("button_checked"));
         ui->btHD->setStyleSheet(App::getStyles()->get("button_unchecked"));
     }
-    else if (App::getState()->tilePreviewShow() == "hd")
+    else if (value == "hd")
     {
         ui->btOriginal->setStyleSheet(App::getStyles()->get("button_unchecked"));
         ui->btHD->setStyleSheet(App::getStyles()->get("button_checked"));
@@ -25,24 +21,30 @@ FragmentTilePreview::FragmentTilePreview(QWidget *parent) :
         ui->btHD->setStyleSheet(App::getStyles()->get("button_unchecked"));
     }
 
+    ui->btOriginal->update();
+    ui->btHD->update();
+}
+
+FragmentTilePreview::FragmentTilePreview(QWidget *parent) :
+    QWidget(parent),
+    ui(new Ui::FragmentTilePreview)
+{
+    ui->setupUi(this);
+
+    styleButtons(App::getState()->tilePreviewShow());
+
     connect(ui->btOriginal, &QPushButton::clicked, this, [&](){ App::getState()->setTilePreviewShow("original"); });
     connect(ui->btHD, &QPushButton::clicked, this, [&](){ App::getState()->setTilePreviewShow("hd"); });
+    connect(App::getState(), &AppState::onTilePreviewShowChanged, this, [&](QString const & value) { styleButtons(value); });
 
-    connect(App::getState(), &AppState::onTilePreviewShowChanged, this, [&](QString const & value) {
-        if (value == "original")
+    connect(App::getState(), &AppState::onPaletteSelectedItemChanged, this, [&](Palette * value){
+        if (value == nullptr)
         {
-            ui->btOriginal->setStyleSheet(App::getStyles()->get("button_checked"));
-            ui->btHD->setStyleSheet(App::getStyles()->get("button_unchecked"));
-        }
-        else if (value == "hd")
-        {
-            ui->btOriginal->setStyleSheet(App::getStyles()->get("button_unchecked"));
-            ui->btHD->setStyleSheet(App::getStyles()->get("button_checked"));
+            qDebug() << "Changed palette to nullptr";
         }
         else
         {
-            ui->btOriginal->setStyleSheet(App::getStyles()->get("button_unchecked"));
-            ui->btHD->setStyleSheet(App::getStyles()->get("button_unchecked"));
+            qDebug() << "Changed palette to " << value->id;
         }
     });
 }
