@@ -285,7 +285,7 @@
           </widget>
          </item>
          <item>
-          <widget class="WidgetColorPalette" name="widget" native="true"/>
+          <widget class="QWidget" name="palette" native="true"/>
          </item>
         </layout>
        </widget>
@@ -295,14 +295,6 @@
    </item>
   </layout>
  </widget>
- <customwidgets>
-  <customwidget>
-   <class>WidgetColorPalette</class>
-   <extends>QWidget</extends>
-   <header>widgetcolorpalette.h</header>
-   <container>1</container>
-  </customwidget>
- </customwidgets>
  <resources/>
  <connections/>
 </ui>

@@ -36,11 +36,7 @@ FragmentTilePreview::FragmentTilePreview(QWidget *parent) :
     connect(ui->btOriginal, &QPushButton::clicked, this, [&](){ App::getState()->setTilePreviewShow("original"); });
     connect(ui->btHD, &QPushButton::clicked, this, [&](){ App::getState()->setTilePreviewShow("hd"); });
     connect(App::getState(), &AppState::onTilePreviewShowChanged, this, [&](QString const & value) { styleButtons(value); });
-
-    connect(App::getState(), &AppState::onPaletteSelectedItemChanged, this, [&](Palette * value) {
-        loadPalette(value);
-    });
-
+    connect(App::getState(), &AppState::onPaletteSelectedItemChanged, this, [&](Palette * value) { loadPalette(value); });
 
     loadPalette(App::getState()->palettesSelectedItem());
 }

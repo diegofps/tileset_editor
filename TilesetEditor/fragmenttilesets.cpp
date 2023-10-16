@@ -52,24 +52,34 @@ FragmentTilesets::FragmentTilesets(QWidget *parent) :
 
         int const position = ui->listTilesets->currentRow() < 0 ? 0 : ui->listTilesets->currentRow()+1;
         App::getState()->insertProjectTileset(position, ts);
+        App::getState()->setProjectHasChanges(true);
     });
 
     connect(ui->btRemove, &QPushButton::clicked, this, [&]()
     {
         if (ui->listTilesets->currentRow() >= 0)
+        {
             App::getState()->removeProjectTileset(ui->listTilesets->currentRow());
+            App::getState()->setProjectHasChanges(true);
+        }
     });
 
     connect(ui->btMoveUp, &QPushButton::clicked, this, [&]()
     {
         if (ui->listTilesets->currentRow() >= 0)
+        {
             App::getState()->moveDownProjectTileset(ui->listTilesets->currentRow());
+            App::getState()->setProjectHasChanges(true);
+        }
     });
 
     connect(ui->btMoveDown, &QPushButton::clicked, this, [&]()
     {
         if (ui->listTilesets->currentRow() >= 0)
+        {
             App::getState()->moveUpProjectTileset(ui->listTilesets->currentRow());
+            App::getState()->setProjectHasChanges(true);
+        }
     });
 
     connect(ui->listTilesets, &QListWidget::currentRowChanged, this, [&](int position) {

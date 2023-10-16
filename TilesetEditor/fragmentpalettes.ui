@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>502</width>
+    <width>414</width>
     <height>521</height>
    </rect>
   </property>
@@ -31,6 +31,12 @@
    </property>
    <item>
     <widget class="QFrame" name="frame">
+     <property name="minimumSize">
+      <size>
+       <width>200</width>
+       <height>0</height>
+      </size>
+     </property>
      <property name="styleSheet">
       <string notr="true">background-color: rgb(52, 66, 74);</string>
      </property>
@@ -138,6 +144,9 @@ font: 9pt;</string>
           </property>
           <property name="lineWidth">
            <number>0</number>
+          </property>
+          <property name="horizontalScrollBarPolicy">
+           <enum>Qt::ScrollBarAlwaysOff</enum>
           </property>
          </widget>
         </item>

@@ -47,6 +47,15 @@ void AppState::setProject(Project * value)
     emit onProjectChanged(value);
 }
 
+void AppState::setProjectHasChanges(bool value)
+{
+    if (value != _projectHasChanges)
+    {
+        _projectHasChanges = value;
+        emit onProjectHasChangesChanged(value);
+    }
+}
+
 void AppState::setProjectLastDumpFolder(QString value)
 {
     if (value != _projectLastDumpFolder)
@@ -136,6 +145,11 @@ void AppState::moveDownProjectTileset(int const position)
 Project * AppState::project() const
 {
     return _project;
+}
+
+bool AppState::projectHasChanges()
+{
+    return _projectHasChanges;
 }
 
 const QString &AppState::projectLastDumpFolder() const

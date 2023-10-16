@@ -94,7 +94,7 @@ QMenu::item:selected {
      <string>&amp;View</string>
     </property>
     <addaction name="action_View_References"/>
-    <addaction name="action_View_ResetLayout"/>
+    <addaction name="action_View_NextTileUsage"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuView"/>
@@ -129,14 +129,6 @@ color: rgb(255, 255, 255);</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+Q</string>
-   </property>
-  </action>
-  <action name="actionReload_dump">
-   <property name="text">
-    <string>Reload Dump</string>
-   </property>
-   <property name="shortcut">
-    <string>F5</string>
    </property>
   </action>
   <action name="action_Execute_BuildTilesets">
@@ -187,14 +179,6 @@ color: rgb(255, 255, 255);</string>
     <string>R</string>
    </property>
   </action>
-  <action name="action_View_ResetLayout">
-   <property name="text">
-    <string>Reset &amp;Layout</string>
-   </property>
-   <property name="shortcut">
-    <string>0</string>
-   </property>
-  </action>
   <action name="action_File_CloseProject">
    <property name="text">
     <string>&amp;Close Project</string>
@@ -225,6 +209,14 @@ color: rgb(255, 255, 255);</string>
    </property>
    <property name="shortcut">
     <string>F5</string>
+   </property>
+  </action>
+  <action name="action_View_NextTileUsage">
+   <property name="text">
+    <string>Next Tile Usage</string>
+   </property>
+   <property name="shortcut">
+    <string>N</string>
    </property>
   </action>
  </widget>

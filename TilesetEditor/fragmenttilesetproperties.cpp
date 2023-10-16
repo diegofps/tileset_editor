@@ -18,6 +18,7 @@ FragmentTilesetProperties::FragmentTilesetProperties(QWidget *parent) :
         if (ts != nullptr && ts->name != text) {
             ts->name = text;
             App::getState()->setTilesetsSelectedItem(ts);
+            App::getState()->setProjectHasChanges(true);
         }
     });
 
@@ -26,6 +27,7 @@ FragmentTilesetProperties::FragmentTilesetProperties(QWidget *parent) :
         if (ts != nullptr && ts->gridW != value) {
             ts->gridW = value;
             App::getState()->setTilesetsSelectedItem(ts);
+            App::getState()->setProjectHasChanges(true);
         }
 
         ui->leWidthOriginal->setText(QString::number(value*8));
@@ -37,6 +39,7 @@ FragmentTilesetProperties::FragmentTilesetProperties(QWidget *parent) :
         if (ts != nullptr && ts->gridH != value) {
             ts->gridH = value;
             App::getState()->setTilesetsSelectedItem(ts);
+            App::getState()->setProjectHasChanges(true);
         }
 
         ui->leHeightOriginal->setText(QString::number(value*8));
@@ -54,6 +57,7 @@ FragmentTilesetProperties::FragmentTilesetProperties(QWidget *parent) :
         if (dialog.exec() && ts->bgColor != dialog.selectedColor()) {
             ts->bgColor = dialog.selectedColor();
             App::getState()->setTilesetsSelectedItem(ts);
+            App::getState()->setProjectHasChanges(true);
         }
     });
 

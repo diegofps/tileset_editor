@@ -242,57 +242,6 @@ QPushButton#evilButton:checked {
          </widget>
         </item>
         <item>
-         <widget class="QPushButton" name="btShowNext">
-          <property name="minimumSize">
-           <size>
-            <width>20</width>
-            <height>20</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>20</width>
-            <height>20</height>
-           </size>
-          </property>
-          <property name="styleSheet">
-           <string notr="true">QPushButton {
-    background-color: rgb(21, 21, 21);
-    color: white;
-    border-width: 0px;
-    border-radius: 10px;
-    font: bold 12px;
-    padding: 4px;
-}
-
-QPushButton#evilButton:pressed {
-    background-color: rgb(9, 36, 78);
-}
-
-QPushButton#evilButton:checked {
-    background-color: rgb(86, 145, 236);
-}</string>
-          </property>
-          <property name="text">
-           <string/>
-          </property>
-          <property name="icon">
-           <iconset>
-            <normalon>:/icons/search-solid.svg</normalon>
-           </iconset>
-          </property>
-          <property name="iconSize">
-           <size>
-            <width>10</width>
-            <height>10</height>
-           </size>
-          </property>
-          <property name="checkable">
-           <bool>true</bool>
-          </property>
-         </widget>
-        </item>
-        <item>
          <widget class="QPushButton" name="btShowLinkedTiles">
           <property name="minimumSize">
            <size>
@@ -541,7 +490,7 @@ QPushButton#evilButton:checked {
           </widget>
          </item>
          <item>
-          <widget class="WidgetColorPalette" name="widget" native="true"/>
+          <widget class="QWidget" name="palette" native="true"/>
          </item>
         </layout>
        </widget>
@@ -551,14 +500,6 @@ QPushButton#evilButton:checked {
    </item>
   </layout>
  </widget>
- <customwidgets>
-  <customwidget>
-   <class>WidgetColorPalette</class>
-   <extends>QWidget</extends>
-   <header>widgetcolorpalette.h</header>
-   <container>1</container>
-  </customwidget>
- </customwidgets>
  <resources/>
  <connections/>
 </ui>

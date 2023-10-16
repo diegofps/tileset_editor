@@ -8,7 +8,6 @@ class Project
 public:
 
     QString path;
-    bool hasChanges;
 
     int dbVersion;
     int lastTileID;

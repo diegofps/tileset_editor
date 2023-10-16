@@ -38,6 +38,7 @@ void ServiceContext::create(const QString & folderpath, ContextReport * report)
     App::getState()->setProjectPalettes(palettes);
     App::getState()->setProjectReferences(references);
     App::getState()->setProjectScreenshots(screenshots);
+    App::getState()->setProjectHasChanges(false);
 
     save(report);
 }
@@ -94,6 +95,7 @@ void ServiceContext::load(const QString & folderpath, ContextReport * report)
         App::getState()->setProjectReferences(references);
         App::getState()->setProjectScreenshots(screenshots);
         App::getState()->setProject(context);
+        App::getState()->setProjectHasChanges(false);
 
         if (report != nullptr)
             report->success(QString("Project loaded successfully: %1").arg(folderpath));
@@ -144,9 +146,9 @@ void ServiceContext::save(ContextReport * report)
         saveTilesets(contextDir, App::getState()->projectTilesets()) &&
         saveScreenshots(contextDir, App::getState()->projectScreenshots()) )
     {
-        auto project = App::getState()->project();
-        project->hasChanges = false;
-        App::getState()->setProject(project);
+//        auto project = App::getState()->project();
+//        App::getState()->setProject(project);
+        App::getState()->setProjectHasChanges(false);
 
         qInfo("Context saved successfully.");
         if (report != nullptr)
@@ -297,8 +299,9 @@ void ServiceContext::importDump(QString const & folderpath, ContextReport * repo
     }
 
     auto project = App::getState()->project();
-    project->hasChanges = true;
+
     App::getState()->setProject(project);
+    App::getState()->setProjectHasChanges(true);
 
     if (report != nullptr)
         report->success(QString("Dump imported, new items: tiles=%1, palettes=%2, references=%3, screenshots=%4.")

@@ -52,7 +52,7 @@ FragmentEditor::FragmentEditor(QWidget *parent) :
 //    ui->btLinker->setToolTip("Mark Tiles that link their original image to its HD version");
 
     styleToolButtons(App::getState()->editorTool());
-    ui->btShowNext->setStyleSheet(App::getStyles()->get("button_click"));
+//    ui->btShowNext->setStyleSheet(App::getStyles()->get("button_click"));
     styleButton(App::getState()->editorShowLinkedTiles(), ui->btShowLinkedTiles);
     styleButton(App::getState()->editorShowUnlinkedTiles(), ui->btShowUnlinkedTiles);
     styleButton(App::getState()->editorShowGrid(), ui->btShowGrid);
@@ -61,9 +61,9 @@ FragmentEditor::FragmentEditor(QWidget *parent) :
     connect(ui->btEraser, &QPushButton::clicked, this, [&]() { App::getState()->setEditorTool(ERASER); });
     connect(ui->btLinker, &QPushButton::clicked, this, [&]() { App::getState()->setEditorTool(LINKER); });
 
-    connect(ui->btShowNext, &QPushButton::clicked, this, [&]() {
-        // TODO: Show next tile appearance
-    });
+//    connect(ui->btShowNext, &QPushButton::clicked, this, [&]() {
+//        // TODO: Show next tile appearance
+//    });
 
     connect(ui->btShowLinkedTiles, &QPushButton::clicked, this, [&]() {
         App::getState()->setEditorShowLinkedTiles(!App::getState()->editorShowLinkedTiles());

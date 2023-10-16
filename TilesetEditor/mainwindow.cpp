@@ -21,9 +21,26 @@ MainWindow::MainWindow(QWidget *parent)
         prepareUIForProject(value);
     });
 
+    connect(App::getState(), &AppState::onProjectHasChangesChanged, this, [&](bool value) {
+        auto project = App::getState()->project();
+
+        if (project == nullptr)
+        {
+            setWindowTitle("TilesetEditor");
+            return;
+        }
+
+        if (value)
+            setWindowTitle("*" + project->path);
+        else
+            setWindowTitle(project->path);
+    });
+
     connect(App::getState(), &AppState::onProjectLastDumpFolderChanged, this, [&](QString const & value) {
         ui->action_File_ReloadDump->setEnabled(!value.isEmpty());
     });
+
+
 
     // File menu
 
@@ -158,7 +175,7 @@ void MainWindow::prepareUIForProject(Project * value)
 
     if (hasProject)
     {
-        setWindowTitle((value->hasChanges ? "*" : "") + value->path);
+        setWindowTitle(value->path);
         setCentralWidget(createFragmentContextOpen());
     }
     else
@@ -178,7 +195,7 @@ void MainWindow::prepareUIForProject(Project * value)
     ui->action_Execute_Pipelines->setEnabled(hasProject);
 
     ui->action_View_References->setEnabled(hasProject);
-    ui->action_View_ResetLayout->setEnabled(hasProject);
+    ui->action_View_NextTileUsage->setEnabled(hasProject);
 }
 
 FragmentContextOpen * MainWindow::createFragmentContextOpen()
