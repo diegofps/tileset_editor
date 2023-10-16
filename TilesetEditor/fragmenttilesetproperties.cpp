@@ -5,6 +5,8 @@
 
 #include <QColorDialog>
 
+QString COLOR_STYLE = "border:0px; padding:3px 8px; border-radius:10px; background-color: ";
+
 FragmentTilesetProperties::FragmentTilesetProperties(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::FragmentTilesetProperties)
@@ -75,7 +77,7 @@ void FragmentTilesetProperties::loadTileset(Tileset * ts)
         ui->leName->setText("");
         ui->sbGridW->setValue(0);
         ui->sbGridH->setValue(0);
-        ui->btColor->setStyleSheet("background-color: #000000");
+        ui->btColor->setStyleSheet(COLOR_STYLE + "#000000");
     }
     else
     {
@@ -90,7 +92,7 @@ void FragmentTilesetProperties::loadTileset(Tileset * ts)
         ui->leName->setText(ts->name);
         ui->sbGridW->setValue(ts->gridW);
         ui->sbGridH->setValue(ts->gridH);
-        ui->btColor->setStyleSheet("background-color: " + ts->bgColor.name(QColor::HexRgb));
+        ui->btColor->setStyleSheet(COLOR_STYLE + ts->bgColor.name(QColor::HexRgb));
     }
 }
 

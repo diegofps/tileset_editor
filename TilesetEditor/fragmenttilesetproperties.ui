@@ -111,6 +111,12 @@ font: 9pt;</string>
          </item>
          <item row="0" column="1">
           <widget class="QLineEdit" name="leID">
+           <property name="styleSheet">
+            <string notr="true">background-color: #283137;
+border: 0px;
+padding: 3px 8px ;
+border-radius: 10px;</string>
+           </property>
            <property name="text">
             <string>80</string>
            </property>
@@ -128,6 +134,12 @@ font: 9pt;</string>
          </item>
          <item row="1" column="1">
           <widget class="QLineEdit" name="leName">
+           <property name="styleSheet">
+            <string notr="true">background-color: #151515;
+border: 0px;
+padding: 3px 8px ;
+border-radius: 10px;</string>
+           </property>
            <property name="text">
             <string>Noname</string>
            </property>
@@ -145,6 +157,12 @@ font: 9pt;</string>
          </item>
          <item row="2" column="1">
           <widget class="QSpinBox" name="sbGridW">
+           <property name="styleSheet">
+            <string notr="true">background-color: #151515;
+border: 0px;
+padding: 3px 8px ;
+border-radius: 10px;</string>
+           </property>
            <property name="minimum">
             <number>1</number>
            </property>
@@ -159,6 +177,12 @@ font: 9pt;</string>
          </item>
          <item row="3" column="1">
           <widget class="QSpinBox" name="sbGridH">
+           <property name="styleSheet">
+            <string notr="true">background-color: #151515;
+border: 0px;
+padding: 3px 8px ;
+border-radius: 10px;</string>
+           </property>
            <property name="minimum">
             <number>1</number>
            </property>
@@ -181,7 +205,7 @@ font: 9pt;</string>
          <item row="5" column="0">
           <widget class="QLabel" name="lbWidth">
            <property name="text">
-            <string>Width</string>
+            <string>PixelW</string>
            </property>
           </widget>
          </item>
@@ -189,6 +213,12 @@ font: 9pt;</string>
           <layout class="QHBoxLayout" name="horizontalLayout">
            <item>
             <widget class="QLineEdit" name="leWidthOriginal">
+             <property name="styleSheet">
+              <string notr="true">background-color: #283137;
+border: 0px;
+padding: 3px 8px ;
+border-radius: 10px;</string>
+             </property>
              <property name="text">
               <string>80</string>
              </property>
@@ -199,6 +229,12 @@ font: 9pt;</string>
            </item>
            <item>
             <widget class="QLineEdit" name="leWidthHD">
+             <property name="styleSheet">
+              <string notr="true">background-color: #283137;
+border: 0px;
+padding: 3px 8px ;
+border-radius: 10px;</string>
+             </property>
              <property name="text">
               <string>80</string>
              </property>
@@ -212,7 +248,7 @@ font: 9pt;</string>
          <item row="6" column="0">
           <widget class="QLabel" name="lbHeight">
            <property name="text">
-            <string>Height</string>
+            <string>PixelH</string>
            </property>
           </widget>
          </item>
@@ -220,6 +256,12 @@ font: 9pt;</string>
           <layout class="QHBoxLayout" name="horizontalLayout_3">
            <item>
             <widget class="QLineEdit" name="leHeightOriginal">
+             <property name="styleSheet">
+              <string notr="true">background-color: #283137;
+border: 0px;
+padding: 3px 8px ;
+border-radius: 10px;</string>
+             </property>
              <property name="text">
               <string>80</string>
              </property>
@@ -230,6 +272,12 @@ font: 9pt;</string>
            </item>
            <item>
             <widget class="QLineEdit" name="leHeightHD">
+             <property name="styleSheet">
+              <string notr="true">background-color: #283137;
+border: 0px;
+padding: 3px 8px ;
+border-radius: 10px;</string>
+             </property>
              <property name="text">
               <string>80</string>
              </property>
