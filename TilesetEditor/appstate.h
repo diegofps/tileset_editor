@@ -79,6 +79,11 @@ public:
     void setProjectReferences(QList<Reference *> * value);
     void setProjectScreenshots(QList<Screenshot *> * value);
 
+    void insertProjectTileset(int const position, Tileset * value);
+    void removeProjectTileset(int const position);
+    void moveUpProjectTileset(const int position);
+    void moveDownProjectTileset(const int position);
+
     // Editor Toolbox
     EditorTool editorTool() const;
     bool editorShowLinkedTiles() const;
@@ -123,6 +128,10 @@ signals:
     void onProjectTilesetsChanged(QList<Tileset *> const * value);
     void onProjectReferencesChanged(QList<Reference *> const * value);
     void onProjectScreenshotsChanged(QList<Screenshot*> const * value);
+
+    void onProjectTilesetsInserted(QList<Tileset *> const * value, int const position);
+    void onProjectTilesetsRemoved(QList<Tileset *> const * value, int const position);
+    void onProjectTilesetsMoved(QList<Tileset *> const * value, int const oldPosition, int const newPosition);
 
     // Editor Toolbox
     void onEditorToolChanged(EditorTool const value);

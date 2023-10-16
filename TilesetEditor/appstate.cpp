@@ -91,15 +91,52 @@ void AppState::setProjectScreenshots(QList<Screenshot*> *value)
     emit onProjectScreenshotsChanged(value);
 }
 
+void AppState::insertProjectTileset(int const position, Tileset * value)
+{
+    if (value == nullptr)
+        return;
+
+    _projectTilesets->insert(position, value);
+    emit onProjectTilesetsInserted(_projectTilesets, position);
+}
+
+void AppState::removeProjectTileset(int const position)
+{
+    if (position < 0 || position >= _projectTilesets->size())
+        return;
+
+    auto ts = _projectTilesets->at(position);
+    _projectTilesets->remove(position);
+    emit onProjectTilesetsRemoved(_projectTilesets, position);
+    delete ts;
+}
+
+void AppState::moveUpProjectTileset(int const position)
+{
+    if (position < 0 || position >= _projectTilesets->size()-1)
+        return;
+
+    auto ts = _projectTilesets->takeAt(position);
+    _projectTilesets->insert(position+1, ts);
+
+    emit onProjectTilesetsMoved(_projectTilesets, position, position+1);
+}
+
+void AppState::moveDownProjectTileset(int const position)
+{
+    if (position <= 0 || position >= _projectTilesets->size())
+        return;
+
+    auto ts = _projectTilesets->takeAt(position);
+    _projectTilesets->insert(position-1, ts);
+
+    emit onProjectTilesetsMoved(_projectTilesets, position, position-1);
+}
+
 Project * AppState::project() const
 {
     return _project;
 }
-
-//const QString & AppState::projectFolder() const
-//{
-//    return _projectFolder;
-//}
 
 const QString &AppState::projectLastDumpFolder() const
 {

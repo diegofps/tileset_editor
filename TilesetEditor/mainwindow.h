@@ -28,7 +28,6 @@ private slots:
     void onAction_File_ReloadDump();
     void onAction_File_QuitProject();
 
-    void onAction_View_Editor();
     void onAction_View_References();
 
 private:

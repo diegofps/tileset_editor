@@ -38,7 +38,6 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->action_File_Quit, &QAction::triggered, this, &MainWindow::onAction_File_QuitProject);
 
     // View menu
-    connect(ui->action_View_Editor, &QAction::triggered, this, &MainWindow::onAction_View_Editor);
     connect(ui->action_View_References, &QAction::triggered, this, &MainWindow::onAction_View_References);
 
     // Execute menu
@@ -145,14 +144,12 @@ void MainWindow::onAction_File_QuitProject()
     close();
 }
 
-void MainWindow::onAction_View_Editor()
-{
-    App::getState()->setPreviewPage("editor");
-}
-
 void MainWindow::onAction_View_References()
 {
-    App::getState()->setPreviewPage("references");
+    if (App::getState()->previewPage() == "references")
+        App::getState()->setPreviewPage("editor");
+    else
+        App::getState()->setPreviewPage("references");
 }
 
 void MainWindow::prepareUIForProject(Project * value)
@@ -181,7 +178,6 @@ void MainWindow::prepareUIForProject(Project * value)
     ui->action_Execute_Pipelines->setEnabled(hasProject);
 
     ui->action_View_References->setEnabled(hasProject);
-    ui->action_View_Editor->setEnabled(hasProject);
     ui->action_View_ResetLayout->setEnabled(hasProject);
 }
 
