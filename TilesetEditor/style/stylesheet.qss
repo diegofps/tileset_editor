@@ -6,3 +6,30 @@
     background-color: #151515;
     color: #ffffff;
 }
+
+QScrollBar:vertical {
+    border-width: 0px;
+    background-color: red;
+    margin: 0px 0px 0px 0px;
+    width: 10px;
+}
+
+QScrollBar::handle:vertical {
+    background-color: #151515;
+}
+
+QScrollBar::add-line:vertical {
+    border: 0px;
+    background-color: green;
+    height: 0px;
+    subcontrol-position: bottom;
+    subcontrol-origin: margin;
+}
+
+QScrollBar::sub-line:vertical {
+    border: 0px;
+    background-color: blue;
+    height: 0px;
+    subcontrol-position: top;
+    subcontrol-origin: margin;
+}

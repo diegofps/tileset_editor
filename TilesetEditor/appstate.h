@@ -56,6 +56,9 @@ private:
     // Tile Preview
     QString _tilePreviewShow;
 
+    //Tilesets
+    Tileset * _tilesetsSelectedItem;
+
 public:
 
     AppState();
@@ -117,6 +120,10 @@ public:
     const QString & tilePreviewShow() const;
     void setTilePreviewShow(QString const & value);
 
+    // Tilesets
+    Tileset * tilesetSelectedItem() const;
+    void setTilesetsSelectedItem(Tileset * value);
+
 signals:
 
     // Context Folder
@@ -154,6 +161,9 @@ signals:
 
     // Tile Preview
     void onTilePreviewShowChanged(QString const & value);
+
+    // Tilesets
+    void onTilesetsSelectedItemChanged(Tileset * value);
 
 };
 

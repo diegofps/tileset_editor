@@ -317,8 +317,20 @@ void AppState::setTilePreviewShow(QString const & value)
     }
 }
 
+Tileset * AppState::tilesetSelectedItem() const
+{
+    return _tilesetsSelectedItem;
+}
+
 const QString &AppState::tilePreviewShow() const
 {
     return _tilePreviewShow;
 }
 
+// Tilesets
+
+void AppState::setTilesetsSelectedItem(Tileset * value)
+{
+    _tilesetsSelectedItem = value;
+    emit onTilesetsSelectedItemChanged(value);
+}
