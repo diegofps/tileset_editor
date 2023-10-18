@@ -20,6 +20,11 @@ protected:
 
 private:
     QPen _pen;
+    QBrush _brush;
+
+    // QWidget interface
+protected:
+    void resizeEvent(QResizeEvent *event);
 };
 
 #endif // WIDGETPREVIEW_H
