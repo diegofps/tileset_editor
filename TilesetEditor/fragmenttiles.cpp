@@ -2,6 +2,8 @@
 #include "qstyle.h"
 #include "ui_fragmenttiles.h"
 #include "app.h"
+#include "widgetpreview.h"
+#include "qverticalscrollarea.h"
 
 void FragmentTiles::styleButtons(QString const & value)
 {
@@ -36,6 +38,20 @@ FragmentTiles::FragmentTiles(QWidget *parent) :
     connect(ui->btAll, &QPushButton::clicked, this, [&](){ App::getState()->setTilesShow("all"); });
     connect(ui->btUnlinked, &QPushButton::clicked, this, [&](){ App::getState()->setTilesShow("unlinked"); });
     connect(App::getState(), &AppState::onTilesShowChanged, this, [&](QString const & value) { styleButtons(value); });
+
+    auto wPreview = new WidgetPreview(this);
+    wPreview->setMinimumHeight(1000);
+
+//    auto layout = new QVBoxLayout();
+//    layout->addWidget(wPreview);
+
+    auto vScrollArea = new QVerticalScrollArea(wPreview, this);
+//    vScrollArea->setLayout(layout);
+
+    auto layout2 = new QVBoxLayout();
+    layout2->addWidget(vScrollArea);
+
+    ui->listFrame->setLayout(layout2);
 }
 
 FragmentTiles::~FragmentTiles()
