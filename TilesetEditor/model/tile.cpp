@@ -50,6 +50,26 @@ Tile::Tile(QJsonObject & data)
 
     paletteSize = data["PaletteSize"].toInt();
 
+    // UsedInSprite
+
+    if (!data.contains("UsedInSprite"))
+        throw ContextError("Tile is missing attribute 'UsedInSprite'");
+
+    if (!data["UsedInSprite"].isBool())
+        throw ContextError("Tile has the wrong value type associated to 'UsedInSprite'");
+
+    usedInSprite = data["UsedInSprite"].toBool();
+
+    // UsedInBackground
+
+    if (!data.contains("UsedInBackground"))
+        throw ContextError("Tile is missing attribute 'UsedInBackground'");
+
+    if (!data["UsedInBackground"].isBool())
+        throw ContextError("Tile has the wrong value type associated to 'UsedInBackground'");
+
+    usedInBackground = data["UsedInBackground"].toBool();
+
     // SeenOnFrames
 
     seenOnFrames = data.contains("SeenOnFrames") ? data["SeenOnFrames"].toInt(-1) : -1;
@@ -75,6 +95,8 @@ QJsonObject Tile::exportAsJson()
     jTile["LastSeenOnFrame"] = 0;
     jTile["PaletteSize"] = paletteSize;
     jTile["SeenOnFrames"] = seenOnFrames;
+    jTile["UsedInBackground"] = usedInBackground;
+    jTile["UsedInSprite"] = usedInSprite;
 
     return jTile;
 }

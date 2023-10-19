@@ -1,6 +1,7 @@
 #ifndef FRAGMENTTILES_H
 #define FRAGMENTTILES_H
 
+#include <QPushButton>
 #include <QWidget>
 
 namespace Ui {
@@ -17,7 +18,7 @@ public:
 
 private:
     Ui::FragmentTiles *ui;
-    void styleButtons(const QString &value);
+    void styleButton(QPushButton * btn, bool value);
 };
 
 #endif // FRAGMENTTILES_H

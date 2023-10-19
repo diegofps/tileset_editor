@@ -2,23 +2,33 @@
 
 AppState::AppState()
 {
-    _tilesShow = "all";
-    _palettesShow = "all";
+    _tilesetsSelectedItem = nullptr;
+
     _tilePreviewShow = "original";
+
+    _palettesShow = "all";
+    _palettesSelectedItem = nullptr;
+
+    _tilesFilter = new TilesFilter();
+
     _previewPage = "editor";
+
     _referenceScreenshot = 0;
     _referenceHighlightPosition = true;
+
     _editorTool = PENCIL;
     _editorShowLinkedTiles = true;
     _editorShowUnlinkedTiles = true;
     _editorShowGrid = true;
 
     _project = nullptr;
+    _projectHasChanges = false;
     _projectTiles = nullptr;
     _projectPalettes = nullptr;
     _projectTilesets = nullptr;
     _projectReferences = nullptr;
     _projectScreenshots = nullptr;
+
 }
 
 // Context Folder
@@ -289,18 +299,18 @@ const QString & AppState::previewPage() const
 
 // Tiles
 
-void AppState::setTilesShow(QString const & value)
+void AppState::setTilesFilter(TilesFilter * value)
 {
-    if (value != _tilesShow)
-    {
-        _tilesShow = value;
-        emit onTilesShowChanged(value);
-    }
+    if (_tilesFilter != nullptr && value != _tilesFilter)
+        delete _tilesFilter;
+
+    _tilesFilter = value;
+    emit onTilesFilterChanged(value);
 }
 
-const QString & AppState::tilesShow() const
+TilesFilter * AppState::tilesFilter() const
 {
-    return _tilesShow;
+    return _tilesFilter;
 }
 
 // Palettes

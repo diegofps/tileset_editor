@@ -32,13 +32,13 @@ void ServiceContext::create(const QString & folderpath, ContextReport * report)
 
     project->path = folderpath;
 
-    App::getState()->setProject(project);
     App::getState()->setProjectTiles(tiles);
     App::getState()->setProjectTilesets(tilesets);
     App::getState()->setProjectPalettes(palettes);
     App::getState()->setProjectReferences(references);
     App::getState()->setProjectScreenshots(screenshots);
     App::getState()->setProjectHasChanges(false);
+    App::getState()->setProject(project);
 
     save(report);
 }
@@ -94,8 +94,8 @@ void ServiceContext::load(const QString & folderpath, ContextReport * report)
         App::getState()->setProjectPalettes(palettes);
         App::getState()->setProjectReferences(references);
         App::getState()->setProjectScreenshots(screenshots);
-        App::getState()->setProject(context);
         App::getState()->setProjectHasChanges(false);
+        App::getState()->setProject(context);
 
         if (report != nullptr)
             report->success(QString("Project loaded successfully: %1").arg(folderpath));

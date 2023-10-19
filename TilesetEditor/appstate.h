@@ -18,6 +18,15 @@ enum EditorTool
     LINKER
 };
 
+class TilesFilter
+{
+public:
+    bool usedInSprite;
+    bool usedInBackground;
+    bool isUnlinked;
+    TilesFilter() : usedInSprite(false), usedInBackground(false), isUnlinked(false) { }
+};
+
 class AppState : public QObject
 {
 private:
@@ -49,7 +58,7 @@ private:
     QString _previewPage;
 
     // Tiles
-    QString _tilesShow;
+    TilesFilter * _tilesFilter;
 
     // Palettes
     QString _palettesShow;
@@ -111,8 +120,8 @@ public:
     void setPreviewPage(QString value);
 
     // Tiles
-    const QString & tilesShow() const;
-    void setTilesShow(QString const & value);
+    TilesFilter * tilesFilter() const;
+    void setTilesFilter(TilesFilter * value);
 
     // Palettes
     const QString & palettesShow() const;
@@ -158,7 +167,7 @@ signals:
     void onPreviewPageChanged(QString const & value);
 
     // Tiles
-    void onTilesShowChanged(QString const & value);
+    void onTilesFilterChanged(TilesFilter * value);
 
     // Palettes
     void onPalettesShowChanged(QString const & value);

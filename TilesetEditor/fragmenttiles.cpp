@@ -5,26 +5,10 @@
 #include "widgetpreview.h"
 #include "qverticalscrollarea.h"
 
-void FragmentTiles::styleButtons(QString const & value)
+void FragmentTiles::styleButton(QPushButton * btn, bool value)
 {
-    if (value == "all")
-    {
-        ui->btAll->setStyleSheet(App::getStyles()->get("button_checked"));
-        ui->btUnlinked->setStyleSheet(App::getStyles()->get("button_unchecked"));
-    }
-    else if (value == "unlinked")
-    {
-        ui->btAll->setStyleSheet(App::getStyles()->get("button_unchecked"));
-        ui->btUnlinked->setStyleSheet(App::getStyles()->get("button_checked"));
-    }
-    else
-    {
-        ui->btAll->setStyleSheet(App::getStyles()->get("button_unchecked"));
-        ui->btUnlinked->setStyleSheet(App::getStyles()->get("button_unchecked"));
-    }
-
-    ui->btAll->update();
-    ui->btUnlinked->update();
+    btn->setStyleSheet(App::getStyles()->get(value?"button_checked":"button_unchecked"));
+    btn->update();
 }
 
 FragmentTiles::FragmentTiles(QWidget *parent) :
@@ -33,20 +17,44 @@ FragmentTiles::FragmentTiles(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    styleButtons(App::getState()->tilesShow());
+    auto filter = App::getState()->tilesFilter();
 
-    connect(ui->btAll, &QPushButton::clicked, this, [&](){ App::getState()->setTilesShow("all"); });
-    connect(ui->btUnlinked, &QPushButton::clicked, this, [&](){ App::getState()->setTilesShow("unlinked"); });
-    connect(App::getState(), &AppState::onTilesShowChanged, this, [&](QString const & value) { styleButtons(value); });
+    styleButton(ui->btBackground, filter->usedInBackground);
+    styleButton(ui->btUnlinked, filter->isUnlinked);
+    styleButton(ui->btSprite, filter->usedInSprite);
+
+    connect(ui->btSprite, &QPushButton::clicked, this, [&]()
+    {
+        auto filter = App::getState()->tilesFilter();
+        filter->usedInSprite = !filter->usedInSprite;
+        App::getState()->setTilesFilter(filter);
+    });
+
+    connect(ui->btBackground, &QPushButton::clicked, this, [&]()
+    {
+        auto filter = App::getState()->tilesFilter();
+        filter->usedInBackground = !filter->usedInBackground;
+        App::getState()->setTilesFilter(filter);
+    });
+
+    connect(ui->btUnlinked, &QPushButton::clicked, this, [&]()
+    {
+        auto filter = App::getState()->tilesFilter();
+        filter->isUnlinked = !filter->isUnlinked;
+        App::getState()->setTilesFilter(filter);
+    });
+
+    connect(App::getState(), &AppState::onTilesFilterChanged, this, [&](TilesFilter * filter)
+    {
+        styleButton(ui->btBackground, filter->usedInBackground);
+        styleButton(ui->btSprite, filter->usedInSprite);
+        styleButton(ui->btUnlinked, filter->isUnlinked);
+    });
 
     auto wPreview = new WidgetPreview(this);
     wPreview->setMinimumHeight(1000);
 
-//    auto layout = new QVBoxLayout();
-//    layout->addWidget(wPreview);
-
     auto vScrollArea = new QVerticalScrollArea(wPreview, this);
-//    vScrollArea->setLayout(layout);
 
     auto layout2 = new QVBoxLayout();
     layout2->addWidget(vScrollArea);
