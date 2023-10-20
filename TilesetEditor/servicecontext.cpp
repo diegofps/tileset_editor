@@ -32,6 +32,14 @@ void ServiceContext::create(const QString & folderpath, ContextReport * report)
 
     project->path = folderpath;
 
+    auto ts = new Tileset();
+    ts->id = ++project->lastTilesetID;
+    ts->name = "Noname";
+    ts->gridW = 10;
+    ts->gridH = 10;
+    ts->bgColor = QColor::fromRgb(0,0,0);
+    tilesets->append(ts);
+
     App::getState()->setProjectTiles(tiles);
     App::getState()->setProjectTilesets(tilesets);
     App::getState()->setProjectPalettes(palettes);
@@ -39,6 +47,7 @@ void ServiceContext::create(const QString & folderpath, ContextReport * report)
     App::getState()->setProjectScreenshots(screenshots);
     App::getState()->setProjectHasChanges(false);
     App::getState()->setProject(project);
+    App::getOriginalTileCache()->clear();
 
     save(report);
 }
@@ -65,6 +74,7 @@ void ServiceContext::close(ContextReport * report)
     App::getState()->setProjectPalettes(nullptr);
     App::getState()->setProjectReferences(nullptr);
     App::getState()->setProjectScreenshots(nullptr);
+    App::getOriginalTileCache()->clear();
 
     if (report != nullptr)
         report->success(QString("Project %1 closed successfully").arg(path));
@@ -96,6 +106,7 @@ void ServiceContext::load(const QString & folderpath, ContextReport * report)
         App::getState()->setProjectScreenshots(screenshots);
         App::getState()->setProjectHasChanges(false);
         App::getState()->setProject(context);
+        App::getOriginalTileCache()->clear();
 
         if (report != nullptr)
             report->success(QString("Project loaded successfully: %1").arg(folderpath));
@@ -230,9 +241,10 @@ void ServiceContext::importDump(QString const & folderpath, ContextReport * repo
         }
 
         int const newID = ++App::getState()->project()->lastPaletteID;
-        App::getState()->projectPalettes()->append(dPalette);
         paletteStateId[dPalette->id] = newID;
         dPalette->id = newID;
+
+        App::getState()->appendProjectPalette(dPalette);
         ++palettesImported;
     }
 
@@ -246,13 +258,16 @@ void ServiceContext::importDump(QString const & folderpath, ContextReport * repo
         }
 
         int const newID = ++App::getState()->project()->lastTileID;
-        App::getState()->projectTiles()->append(dTile);
         tileStateId[dTile->id] = newID;
         dTile->id = newID;
-        ++tilesImported;
 
-        for (int i=0;i!=dTile->palettesUsed.size();++i)
-            dTile->palettesUsed[i] = paletteStateId[dTile->palettesUsed[i]];
+        QHash<int, int> newPalettesUsed;
+        for (auto pair : dTile->palettesUsed.asKeyValueRange())
+            newPalettesUsed[paletteStateId[pair.first]] = pair.second;
+        dTile->palettesUsed = std::move(newPalettesUsed);
+
+        App::getState()->appendProjectTile(dTile);
+        ++tilesImported;
     }
 
     for (auto dReference : dumpedReferences)
@@ -271,9 +286,9 @@ void ServiceContext::importDump(QString const & folderpath, ContextReport * repo
         dReference->id = ++App::getState()->project()->lastReferenceID;
         dReference->screenshotId = screenshotsStateId[dReference->screenshotId];
         dReference->tileId = tileStateId[dReference->tileId];
-        ++referencesImported;
 
-        App::getState()->projectReferences()->append(dReference);
+        App::getState()->appendProjectReference(dReference);
+        ++referencesImported;
     }
 
     for (auto dScreenshot : dumpedScreenshots)
@@ -288,9 +303,9 @@ void ServiceContext::importDump(QString const & folderpath, ContextReport * repo
             dScreenshot->id = screenshotsStateId[dScreenshot->id];
             dScreenshot->filename = QString::number(dScreenshot->id).rightJustified(6, '0') + ".png";
             dScreenshot->data = file.readAll();
-            ++screenshotsImported;
 
-            App::getState()->projectScreenshots()->append(dScreenshot);
+            App::getState()->appendProjectScreenshot(dScreenshot);
+            ++screenshotsImported;
         }
         else
         {

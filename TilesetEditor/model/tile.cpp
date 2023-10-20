@@ -74,7 +74,23 @@ Tile::Tile(QJsonObject & data)
 
     seenOnFrames = data.contains("SeenOnFrames") ? data["SeenOnFrames"].toInt(-1) : -1;
 
+    // Unique key
+
     _uniqueKey.clear();
+
+    // Preferred Palette
+
+    int bestID = 0;
+    int bestFreq = 0;
+    for (auto pair : palettesUsed.asKeyValueRange())
+    {
+        if (pair.second > bestFreq)
+        {
+            bestFreq = pair.second;
+            bestID = pair.first;
+        }
+    }
+    preferredPalette = bestID;
 }
 
 QJsonObject Tile::exportAsJson()

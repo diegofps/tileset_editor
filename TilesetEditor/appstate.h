@@ -34,24 +34,29 @@ private:
     Q_OBJECT
 
     // Context Folder
-    Project * _project;
-    bool _projectHasChanges;
-//    QString _projectFolder; // TODO: Move to Project?
-    QString _projectLastDumpFolder;
-    QList<Tile*> * _projectTiles;
-    QList<Palette*> * _projectPalettes;
-    QList<Tileset*> * _projectTilesets;
-    QList<Reference*> * _projectReferences;
+    Project            * _project;
+    bool                 _projectHasChanges;
+    QString              _projectLastDumpFolder;
+    QList<Tile*>       * _projectTiles;
+    QList<Palette*>    * _projectPalettes;
+    QList<Tileset*>    * _projectTilesets;
+    QList<Reference*>  * _projectReferences;
     QList<Screenshot*> * _projectScreenshots;
+
+    QHash<int, Tile*>       _index_Tile_ID;
+    QHash<int, Tileset*>    _index_Tileset_ID;
+    QHash<int, Screenshot*> _index_Screenshot_ID;
+    QHash<int, Palette*>    _index_Palette_ID;
+    QHash<int, Reference*>  _index_Reference_ID;
 
     // Editor Toolbox
     EditorTool _editorTool;
-    bool _editorShowLinkedTiles;
-    bool _editorShowUnlinkedTiles;
-    bool _editorShowGrid;
+    bool       _editorShowLinkedTiles;
+    bool       _editorShowUnlinkedTiles;
+    bool       _editorShowGrid;
 
     // References Toolbox
-    int _referenceScreenshot;
+    int  _referenceScreenshot;
     bool _referenceHighlightPosition;
 
     // Preview
@@ -61,7 +66,7 @@ private:
     TilesFilter * _tilesFilter;
 
     // Palettes
-    QString _palettesShow;
+    QString   _palettesShow;
     Palette * _palettesSelectedItem;
 
     // Tile Preview
@@ -93,8 +98,21 @@ public:
     void setProjectReferences(QList<Reference *> * value);
     void setProjectScreenshots(QList<Screenshot *> * value);
 
-    void insertProjectTileset(int const position, Tileset * value);
-    void removeProjectTileset(int const position);
+    Tile * getProjectTileById(int id);
+    Palette * getProjectPaletteById(int id);
+    Tileset * getProjectTilesetById(int id);
+    Reference* getProjectReferenceById(int id);
+    Screenshot * getProjectScreenshotById(int id);
+    QList<Reference*> getProjectReferencesByTileId(int tileId);
+
+    void appendProjectTile(Tile * value);
+    void appendProjectPalette(Palette * value);
+    void appendProjectTileset(Tileset * value);
+    void appendProjectReference(Reference * value);
+    void appendProjectScreenshot(Screenshot * value);
+
+    void addProjectTileset(int const position, Tileset * value);
+    void dropProjectTileset(int const position);
     void moveUpProjectTileset(const int position);
     void moveDownProjectTileset(const int position);
 

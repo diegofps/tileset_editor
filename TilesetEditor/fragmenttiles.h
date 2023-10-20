@@ -1,6 +1,9 @@
 #ifndef FRAGMENTTILES_H
 #define FRAGMENTTILES_H
 
+#include "model/tile.h"
+#include "appstate.h"
+#include "widgetgridtiles.h"
 #include <QPushButton>
 #include <QWidget>
 
@@ -17,8 +20,13 @@ public:
     ~FragmentTiles();
 
 private:
-    Ui::FragmentTiles *ui;
+    void loadTiles(QList<Tile *> const * tiles, TilesFilter *filter);
     void styleButton(QPushButton * btn, bool value);
+
+private:
+    Ui::FragmentTiles *ui;
+    QList<Tile*> _tiles;
+    WidgetGridTiles * _gridTiles;
 };
 
 #endif // FRAGMENTTILES_H

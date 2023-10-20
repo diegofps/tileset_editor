@@ -75,10 +75,21 @@ void AppState::setProjectLastDumpFolder(QString value)
     }
 }
 
+
+template <typename ITEM, typename KEY_FUNC>
+void recreateIndex(QList<ITEM*> * value, QHash<int, ITEM*> & index, KEY_FUNC keyFunc)
+{
+    index.clear();
+    if (value != nullptr)
+        for (ITEM * t : *value)
+            index[keyFunc(t)] = t;
+}
+
 void AppState::setProjectTiles(QList<Tile *> *value)
 {
     deleteItemsAndQListIfNotNullptr(_projectTiles, value);
     _projectTiles = value;
+    recreateIndex(value, _index_Tile_ID, [](Tile* item){ return item->id; });
     emit onProjectTilesChanged(value);
 }
 
@@ -86,6 +97,7 @@ void AppState::setProjectPalettes(QList<Palette *> *value)
 {
     deleteItemsAndQListIfNotNullptr(_projectPalettes, value);
     _projectPalettes = value;
+    recreateIndex(value, _index_Palette_ID, [](Palette* item){ return item->id; });
     emit onProjectPalettesChanged(value);
 }
 
@@ -93,6 +105,7 @@ void AppState::setProjectReferences(QList<Reference *> *value)
 {
     deleteItemsAndQListIfNotNullptr(_projectReferences, value);
     _projectReferences = value;
+    recreateIndex(value, _index_Reference_ID, [](Reference * item){ return item->id; });
     emit onProjectReferencesChanged(value);
 }
 
@@ -100,6 +113,7 @@ void AppState::setProjectTilesets(QList<Tileset *> *value)
 {
     deleteItemsAndQListIfNotNullptr(_projectTilesets, value);
     _projectTilesets = value;
+    recreateIndex(value, _index_Tileset_ID, [](Tileset* item){ return item->id; });
     emit onProjectTilesetsChanged(value);
 }
 
@@ -107,25 +121,99 @@ void AppState::setProjectScreenshots(QList<Screenshot*> *value)
 {
     deleteItemsAndQListIfNotNullptr(_projectScreenshots, value);
     _projectScreenshots = value;
+    recreateIndex(value, _index_Screenshot_ID, [](Screenshot * item){ return item->id; });
     emit onProjectScreenshotsChanged(value);
 }
 
-void AppState::insertProjectTileset(int const position, Tileset * value)
+Tile * AppState::getProjectTileById(int id)
+{
+    auto it = _index_Tile_ID.find(id);
+    return it == _index_Tile_ID.end() ? nullptr : it.value();
+}
+
+Palette * AppState::getProjectPaletteById(int id)
+{
+    auto it = _index_Palette_ID.find(id);
+    return it == _index_Palette_ID.end() ? nullptr : it.value();
+}
+
+Tileset * AppState::getProjectTilesetById(int id)
+{
+    auto it = _index_Tileset_ID.find(id);
+    return it == _index_Tileset_ID.end() ? nullptr : it.value();
+}
+
+Reference * AppState::getProjectReferenceById(int id)
+{
+    auto it = _index_Reference_ID.find(id);
+    return it == _index_Reference_ID.end() ? nullptr : it.value();
+}
+
+Screenshot *AppState::getProjectScreenshotById(int id)
+{
+    auto it = _index_Screenshot_ID.find(id);
+    return it == _index_Screenshot_ID.end() ? nullptr : it.value();
+}
+
+QList<Reference *> AppState::getProjectReferencesByTileId(int tileId)
+{
+    QList<Reference*> result;
+    if (_projectReferences != nullptr)
+        for (auto r : *_projectReferences)
+            if (r->tileId == tileId)
+                result.append(r);
+    return result;
+
+}
+
+void AppState::appendProjectTile(Tile *value)
+{
+    _projectTiles->append(value);
+    _index_Tile_ID[value->id] = value;
+}
+
+void AppState::appendProjectPalette(Palette *value)
+{
+    _projectPalettes->append(value);
+    _index_Palette_ID[value->id] = value;
+}
+
+void AppState::appendProjectTileset(Tileset *value)
+{
+    _projectTilesets->append(value);
+    _index_Tileset_ID[value->id] = value;
+}
+
+void AppState::appendProjectReference(Reference *value)
+{
+    _projectReferences->append(value);
+    _index_Reference_ID[value->id] = value;
+}
+
+void AppState::appendProjectScreenshot(Screenshot *value)
+{
+    _projectScreenshots->append(value);
+    _index_Screenshot_ID[value->id] = value;
+}
+
+void AppState::addProjectTileset(int const position, Tileset * value)
 {
     if (value == nullptr)
         return;
 
     _projectTilesets->insert(position, value);
+    _index_Tileset_ID[value->id] = value;
     emit onProjectTilesetsInserted(_projectTilesets, position);
 }
 
-void AppState::removeProjectTileset(int const position)
+void AppState::dropProjectTileset(int const position)
 {
     if (position < 0 || position >= _projectTilesets->size())
         return;
 
     auto ts = _projectTilesets->at(position);
     _projectTilesets->remove(position);
+    _index_Tileset_ID.remove(ts->id);
     emit onProjectTilesetsRemoved(_projectTilesets, position);
     delete ts;
 }

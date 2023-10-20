@@ -3,6 +3,7 @@
 
 #include "appstate.h"
 #include "appstyles.h"
+#include "tilecache.h"
 
 class App
 {
@@ -10,24 +11,15 @@ private:
 
     static AppState * appState;
     static AppStyles * appStyles;
+    static TileCache * originalTileCache;
 
 public:
 
     App();
+    static AppState * getState();
+    static AppStyles * getStyles();
+    static TileCache * getOriginalTileCache();
 
-    static AppState * getState()
-    {
-        if (appState == nullptr)
-            appState = new AppState();
-        return appState;
-    }
-
-    static AppStyles * getStyles()
-    {
-        if (appStyles == nullptr)
-            appStyles = new AppStyles();
-        return appStyles;
-    }
 };
 
 #endif // APP_H

@@ -33,10 +33,11 @@ SOURCES += \
     model/tileset.cpp \
     qverticalscrollarea.cpp \
     servicecontext.cpp \
+    tilecache.cpp \
     tilesgridlist.cpp \
+    widgetgridtiles.cpp \
     widgetitempalette.cpp \
-    widgetpalette.cpp \
-    widgetpreview.cpp
+    widgetpalette.cpp
 
 HEADERS += \
     app.h \
@@ -63,10 +64,11 @@ HEADERS += \
     model/tileset.h \
     qverticalscrollarea.h \
     servicecontext.h \
+    tilecache.h \
     tilesgridlist.h \
+    widgetgridtiles.h \
     widgetitempalette.h \
-    widgetpalette.h \
-    widgetpreview.h
+    widgetpalette.h
 
 FORMS += \
     fragmentcontextclosed.ui \
