@@ -178,7 +178,6 @@ QList<Reference *> AppState::getProjectReferencesByTileId(int tileId)
             if (r->tileId == tileId)
                 result.append(r);
     return result;
-
 }
 
 void AppState::appendProjectTile(Tile *value)
@@ -224,6 +223,7 @@ void AppState::insertProjectCluster(const int position, Cluster *value)
 
     _projectClusters->insert(position, value);
     _index_Cluster_ID[value->id] = value;
+
     emit onProjectClustersInserted(_projectClusters, position);
 }
 
@@ -235,6 +235,11 @@ void AppState::removeProjectCluster(const int position)
     auto value = _projectClusters->at(position);
     _projectClusters->remove(position);
     _index_Cluster_ID.remove(value->id);
+
+    for (auto t : *_projectTiles)
+        if (t->clusterId == value->id)
+            t->clusterId = 0;
+
     emit onProjectClustersRemoved(_projectClusters, position);
     delete value;
 }
@@ -268,6 +273,7 @@ void AppState::insertProjectTileset(int const position, Tileset * value)
 
     _projectTilesets->insert(position, value);
     _index_Tileset_ID[value->id] = value;
+
     emit onProjectTilesetsInserted(_projectTilesets, position);
 }
 
@@ -279,6 +285,7 @@ void AppState::removeProjectTileset(int const position)
     auto ts = _projectTilesets->at(position);
     _projectTilesets->remove(position);
     _index_Tileset_ID.remove(ts->id);
+
     emit onProjectTilesetsRemoved(_projectTilesets, position);
     delete ts;
 }

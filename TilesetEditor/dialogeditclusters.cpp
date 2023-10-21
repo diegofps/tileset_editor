@@ -37,7 +37,7 @@ DialogEditClusters::DialogEditClusters(QWidget *parent) :
 
     connect(App::getState(), &AppState::onProjectClustersMoved, this, [&](QList<Cluster*> const * value, int const oldPosition, int const newPosition)
     {
-        (void)oldPosition;
+        (void) oldPosition;
         loadClusters(value);
         ui->listClusters->setCurrentRow(newPosition);
     });

@@ -56,7 +56,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->action_File_Quit, &QAction::triggered, this, &MainWindow::onAction_File_QuitProject);
 
     // Edit menu
-    connect(ui->action_View_References, &QAction::triggered, this, &MainWindow::onAction_View_References);
+    connect(ui->action_View_References, &QAction::triggered, this, &MainWindow::onAction_Edit_References);
     connect(ui->action_View_Clusters, &QAction::triggered, this, &MainWindow::onAction_Edit_Clusters);
 
     // Execute menu
@@ -163,7 +163,7 @@ void MainWindow::onAction_File_QuitProject()
     close();
 }
 
-void MainWindow::onAction_View_References()
+void MainWindow::onAction_Edit_References()
 {
     if (App::getState()->previewPage() == "references")
         App::getState()->setPreviewPage("editor");
@@ -176,6 +176,11 @@ void MainWindow::onAction_Edit_Clusters()
     DialogEditClusters dialog(this);
     if (dialog.exec())
         App::getState()->setProjectClusters(App::getState()->projectClusters());
+}
+
+void MainWindow::onAction_Edit_MoveToCluster()
+{
+
 }
 
 void MainWindow::prepareUIForProject(Project * value)
@@ -206,6 +211,7 @@ void MainWindow::prepareUIForProject(Project * value)
     ui->action_View_References->setEnabled(hasProject);
     ui->action_View_NextTileUsage->setEnabled(hasProject);
     ui->action_View_Clusters->setEnabled(hasProject);
+    ui->action_View_MoveToCluster->setEnabled(hasProject);
 }
 
 FragmentContextOpen * MainWindow::createFragmentContextOpen()

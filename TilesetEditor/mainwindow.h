@@ -28,8 +28,9 @@ private slots:
     void onAction_File_ReloadDump();
     void onAction_File_QuitProject();
 
-    void onAction_View_References();
+    void onAction_Edit_References();
     void onAction_Edit_Clusters();
+    void onAction_Edit_MoveToCluster();
 
 private:
     void prepareUIForProject(Project * value);
@@ -37,7 +38,7 @@ private:
     FragmentContextClosed * createFragmentContextClosed();
 
 private:
-    Ui::MainWindow *ui;
+    Ui::MainWindow * ui;
     FragmentContextOpen * _fragmentContextOpen;
     FragmentContextClosed * _fragmentContextClosed;
 
