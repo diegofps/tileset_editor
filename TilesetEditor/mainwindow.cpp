@@ -41,7 +41,38 @@ MainWindow::MainWindow(QWidget *parent)
         ui->action_File_ReloadDump->setEnabled(!value.isEmpty());
     });
 
+    connect(ui->cbScenes, &QComboBox::currentIndexChanged, this, [&](int index) {
+        int newSceneID = index < 2 ? index-1 : App::getState()->projectScenes()->at(index-2)->id;
+        if (newSceneID != App::getState()->projectSelectedSceneID())
+            App::getState()->setProjectSelectedSceneID(newSceneID);
+    });
 
+    connect(App::getState(), &AppState::onProjectScenesChanged, this, [&](QList<Scene*> const * value)
+    {
+        int oldSceneID = App::getState()->projectSelectedSceneID();
+
+        loadScenes(value);
+
+        if (oldSceneID < 1)
+        {
+            ui->cbScenes->setCurrentIndex(oldSceneID+1);
+            return;
+        }
+
+        for (qsizetype i=0;i!=value->size();++i)
+        {
+            if ((*value)[i]->id == oldSceneID)
+            {
+                ui->cbScenes->setCurrentIndex(i+2);
+                return;
+            }
+        }
+
+        ui->cbScenes->setCurrentIndex(0);
+    });
+
+    loadScenes(App::getState()->projectScenes());
+    ui->cbScenes->setCurrentIndex(0);
 
     // File menu
 
@@ -56,12 +87,35 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->action_File_Quit, &QAction::triggered, this, &MainWindow::onAction_File_QuitProject);
 
     // Edit menu
-    connect(ui->action_View_References, &QAction::triggered, this, &MainWindow::onAction_Edit_References);
-    connect(ui->action_View_Clusters, &QAction::triggered, this, &MainWindow::onAction_Edit_Clusters);
+    connect(ui->action_Edit_Scenes, &QAction::triggered, this, &MainWindow::onAction_Edit_Scenes);
+    connect(ui->action_Edit_MoveTileToScene, &QAction::triggered, this, &MainWindow::onAction_Edit_MoveTileToScene);
+    connect(ui->action_Edit_MoveTilesetToScene, &QAction::triggered, this, &MainWindow::onAction_Edit_MoveTilesetToScene);
+
+    // View menu
+    connect(ui->action_View_Reference1, &QAction::triggered, this, [&](){onAction_View_Reference(0); });
+    connect(ui->action_View_Reference2, &QAction::triggered, this, [&](){onAction_View_Reference(1); });
+    connect(ui->action_View_Reference3, &QAction::triggered, this, [&](){onAction_View_Reference(2); });
 
     // Execute menu
 
     // Help menu
+}
+
+void MainWindow::loadScenes(QList<Scene*> const * value)
+{
+    ui->cbScenes->clear();
+    ui->cbScenes->addItem("All Scenes");
+    ui->cbScenes->addItem("NULL Scene");
+
+    if (value == nullptr)
+        return;
+
+    for (auto s : *value)
+    {
+        QString number = QString::number(s->id).rightJustified(3, '0');
+        QString newText = QString("%1: %2").arg(number).arg(s->name);
+        ui->cbScenes->addItem(newText);
+    }
 }
 
 MainWindow::~MainWindow()
@@ -84,7 +138,7 @@ void MainWindow::onAction_File_NewProject()
         ContextReport report;
         fileNames = dialog.selectedFiles();
         ServiceContext::create(fileNames.first(), &report);
-        ui->statusBar->showMessage(report.message());
+        showMessage(report.message());
     }
     else
     {
@@ -106,7 +160,7 @@ void MainWindow::onAction_File_OpenProject()
         ContextReport report;
         fileNames = dialog.selectedFiles();
         ServiceContext::load(fileNames.first(), &report);
-        ui->statusBar->showMessage(report.message());
+        showMessage(report.message());
     }
     else
     {
@@ -118,14 +172,14 @@ void MainWindow::onAction_File_SaveProject()
 {
     ContextReport report;
     ServiceContext::save(&report);
-    ui->statusBar->showMessage(report.message());
+    showMessage(report.message());
 }
 
 void MainWindow::onAction_File_CloseProject()
 {
     ContextReport report;
     ServiceContext::close(&report);
-    ui->statusBar->showMessage(report.message());
+    showMessage(report.message());
 }
 
 void MainWindow::onAction_File_LoadDump()
@@ -143,7 +197,7 @@ void MainWindow::onAction_File_LoadDump()
         fileNames = dialog.selectedFiles();
         ServiceContext::importDump(fileNames.first(), &report);
         App::getState()->setProjectLastDumpFolder(fileNames.first());
-        ui->statusBar->showMessage(report.message());
+        showMessage(report.message());
     }
     else
     {
@@ -155,7 +209,7 @@ void MainWindow::onAction_File_ReloadDump()
 {
     ContextReport report;
     ServiceContext::importDump(App::getState()->projectLastDumpFolder(), &report);
-    ui->statusBar->showMessage(report.message());
+    showMessage(report.message());
 }
 
 void MainWindow::onAction_File_QuitProject()
@@ -163,22 +217,35 @@ void MainWindow::onAction_File_QuitProject()
     close();
 }
 
-void MainWindow::onAction_Edit_References()
+void MainWindow::onAction_View_Reference(int position)
 {
     if (App::getState()->previewPage() == "references")
-        App::getState()->setPreviewPage("editor");
+    {
+        if (App::getState()->referenceScreenshot() == position)
+            App::getState()->setPreviewPage("editor");
+        else
+            App::getState()->setReferenceScreenshot(position);
+    }
     else
+    {
+        App::getState()->setReferenceScreenshot(position);
         App::getState()->setPreviewPage("references");
+    }
 }
 
-void MainWindow::onAction_Edit_Clusters()
+void MainWindow::onAction_Edit_Scenes()
 {
     DialogEditScenes dialog(this);
-    if (dialog.exec())
-        App::getState()->setProjectScenes(App::getState()->projectClusters());
+    dialog.exec();
+    App::getState()->setProjectScenes(App::getState()->projectScenes());
 }
 
-void MainWindow::onAction_Edit_MoveToCluster()
+void MainWindow::onAction_Edit_MoveTileToScene()
+{
+
+}
+
+void MainWindow::onAction_Edit_MoveTilesetToScene()
 {
 
 }
@@ -186,16 +253,20 @@ void MainWindow::onAction_Edit_MoveToCluster()
 void MainWindow::prepareUIForProject(Project * value)
 {
     bool const hasProject = value != nullptr;
+    auto layout = ui->contentFrame->layout();
 
-    if (hasProject)
+    setWindowTitle(hasProject?value->path:"TilesetEditor");
+
+    if (layout == nullptr)
     {
-        setWindowTitle(value->path);
-        setCentralWidget(createFragmentContextOpen());
+        layout = new QVBoxLayout();
+        layout->addWidget(hasProject?createFragmentContextOpen():createFragmentContextClosed());
+        layout->setContentsMargins(0,0,0,0);
+        ui->contentFrame->setLayout(layout);
     }
     else
     {
-        setWindowTitle("TilesetEditor");
-        setCentralWidget(createFragmentContextClosed());
+        layout->replaceWidget(layout->itemAt(0)->widget(), hasProject?createFragmentContextOpen():createFragmentContextClosed());
     }
 
     ui->action_File_SaveProject->setEnabled(hasProject);
@@ -208,13 +279,19 @@ void MainWindow::prepareUIForProject(Project * value)
     ui->action_Execute_EncodeHDTiles->setEnabled(hasProject);
     ui->action_Execute_Pipelines->setEnabled(hasProject);
 
-    ui->action_View_References->setEnabled(hasProject);
     ui->action_View_NextTileUsage->setEnabled(hasProject);
-    ui->action_View_Clusters->setEnabled(hasProject);
-    ui->action_View_MoveToCluster->setEnabled(hasProject);
+    ui->action_View_Reference1->setEnabled(hasProject);
+    ui->action_View_Reference2->setEnabled(hasProject);
+    ui->action_View_Reference3->setEnabled(hasProject);
+
+    ui->action_Edit_Scenes->setEnabled(hasProject);
+    ui->action_Edit_MoveTileToScene->setEnabled(hasProject);
+    ui->action_Edit_MoveTilesetToScene->setEnabled(hasProject);
+
+    ui->cbScenes->setVisible(hasProject);
 }
 
-FragmentContextOpen * MainWindow::createFragmentContextOpen()
+QWidget * MainWindow::createFragmentContextOpen()
 {
     QSizePolicy policy;
     policy.setHorizontalPolicy(QSizePolicy::Expanding);
@@ -228,7 +305,7 @@ FragmentContextOpen * MainWindow::createFragmentContextOpen()
     return _fragmentContextOpen;
 }
 
-FragmentContextClosed * MainWindow::createFragmentContextClosed()
+QWidget * MainWindow::createFragmentContextClosed()
 {
     QSizePolicy policy;
     policy.setHorizontalPolicy(QSizePolicy::Expanding);
@@ -240,5 +317,12 @@ FragmentContextClosed * MainWindow::createFragmentContextClosed()
     _fragmentContextClosed->setSizePolicy(policy);
 
     return _fragmentContextClosed;
+}
+
+void MainWindow::showMessage(QString msg)
+{
+    ui->lbStatusBar->setText(msg);
+    if (msg != "")
+        QTimer::singleShot(2000, [&](){ showMessage("") ;});
 }
 

@@ -29,6 +29,7 @@ AppState::AppState()
     _projectReferences = nullptr;
     _projectScreenshots = nullptr;
     _projectScenes = nullptr;
+    _projectSelectedSceneID = -1;
 
 }
 
@@ -131,7 +132,13 @@ void AppState::setProjectScenes(QList<Scene *> *value)
     deleteItemsAndQListIfNotNullptr(_projectScenes, value);
     _projectScenes = value;
     recreateIndex(value, _index_Scene_ID, [](Scene * item){ return item->id; });
-    emit onProjectClustersChanged(value);
+    emit onProjectScenesChanged(value);
+}
+
+void AppState::setProjectSelectedSceneID(int value)
+{
+    _projectSelectedSceneID = value;
+    emit onProjectSelectedSceneIDChanged(value);
 }
 
 Tile * AppState::getProjectTileById(int id)
@@ -224,7 +231,7 @@ void AppState::insertProjectScene(const int position, Scene *value)
     _projectScenes->insert(position, value);
     _index_Scene_ID[value->id] = value;
 
-    emit onProjectClustersInserted(_projectScenes, position);
+    emit onProjectScenesInserted(_projectScenes, position);
 }
 
 void AppState::removeProjectScene(const int position)
@@ -240,7 +247,7 @@ void AppState::removeProjectScene(const int position)
         if (t->sceneId == value->id)
             t->sceneId = 0;
 
-    emit onProjectClustersRemoved(_projectScenes, position);
+    emit onProjectScenesRemoved(_projectScenes, position);
     delete value;
 }
 
@@ -252,7 +259,7 @@ void AppState::moveUpProjectScene(const int position)
     auto ts = _projectScenes->takeAt(position);
     _projectScenes->insert(position+1, ts);
 
-    emit onProjectClustersMoved(_projectScenes, position, position+1);
+    emit onProjectScenesMoved(_projectScenes, position, position+1);
 }
 
 void AppState::moveDownProjectScene(const int position)
@@ -263,7 +270,7 @@ void AppState::moveDownProjectScene(const int position)
     auto ts = _projectScenes->takeAt(position);
     _projectScenes->insert(position-1, ts);
 
-    emit onProjectClustersMoved(_projectScenes, position, position-1);
+    emit onProjectScenesMoved(_projectScenes, position, position-1);
 }
 
 void AppState::insertProjectTileset(int const position, Tileset * value)
@@ -347,9 +354,14 @@ QList<Screenshot *> * AppState::projectScreenshots() const
     return _projectScreenshots;
 }
 
-QList<Scene *> *AppState::projectClusters() const
+QList<Scene *> *AppState::projectScenes() const
 {
     return _projectScenes;
+}
+
+int AppState::projectSelectedSceneID() const
+{
+    return _projectSelectedSceneID;
 }
 
 QList<Tileset *> * AppState::projectTilesets() const

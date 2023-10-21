@@ -15,27 +15,27 @@ DialogEditScenes::DialogEditScenes(QWidget *parent) :
     ui->btMoveUp->setStyleSheet(App::getStyles()->get("button_click"));
     ui->btMoveDown->setStyleSheet(App::getStyles()->get("button_click"));
 
-    connect(App::getState(), &AppState::onProjectClustersChanged, this, [&](QList<Scene*> const * value)
+    connect(App::getState(), &AppState::onProjectScenesChanged, this, [&](QList<Scene*> const * value)
     {
         loadClusters(value);
         if (value != nullptr && ui->listScenes->currentRow() < 0 && !value->isEmpty())
             ui->listScenes->setCurrentRow(0);
     });
 
-    connect(App::getState(), &AppState::onProjectClustersInserted, this, [&](QList<Scene*> const * value, int const position)
+    connect(App::getState(), &AppState::onProjectScenesInserted, this, [&](QList<Scene*> const * value, int const position)
     {
         loadClusters(value);
         ui->listScenes->setCurrentRow(position);
     });
 
-    connect(App::getState(), &AppState::onProjectClustersRemoved, this, [&](QList<Scene*> const * value, int const position)
+    connect(App::getState(), &AppState::onProjectScenesRemoved, this, [&](QList<Scene*> const * value, int const position)
     {
         loadClusters(value);
         if (value->size() != 0)
             ui->listScenes->setCurrentRow(position >= value->size() ? value->size()-1 : position);
     });
 
-    connect(App::getState(), &AppState::onProjectClustersMoved, this, [&](QList<Scene*> const * value, int const oldPosition, int const newPosition)
+    connect(App::getState(), &AppState::onProjectScenesMoved, this, [&](QList<Scene*> const * value, int const oldPosition, int const newPosition)
     {
         (void) oldPosition;
         loadClusters(value);
@@ -49,7 +49,7 @@ DialogEditScenes::DialogEditScenes(QWidget *parent) :
 
     connect(ui->listScenes, &QListWidget::currentRowChanged, this, [&](int position)
     {
-        auto scenes = App::getState()->projectClusters();
+        auto scenes = App::getState()->projectScenes();
 
         if (scenes != nullptr && position >= 0 && position < scenes->size())
         {
@@ -80,7 +80,7 @@ DialogEditScenes::DialogEditScenes(QWidget *parent) :
         qDebug() << "returnPressed";
     });
 
-    auto scenes = App::getState()->projectClusters();
+    auto scenes = App::getState()->projectScenes();
     loadClusters(scenes);
     if (scenes->size() == 0)
     {

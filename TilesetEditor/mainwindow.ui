@@ -17,7 +17,88 @@
    <string notr="true">background-color: rgb(65, 81, 92);</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QVBoxLayout" name="verticalLayout"/>
+   <layout class="QVBoxLayout" name="verticalLayout">
+    <property name="spacing">
+     <number>0</number>
+    </property>
+    <property name="leftMargin">
+     <number>0</number>
+    </property>
+    <property name="topMargin">
+     <number>0</number>
+    </property>
+    <property name="rightMargin">
+     <number>0</number>
+    </property>
+    <property name="bottomMargin">
+     <number>0</number>
+    </property>
+    <item>
+     <widget class="QFrame" name="contentFrame">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+        <horstretch>0</horstretch>
+        <verstretch>1</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="frameShape">
+       <enum>QFrame::NoFrame</enum>
+      </property>
+      <property name="frameShadow">
+       <enum>QFrame::Plain</enum>
+      </property>
+      <property name="lineWidth">
+       <number>0</number>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QFrame" name="frame">
+      <property name="styleSheet">
+       <string notr="true">background-color: #34424a;</string>
+      </property>
+      <property name="frameShape">
+       <enum>QFrame::NoFrame</enum>
+      </property>
+      <property name="frameShadow">
+       <enum>QFrame::Plain</enum>
+      </property>
+      <property name="lineWidth">
+       <number>0</number>
+      </property>
+      <layout class="QHBoxLayout" name="horizontalLayout">
+       <property name="leftMargin">
+        <number>9</number>
+       </property>
+       <property name="topMargin">
+        <number>3</number>
+       </property>
+       <property name="rightMargin">
+        <number>9</number>
+       </property>
+       <property name="bottomMargin">
+        <number>3</number>
+       </property>
+       <item>
+        <widget class="QLabel" name="lbStatusBar">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+           <horstretch>1</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QComboBox" name="cbScenes"/>
+       </item>
+      </layout>
+     </widget>
+    </item>
+   </layout>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
@@ -93,21 +174,24 @@ QMenu::item:selected {
     <property name="title">
      <string>Edit</string>
     </property>
-    <addaction name="action_View_References"/>
+    <addaction name="action_Edit_Scenes"/>
+    <addaction name="action_Edit_MoveTileToScene"/>
+    <addaction name="action_Edit_MoveTilesetToScene"/>
+   </widget>
+   <widget class="QMenu" name="menuView_2">
+    <property name="title">
+     <string>View</string>
+    </property>
     <addaction name="action_View_NextTileUsage"/>
-    <addaction name="action_View_Clusters"/>
-    <addaction name="action_View_MoveToCluster"/>
+    <addaction name="action_View_Reference1"/>
+    <addaction name="action_View_Reference2"/>
+    <addaction name="action_View_Reference3"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuView"/>
+   <addaction name="menuView_2"/>
    <addaction name="menuExecute"/>
    <addaction name="menuHelp"/>
-  </widget>
-  <widget class="QStatusBar" name="statusBar">
-   <property name="styleSheet">
-    <string notr="true">background-color: rgb(52, 66, 74);
-color: rgb(255, 255, 255);</string>
-   </property>
   </widget>
   <action name="action_File_OpenProject">
    <property name="text">
@@ -173,14 +257,6 @@ color: rgb(255, 255, 255);</string>
     <string>F8</string>
    </property>
   </action>
-  <action name="action_View_References">
-   <property name="text">
-    <string>Toggle &amp;References</string>
-   </property>
-   <property name="shortcut">
-    <string>R</string>
-   </property>
-  </action>
   <action name="action_File_CloseProject">
    <property name="text">
     <string>&amp;Close Project</string>
@@ -215,26 +291,58 @@ color: rgb(255, 255, 255);</string>
   </action>
   <action name="action_View_NextTileUsage">
    <property name="text">
-    <string>Next Tile Usage</string>
+    <string>&amp;Next Tile Usage</string>
    </property>
    <property name="shortcut">
     <string>N</string>
    </property>
   </action>
-  <action name="action_View_Clusters">
+  <action name="action_Edit_Scenes">
    <property name="text">
-    <string>Clusters</string>
+    <string>&amp;Scenes</string>
    </property>
    <property name="shortcut">
     <string>C</string>
    </property>
   </action>
-  <action name="action_View_MoveToCluster">
+  <action name="action_Edit_MoveTileToScene">
    <property name="text">
-    <string>Move Tile to Cluster</string>
+    <string>Move &amp;Tile to Scene</string>
    </property>
    <property name="shortcut">
-    <string>M</string>
+    <string>Alt+T</string>
+   </property>
+  </action>
+  <action name="action_Edit_MoveTilesetToScene">
+   <property name="text">
+    <string>Move T&amp;ileset to Scene</string>
+   </property>
+   <property name="shortcut">
+    <string>Alt+S</string>
+   </property>
+  </action>
+  <action name="action_View_Reference1">
+   <property name="text">
+    <string>Reference &amp;1</string>
+   </property>
+   <property name="shortcut">
+    <string>1</string>
+   </property>
+  </action>
+  <action name="action_View_Reference2">
+   <property name="text">
+    <string>Reference &amp;2</string>
+   </property>
+   <property name="shortcut">
+    <string>2</string>
+   </property>
+  </action>
+  <action name="action_View_Reference3">
+   <property name="text">
+    <string>Reference &amp;3</string>
+   </property>
+   <property name="shortcut">
+    <string>3</string>
    </property>
   </action>
  </widget>

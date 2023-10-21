@@ -4,8 +4,10 @@
 #include "fragmentcontextclosed.h"
 #include "fragmentcontextopen.h"
 #include "model/project.h"
+#include "model/scene.h"
 
 #include <QMainWindow>
+#include <QTimer>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -28,14 +30,18 @@ private slots:
     void onAction_File_ReloadDump();
     void onAction_File_QuitProject();
 
-    void onAction_Edit_References();
-    void onAction_Edit_Clusters();
-    void onAction_Edit_MoveToCluster();
+    void onAction_Edit_Scenes();
+    void onAction_Edit_MoveTileToScene();
+    void onAction_Edit_MoveTilesetToScene();
+
+    void onAction_View_Reference(int position);
 
 private:
     void prepareUIForProject(Project * value);
-    FragmentContextOpen * createFragmentContextOpen();
-    FragmentContextClosed * createFragmentContextClosed();
+    QWidget * createFragmentContextOpen();
+    QWidget * createFragmentContextClosed();
+    void showMessage(QString msg);
+    void loadScenes(QList<Scene*> const * value);
 
 private:
     Ui::MainWindow * ui;

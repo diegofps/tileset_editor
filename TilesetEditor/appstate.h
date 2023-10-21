@@ -57,6 +57,7 @@ private:
     QList<Reference*>  * _projectReferences;
     QList<Screenshot*> * _projectScreenshots;
     QList<Scene*>      * _projectScenes;
+    int                  _projectSelectedSceneID;
 
     QHash<int, Tile*>       _index_Tile_ID;
     QHash<int, Tileset*>    _index_Tileset_ID;
@@ -104,7 +105,8 @@ public:
     QList<Tileset *> * projectTilesets() const;
     QList<Reference *> * projectReferences() const;
     QList<Screenshot *> * projectScreenshots() const;
-    QList<Scene *> * projectClusters() const;
+    QList<Scene *> * projectScenes() const;
+    int projectSelectedSceneID() const;
 
     void setProject(Project * value);
     void setProjectHasChanges(bool value);
@@ -115,6 +117,7 @@ public:
     void setProjectReferences(QList<Reference *> * value);
     void setProjectScreenshots(QList<Screenshot *> * value);
     void setProjectScenes(QList<Scene*> * value);
+    void setProjectSelectedSceneID(int value);
 
     Tile * getProjectTileById(int id);
     Palette * getProjectPaletteById(int id);
@@ -191,11 +194,12 @@ signals:
     void onProjectTilesetsChanged(QList<Tileset *> const * value);
     void onProjectReferencesChanged(QList<Reference *> const * value);
     void onProjectScreenshotsChanged(QList<Screenshot*> const * value);
-    void onProjectClustersChanged(QList<Scene*> const * value);
+    void onProjectScenesChanged(QList<Scene*> const * value);
+    void onProjectSelectedSceneIDChanged(int value);
 
-    void onProjectClustersInserted(QList<Scene *> const * value, int const position);
-    void onProjectClustersRemoved(QList<Scene *> const * value, int const position);
-    void onProjectClustersMoved(QList<Scene *> const * value, int const oldPosition, int const newPosition);
+    void onProjectScenesInserted(QList<Scene *> const * value, int const position);
+    void onProjectScenesRemoved(QList<Scene *> const * value, int const position);
+    void onProjectScenesMoved(QList<Scene *> const * value, int const oldPosition, int const newPosition);
 
     void onProjectTilesetsInserted(QList<Tileset *> const * value, int const position);
     void onProjectTilesetsRemoved(QList<Tileset *> const * value, int const position);

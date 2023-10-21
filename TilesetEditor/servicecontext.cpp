@@ -167,7 +167,7 @@ void ServiceContext::save(ContextReport * report)
         saveReferences(contextDir, App::getState()->projectReferences()) &&
         saveTilesets(contextDir, App::getState()->projectTilesets()) &&
         saveScreenshots(contextDir, App::getState()->projectScreenshots()) &&
-        saveScenes(contextDir, App::getState()->projectClusters()) )
+        saveScenes(contextDir, App::getState()->projectScenes()) )
     {
         App::getState()->setProjectHasChanges(false);
 
