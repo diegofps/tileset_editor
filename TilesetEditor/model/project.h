@@ -15,6 +15,7 @@ public:
     int lastTilesetID;
     int lastReferenceID;
     int lastScreenshotID;
+    int lastClusterID;
 
     Project();
 

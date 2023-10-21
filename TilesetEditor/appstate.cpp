@@ -28,6 +28,7 @@ AppState::AppState()
     _projectTilesets = nullptr;
     _projectReferences = nullptr;
     _projectScreenshots = nullptr;
+    _projectClusters = nullptr;
 
 }
 
@@ -125,6 +126,14 @@ void AppState::setProjectScreenshots(QList<Screenshot*> *value)
     emit onProjectScreenshotsChanged(value);
 }
 
+void AppState::setProjectClusters(QList<Cluster *> *value)
+{
+    deleteItemsAndQListIfNotNullptr(_projectClusters, value);
+    _projectClusters = value;
+    recreateIndex(value, _index_Cluster_ID, [](Cluster * item){ return item->id; });
+    emit onProjectClustersChanged(value);
+}
+
 Tile * AppState::getProjectTileById(int id)
 {
     auto it = _index_Tile_ID.find(id);
@@ -153,6 +162,12 @@ Screenshot *AppState::getProjectScreenshotById(int id)
 {
     auto it = _index_Screenshot_ID.find(id);
     return it == _index_Screenshot_ID.end() ? nullptr : it.value();
+}
+
+Cluster *AppState::getProjectClusterById(int id)
+{
+    auto it = _index_Cluster_ID.find(id);
+    return it == _index_Cluster_ID.end() ? nullptr : it.value();
 }
 
 QList<Reference *> AppState::getProjectReferencesByTileId(int tileId)
@@ -196,7 +211,57 @@ void AppState::appendProjectScreenshot(Screenshot *value)
     _index_Screenshot_ID[value->id] = value;
 }
 
-void AppState::addProjectTileset(int const position, Tileset * value)
+void AppState::appendProjectCluster(Cluster *value)
+{
+    _projectClusters->append(value);
+    _index_Cluster_ID[value->id] = value;
+}
+
+void AppState::insertProjectCluster(const int position, Cluster *value)
+{
+    if (value == nullptr)
+        return;
+
+    _projectClusters->insert(position, value);
+    _index_Cluster_ID[value->id] = value;
+    emit onProjectClustersInserted(_projectClusters, position);
+}
+
+void AppState::removeProjectCluster(const int position)
+{
+    if (position < 0 || position >= _projectClusters->size())
+        return;
+
+    auto value = _projectClusters->at(position);
+    _projectClusters->remove(position);
+    _index_Cluster_ID.remove(value->id);
+    emit onProjectClustersRemoved(_projectClusters, position);
+    delete value;
+}
+
+void AppState::moveUpProjectCluster(const int position)
+{
+    if (position < 0 || position >= _projectClusters->size()-1)
+        return;
+
+    auto ts = _projectClusters->takeAt(position);
+    _projectClusters->insert(position+1, ts);
+
+    emit onProjectClustersMoved(_projectClusters, position, position+1);
+}
+
+void AppState::moveDownProjectCluster(const int position)
+{
+    if (position <= 0 || position >= _projectClusters->size())
+        return;
+
+    auto ts = _projectClusters->takeAt(position);
+    _projectClusters->insert(position-1, ts);
+
+    emit onProjectClustersMoved(_projectClusters, position, position-1);
+}
+
+void AppState::insertProjectTileset(int const position, Tileset * value)
 {
     if (value == nullptr)
         return;
@@ -206,7 +271,7 @@ void AppState::addProjectTileset(int const position, Tileset * value)
     emit onProjectTilesetsInserted(_projectTilesets, position);
 }
 
-void AppState::dropProjectTileset(int const position)
+void AppState::removeProjectTileset(int const position)
 {
     if (position < 0 || position >= _projectTilesets->size())
         return;
@@ -273,6 +338,11 @@ QList<Reference *> * AppState::projectReferences() const
 QList<Screenshot *> * AppState::projectScreenshots() const
 {
     return _projectScreenshots;
+}
+
+QList<Cluster *> *AppState::projectClusters() const
+{
+    return _projectClusters;
 }
 
 QList<Tileset *> * AppState::projectTilesets() const

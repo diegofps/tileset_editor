@@ -65,14 +65,14 @@
          <widget class="QPushButton" name="btPencil">
           <property name="minimumSize">
            <size>
-            <width>20</width>
-            <height>20</height>
+            <width>25</width>
+            <height>25</height>
            </size>
           </property>
           <property name="maximumSize">
            <size>
-            <width>20</width>
-            <height>20</height>
+            <width>25</width>
+            <height>25</height>
            </size>
           </property>
           <property name="font">
@@ -127,14 +127,14 @@ QPushButton#evilButton:checked {
          <widget class="QPushButton" name="btEraser">
           <property name="minimumSize">
            <size>
-            <width>20</width>
-            <height>20</height>
+            <width>25</width>
+            <height>25</height>
            </size>
           </property>
           <property name="maximumSize">
            <size>
-            <width>20</width>
-            <height>20</height>
+            <width>25</width>
+            <height>25</height>
            </size>
           </property>
           <property name="styleSheet">
@@ -178,14 +178,14 @@ QPushButton#evilButton:checked {
          <widget class="QPushButton" name="btLinker">
           <property name="minimumSize">
            <size>
-            <width>20</width>
-            <height>20</height>
+            <width>25</width>
+            <height>25</height>
            </size>
           </property>
           <property name="maximumSize">
            <size>
-            <width>20</width>
-            <height>20</height>
+            <width>25</width>
+            <height>25</height>
            </size>
           </property>
           <property name="styleSheet">
@@ -245,14 +245,14 @@ QPushButton#evilButton:checked {
          <widget class="QPushButton" name="btShowLinkedTiles">
           <property name="minimumSize">
            <size>
-            <width>20</width>
-            <height>20</height>
+            <width>25</width>
+            <height>25</height>
            </size>
           </property>
           <property name="maximumSize">
            <size>
-            <width>20</width>
-            <height>20</height>
+            <width>25</width>
+            <height>25</height>
            </size>
           </property>
           <property name="styleSheet">
@@ -296,14 +296,14 @@ QPushButton#evilButton:checked {
          <widget class="QPushButton" name="btShowUnlinkedTiles">
           <property name="minimumSize">
            <size>
-            <width>20</width>
-            <height>20</height>
+            <width>25</width>
+            <height>25</height>
            </size>
           </property>
           <property name="maximumSize">
            <size>
-            <width>20</width>
-            <height>20</height>
+            <width>25</width>
+            <height>25</height>
            </size>
           </property>
           <property name="styleSheet">
@@ -347,14 +347,14 @@ QPushButton#evilButton:checked {
          <widget class="QPushButton" name="btShowGrid">
           <property name="minimumSize">
            <size>
-            <width>20</width>
-            <height>20</height>
+            <width>25</width>
+            <height>25</height>
            </size>
           </property>
           <property name="maximumSize">
            <size>
-            <width>20</width>
-            <height>20</height>
+            <width>25</width>
+            <height>25</height>
            </size>
           </property>
           <property name="toolTip">

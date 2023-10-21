@@ -4,6 +4,7 @@
 #include <QString>
 #include <QDir>
 
+#include "model/cluster.h"
 #include "model/project.h"
 #include "model/reference.h"
 #include "model/screenshot.h"
@@ -43,6 +44,7 @@ private:
     static bool loadTilesets(QDir contextDir, QList<Tileset*> * tilesets);
     static bool loadScreenshots(QDir baseDir, QList<Screenshot*> * screenshots);
     static bool loadReferences(QDir baseDir, QList<Reference*> * references);
+    static bool loadClusters(QDir baseDir, QList<Cluster*> * clusters);
 
     static bool saveContext(QDir contextDir, Project * context);
     static bool saveTiles(QDir contextDir, QList<Tile*> * tiles);
@@ -50,6 +52,7 @@ private:
     static bool saveTilesets(QDir contextDir, QList<Tileset*> * tilesets);
     static bool saveReferences(QDir contextDir, QList<Reference*> * references);
     static bool saveScreenshots(QDir contextDir, QList<Screenshot*> * screenshots);
+    static bool saveClusters(QDir contextDir, QList<Cluster*> * clusters);
 
 };
 

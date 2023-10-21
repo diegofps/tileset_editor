@@ -18,5 +18,6 @@
         <file>icons/plus-solid.svg</file>
         <file>icons/trash-solid.svg</file>
         <file>icons/message-solid.svg</file>
+        <file>style/button_any.qss</file>
     </qresource>
 </RCC>

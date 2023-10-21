@@ -61,7 +61,7 @@ FragmentPreview::FragmentPreview(QWidget *parent) :
     stackedLayout->setContentsMargins(0,0,0,0);
 
     stackedLayout->addWidget(pageContent, QRect(0,0,-1,-1));
-    stackedLayout->addLayout(pagesRow, QRect(-300,0,300,20));
+    stackedLayout->addLayout(pagesRow, QRect(-300,0,300,25));
 
     ui->stackedFrame->setLayout(stackedLayout);
 

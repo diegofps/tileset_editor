@@ -21,7 +21,7 @@ public:
 
 private:
     void loadTiles(QList<Tile *> const * tiles, TilesFilter *filter);
-    void styleButton(QPushButton * btn, bool value);
+    void styleButton(QPushButton * btn, int value);
 
 private:
     Ui::FragmentTiles *ui;

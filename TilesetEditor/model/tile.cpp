@@ -15,6 +15,10 @@ Tile::Tile(QJsonObject & data)
 
     id = data["ID"].toInt();
 
+    // ClusterID
+
+    clusterId = data.contains("ClusterID") ? data["ClusterID"].toInt(0) : 0;
+
     // Pixels
 
     if (!data.contains("Pixels"))
@@ -70,6 +74,14 @@ Tile::Tile(QJsonObject & data)
 
     usedInBackground = data["UsedInBackground"].toBool();
 
+    // UsedWithHFlip
+
+    usedWithHFlip = data.contains("UsedWithHFlip") ? data["UsedWithHFlip"].toBool() : false;
+
+    // UsedWithVFlip
+
+    usedWithVFlip = data.contains("UsedWithVFlip") ? data["UsedWithVFlip"].toBool() : false;
+
     // SeenOnFrames
 
     seenOnFrames = data.contains("SeenOnFrames") ? data["SeenOnFrames"].toInt(-1) : -1;
@@ -105,6 +117,7 @@ QJsonObject Tile::exportAsJson()
 
     QJsonObject jTile;
     jTile["ID"] = id;
+    jTile["ClusterID"] = clusterId;
     jTile["Pixels"] = jPixels;
     jTile["Palettes"] = jPalettes;
     jTile["PalettesSeen"] = palettesUsed.size();
@@ -113,6 +126,8 @@ QJsonObject Tile::exportAsJson()
     jTile["SeenOnFrames"] = seenOnFrames;
     jTile["UsedInBackground"] = usedInBackground;
     jTile["UsedInSprite"] = usedInSprite;
+    jTile["UsedWithHFlip"] = usedWithHFlip;
+    jTile["UsedWithVFlip"] = usedWithVFlip;
 
     return jTile;
 }
@@ -152,3 +167,4 @@ QByteArray & Tile::uniqueKey()
 //        if (references[i].isEmpty() && !other->references[i].isEmpty())
 //            references[i].import(other->references[i], oldPaletteID2NewPaletteID, oldReferenceID2NewReferenceID);
 //}
+

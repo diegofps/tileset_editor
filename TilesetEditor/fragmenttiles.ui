@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>739</width>
-    <height>532</height>
+    <width>444</width>
+    <height>342</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -65,9 +65,6 @@
       <number>0</number>
      </property>
      <layout class="QVBoxLayout" name="verticalLayout_2">
-      <property name="spacing">
-       <number>6</number>
-      </property>
       <property name="leftMargin">
        <number>0</number>
       </property>
@@ -81,7 +78,7 @@
        <number>0</number>
       </property>
       <item>
-       <widget class="QLabel" name="label">
+       <widget class="QLabel" name="lbTitle">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -113,12 +110,38 @@ font: 9pt;</string>
         <property name="rightMargin">
          <number>9</number>
         </property>
+        <property name="bottomMargin">
+         <number>9</number>
+        </property>
+        <item>
+         <widget class="QComboBox" name="comboBox">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+            <horstretch>1</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QFrame" name="listFrame">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+            <horstretch>0</horstretch>
+            <verstretch>1</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="styleSheet">
+           <string notr="true"/>
+          </property>
+         </widget>
+        </item>
         <item>
          <layout class="QHBoxLayout" name="horizontalLayout">
           <item>
            <widget class="QPushButton" name="btSprite">
             <property name="text">
-             <string>In Sprite</string>
+             <string>Sprite</string>
             </property>
             <property name="checkable">
              <bool>false</bool>
@@ -140,7 +163,21 @@ font: 9pt;</string>
           <item>
            <widget class="QPushButton" name="btBackground">
             <property name="text">
-             <string>In Background</string>
+             <string>BG</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="btHFlip">
+            <property name="text">
+             <string>HFlip</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="btVFlip">
+            <property name="text">
+             <string>VFlip</string>
             </property>
            </widget>
           </item>
@@ -158,19 +195,6 @@ font: 9pt;</string>
            </widget>
           </item>
          </layout>
-        </item>
-        <item>
-         <widget class="QFrame" name="listFrame">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-            <horstretch>0</horstretch>
-            <verstretch>1</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="styleSheet">
-           <string notr="true"/>
-          </property>
-         </widget>
         </item>
        </layout>
       </item>

@@ -1,6 +1,7 @@
 #ifndef APPSTATE_H
 #define APPSTATE_H
 
+#include "model/cluster.h"
 #include "model/project.h"
 #include "model/reference.h"
 #include "model/screenshot.h"
@@ -21,10 +22,23 @@ enum EditorTool
 class TilesFilter
 {
 public:
-    bool usedInSprite;
-    bool usedInBackground;
-    bool isUnlinked;
-    TilesFilter() : usedInSprite(false), usedInBackground(false), isUnlinked(false) { }
+
+    int usedInSprite;
+    int usedInBackground;
+    int isUnlinked;
+    int usedWithHFlip;
+    int usedWithVFlip;
+    int clusterID;
+
+    TilesFilter() :
+        usedInSprite(2),
+        usedInBackground(2),
+        isUnlinked(2),
+        usedWithHFlip(2),
+        usedWithVFlip(2),
+        clusterID(0)
+    { }
+
 };
 
 class AppState : public QObject
@@ -42,12 +56,14 @@ private:
     QList<Tileset*>    * _projectTilesets;
     QList<Reference*>  * _projectReferences;
     QList<Screenshot*> * _projectScreenshots;
+    QList<Cluster*>    * _projectClusters;
 
     QHash<int, Tile*>       _index_Tile_ID;
     QHash<int, Tileset*>    _index_Tileset_ID;
     QHash<int, Screenshot*> _index_Screenshot_ID;
     QHash<int, Palette*>    _index_Palette_ID;
     QHash<int, Reference*>  _index_Reference_ID;
+    QHash<int, Cluster*>  _index_Cluster_ID;
 
     // Editor Toolbox
     EditorTool _editorTool;
@@ -72,7 +88,7 @@ private:
     // Tile Preview
     QString _tilePreviewShow;
 
-    //Tilesets
+    // Tilesets
     Tileset * _tilesetsSelectedItem;
 
 public:
@@ -88,6 +104,7 @@ public:
     QList<Tileset *> * projectTilesets() const;
     QList<Reference *> * projectReferences() const;
     QList<Screenshot *> * projectScreenshots() const;
+    QList<Cluster *> * projectClusters() const;
 
     void setProject(Project * value);
     void setProjectHasChanges(bool value);
@@ -97,12 +114,14 @@ public:
     void setProjectTilesets(QList<Tileset *> * value);
     void setProjectReferences(QList<Reference *> * value);
     void setProjectScreenshots(QList<Screenshot *> * value);
+    void setProjectClusters(QList<Cluster*> * value);
 
     Tile * getProjectTileById(int id);
     Palette * getProjectPaletteById(int id);
     Tileset * getProjectTilesetById(int id);
     Reference* getProjectReferenceById(int id);
     Screenshot * getProjectScreenshotById(int id);
+    Cluster * getProjectClusterById(int id);
     QList<Reference*> getProjectReferencesByTileId(int tileId);
 
     void appendProjectTile(Tile * value);
@@ -110,9 +129,15 @@ public:
     void appendProjectTileset(Tileset * value);
     void appendProjectReference(Reference * value);
     void appendProjectScreenshot(Screenshot * value);
+    void appendProjectCluster(Cluster * value);
 
-    void addProjectTileset(int const position, Tileset * value);
-    void dropProjectTileset(int const position);
+    void insertProjectCluster(int const position, Cluster * value);
+    void removeProjectCluster(int const position);
+    void moveUpProjectCluster(const int position);
+    void moveDownProjectCluster(const int position);
+
+    void insertProjectTileset(int const position, Tileset * value);
+    void removeProjectTileset(int const position);
     void moveUpProjectTileset(const int position);
     void moveDownProjectTileset(const int position);
 
@@ -166,6 +191,11 @@ signals:
     void onProjectTilesetsChanged(QList<Tileset *> const * value);
     void onProjectReferencesChanged(QList<Reference *> const * value);
     void onProjectScreenshotsChanged(QList<Screenshot*> const * value);
+    void onProjectClustersChanged(QList<Cluster*> const * value);
+
+    void onProjectClustersInserted(QList<Cluster *> const * value, int const position);
+    void onProjectClustersRemoved(QList<Cluster *> const * value, int const position);
+    void onProjectClustersMoved(QList<Cluster *> const * value, int const oldPosition, int const newPosition);
 
     void onProjectTilesetsInserted(QList<Tileset *> const * value, int const position);
     void onProjectTilesetsRemoved(QList<Tileset *> const * value, int const position);

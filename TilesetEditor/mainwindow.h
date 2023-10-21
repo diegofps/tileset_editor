@@ -29,6 +29,7 @@ private slots:
     void onAction_File_QuitProject();
 
     void onAction_View_References();
+    void onAction_Edit_Clusters();
 
 private:
     void prepareUIForProject(Project * value);

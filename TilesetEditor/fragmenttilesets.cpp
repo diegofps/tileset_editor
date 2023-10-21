@@ -51,7 +51,7 @@ FragmentTilesets::FragmentTilesets(QWidget *parent) :
         ts->bgColor = QColor::fromRgb(0,0,0);
 
         int const position = ui->listTilesets->currentRow() < 0 ? 0 : ui->listTilesets->currentRow()+1;
-        App::getState()->addProjectTileset(position, ts);
+        App::getState()->insertProjectTileset(position, ts);
         App::getState()->setProjectHasChanges(true);
     });
 
@@ -59,7 +59,7 @@ FragmentTilesets::FragmentTilesets(QWidget *parent) :
     {
         if (ui->listTilesets->currentRow() >= 0)
         {
-            App::getState()->dropProjectTileset(ui->listTilesets->currentRow());
+            App::getState()->removeProjectTileset(ui->listTilesets->currentRow());
             App::getState()->setProjectHasChanges(true);
         }
     });

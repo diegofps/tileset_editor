@@ -34,7 +34,7 @@ void WidgetGridTiles::append(Tile * value)
 void WidgetGridTiles::repack()
 {
     _cols = width() <= SCROLL_SPACE + TILE_SIZE ? 1 : (width() - SCROLL_SPACE - TILE_SIZE) / (TILE_SIZE + SEPARATOR_SPACE) + 1;
-    _rows = _tiles.empty() ? 1 : _tiles.size() / _cols;
+    _rows = _tiles.empty() ? 1 : ceil(_tiles.size() / float(_cols));
 
     int const expectedHeight = _rows * TILE_SIZE + (_rows-1) * SEPARATOR_SPACE;
 
