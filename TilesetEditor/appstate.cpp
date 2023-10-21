@@ -29,7 +29,8 @@ AppState::AppState()
     _projectReferences = nullptr;
     _projectScreenshots = nullptr;
     _projectScenes = nullptr;
-    _projectSelectedSceneID = -1;
+    _projectSelectedSceneID = 0;
+    _lastTilesetMoveToSceneResult = 0;
 
 }
 
@@ -247,6 +248,10 @@ void AppState::removeProjectScene(const int position)
         if (t->sceneId == value->id)
             t->sceneId = 0;
 
+    for (auto t : *_projectTilesets)
+        if (t->sceneId == value->id)
+            t->sceneId = 0;
+
     emit onProjectScenesRemoved(_projectScenes, position);
     delete value;
 }
@@ -317,6 +322,16 @@ void AppState::moveDownProjectTileset(int const position)
     _projectTilesets->insert(position-1, ts);
 
     emit onProjectTilesetsMoved(_projectTilesets, position, position-1);
+}
+
+void AppState::setLastTilesetMoveToSceneResult(int value)
+{
+    _lastTilesetMoveToSceneResult = value;
+}
+
+int AppState::lastTilesetMoveToSceneResult()
+{
+    return _lastTilesetMoveToSceneResult;
 }
 
 Project * AppState::project() const
@@ -544,4 +559,15 @@ void AppState::setTilesetsSelectedItem(Tileset * value)
 {
     _tilesetsSelectedItem = value;
     emit onTilesetsSelectedItemChanged(value);
+}
+
+void AppState::tilesetsMoveSelectedItemToScene(int sceneID)
+{
+    if (_tilesetsSelectedItem == nullptr)
+        return;
+
+    _tilesetsSelectedItem->sceneId = sceneID==-1?0:sceneID;
+    _projectHasChanges = true;
+
+    emit onProjectTilesetsChanged(_projectTilesets);
 }

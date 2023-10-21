@@ -13,6 +13,7 @@ SOURCES += \
     appstate.cpp \
     appstyles.cpp \
     dialogeditscenes.cpp \
+    dialogoptions.cpp \
     fragmentcontextclosed.cpp \
     fragmentcontextopen.cpp \
     fragmenteditor.cpp \
@@ -46,6 +47,7 @@ HEADERS += \
     appstate.h \
     appstyles.h \
     dialogeditscenes.h \
+    dialogoptions.h \
     errors.h \
     fragmentcontextclosed.h \
     fragmentcontextopen.h \
@@ -76,6 +78,7 @@ HEADERS += \
 
 FORMS += \
     dialogeditscenes.ui \
+    dialogoptions.ui \
     fragmentcontextclosed.ui \
     fragmentcontextopen.ui \
     fragmenteditor.ui \

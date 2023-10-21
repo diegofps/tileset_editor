@@ -17,11 +17,12 @@ public:
     ~FragmentTilesets();
 
 private:
-
-    void loadTilesets(QList<Tileset*> const * value);
+    void filterTilesets(int sceneID, QList<Tileset*> const * value);
+    void updateTilesetsWidget();
 
 private:
-    Ui::FragmentTilesets *ui;
+    Ui::FragmentTilesets * ui;
+    QList<Tileset*> _tilesets;
 };
 
 #endif // FRAGMENTTILESETS_H

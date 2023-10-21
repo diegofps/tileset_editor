@@ -20,7 +20,7 @@ public:
     ~FragmentTiles();
 
 private:
-    void loadTiles(QList<Tile *> const * tiles, TilesFilter *filter);
+    void loadTiles(int sceneID, QList<Tile *> const * tiles, TilesFilter * filter);
     void styleButton(QPushButton * btn, int value);
 
 private:

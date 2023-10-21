@@ -28,15 +28,13 @@ public:
     int isUnlinked;
     int usedWithHFlip;
     int usedWithVFlip;
-    int sceneID;
 
     TilesFilter() :
         usedInSprite(2),
         usedInBackground(2),
         isUnlinked(2),
         usedWithHFlip(2),
-        usedWithVFlip(2),
-        sceneID(0)
+        usedWithVFlip(2)
     { }
 
 };
@@ -58,6 +56,7 @@ private:
     QList<Screenshot*> * _projectScreenshots;
     QList<Scene*>      * _projectScenes;
     int                  _projectSelectedSceneID;
+    int                  _lastTilesetMoveToSceneResult;
 
     QHash<int, Tile*>       _index_Tile_ID;
     QHash<int, Tileset*>    _index_Tileset_ID;
@@ -65,6 +64,7 @@ private:
     QHash<int, Palette*>    _index_Palette_ID;
     QHash<int, Reference*>  _index_Reference_ID;
     QHash<int, Scene*>      _index_Scene_ID;
+
 
     // Editor Toolbox
     EditorTool _editorTool;
@@ -144,6 +144,10 @@ public:
     void moveUpProjectTileset(const int position);
     void moveDownProjectTileset(const int position);
 
+
+    void setLastTilesetMoveToSceneResult(int value);
+    int lastTilesetMoveToSceneResult();
+
     // Editor Toolbox
     EditorTool editorTool() const;
     bool editorShowLinkedTiles() const;
@@ -182,6 +186,7 @@ public:
     // Tilesets
     Tileset * tilesetsSelectedItem() const;
     void setTilesetsSelectedItem(Tileset * value);
+    void tilesetsMoveSelectedItemToScene(int sceneID);
 
 signals:
 

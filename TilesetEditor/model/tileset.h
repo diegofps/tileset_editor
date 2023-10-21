@@ -10,6 +10,7 @@ class Tileset
 public:
 
     int id;
+    int sceneId;
     QString name;
     QColor bgColor;
     int gridW;

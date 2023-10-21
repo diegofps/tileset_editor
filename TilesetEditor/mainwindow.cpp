@@ -4,6 +4,7 @@
 #include "qlayout.h"
 #include "servicecontext.h"
 #include "ui_mainwindow.h"
+#include "dialogoptions.h"
 
 #include <QFileDialog>
 
@@ -72,7 +73,7 @@ MainWindow::MainWindow(QWidget *parent)
     });
 
     loadScenes(App::getState()->projectScenes());
-    ui->cbScenes->setCurrentIndex(0);
+    ui->cbScenes->setCurrentIndex(1);
 
     // File menu
 
@@ -113,7 +114,7 @@ void MainWindow::loadScenes(QList<Scene*> const * value)
     for (auto s : *value)
     {
         QString number = QString::number(s->id).rightJustified(3, '0');
-        QString newText = QString("%1: %2").arg(number).arg(s->name);
+        QString newText = QString("%1: %2").arg(number, s->name);
         ui->cbScenes->addItem(newText);
     }
 }
@@ -247,7 +248,29 @@ void MainWindow::onAction_Edit_MoveTileToScene()
 
 void MainWindow::onAction_Edit_MoveTilesetToScene()
 {
+    if (App::getState()->tilesetsSelectedItem() == nullptr)
+        return;
 
+    auto scenes = App::getState()->projectScenes();
+
+    QStringList options;
+    options.append("NULL Scene");
+    for (auto item : *scenes)
+        options.append(item->name);
+
+    DialogOptions dialog;
+    dialog.setOptions(options, App::getState()->lastTilesetMoveToSceneResult());
+    dialog.setWindowTitle("Move Tileset to Scene");
+
+    if (dialog.exec() && dialog.selectedOption() >= 0 && dialog.selectedOption() <= scenes->size())
+    {
+        App::getState()->setLastTilesetMoveToSceneResult(dialog.selectedOption());
+
+        if (dialog.selectedOption() == 0)
+            App::getState()->tilesetsMoveSelectedItemToScene(0);
+        else
+            App::getState()->tilesetsMoveSelectedItemToScene((*scenes)[dialog.selectedOption()-1]->id);
+    }
 }
 
 void MainWindow::prepareUIForProject(Project * value)

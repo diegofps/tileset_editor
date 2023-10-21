@@ -68,10 +68,13 @@ DialogEditScenes::DialogEditScenes(QWidget *parent) :
             if (ui->listScenes->currentRow() < 0)
                 return;
 
+            QString number = QString::number(_selectedScene->id).rightJustified(3, '0');
+            QString newText = QString("%1: %2").arg(number, _selectedScene->name);
+
             auto item = ui->listScenes->item(ui->listScenes->currentRow());
 
-            if (item->text() != text)
-                item->setText(text);
+            if (item->text() != newText)
+                item->setText(newText);
         }
     });
 
@@ -213,6 +216,10 @@ void DialogEditScenes::loadClusters(QList<Scene*> const * value)
         return;
 
     for (auto value : *value)
-        ui->listScenes->addItem(value->name);
+    {
+        QString number = QString::number(value->id).rightJustified(3, '0');
+        QString newText = QString("%1: %2").arg(number, value->name);
+        ui->listScenes->addItem(newText);
+    }
 }
 

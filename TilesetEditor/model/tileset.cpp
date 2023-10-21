@@ -20,6 +20,10 @@ Tileset::Tileset(QJsonObject data)
 
     id = data["ID"].toInt();
 
+    // SceneID
+
+    sceneId = data.contains("SceneID") ? data["SceneID"].toInt(0) : 0;
+
     // Name
 
     if (!data.contains("Name"))
@@ -82,6 +86,7 @@ QJsonObject Tileset::exportAsJson()
 
     QJsonObject data;
     data["ID"] = id;
+    data["SceneID"] = sceneId;
     data["Name"] = name;
     data["GridW"] = gridW;
     data["GridH"] = gridH;

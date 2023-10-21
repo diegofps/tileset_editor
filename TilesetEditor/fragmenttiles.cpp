@@ -76,14 +76,20 @@ FragmentTiles::FragmentTiles(QWidget *parent) :
         App::getState()->setTilesFilter(filter);
     });
 
+    connect(App::getState(), &AppState::onProjectSelectedSceneIDChanged, this, [&](int value){
+        auto tiles = App::getState()->projectTiles();
+        auto filter = App::getState()->tilesFilter();
+        loadTiles(value, tiles, filter);
+    });
+
     connect(App::getState(), &AppState::onTilesFilterChanged, this, [&](TilesFilter * filter)
     {
-        loadTiles(App::getState()->projectTiles(), filter);
+        loadTiles(App::getState()->projectSelectedSceneID(), App::getState()->projectTiles(), filter);
     });
 
     connect(App::getState(), &AppState::onProjectTilesChanged, this, [&](QList<Tile*> const * value)
     {
-        loadTiles(value, App::getState()->tilesFilter());
+        loadTiles(App::getState()->projectSelectedSceneID(), value, App::getState()->tilesFilter());
     });
 
     _gridTiles = new WidgetGridTiles(this);
@@ -97,7 +103,7 @@ FragmentTiles::FragmentTiles(QWidget *parent) :
 
     ui->listFrame->setLayout(layout2);
 
-    loadTiles(App::getState()->projectTiles(), App::getState()->tilesFilter());
+    loadTiles(App::getState()->projectSelectedSceneID(), App::getState()->projectTiles(), App::getState()->tilesFilter());
 }
 
 FragmentTiles::~FragmentTiles()
@@ -105,7 +111,7 @@ FragmentTiles::~FragmentTiles()
     delete ui;
 }
 
-void FragmentTiles::loadTiles(QList<Tile*> const * tiles, TilesFilter * filter)
+void FragmentTiles::loadTiles(int sceneID, QList<Tile*> const * tiles, TilesFilter * filter)
 {
     styleButton(ui->btBackground, filter->usedInBackground);
     styleButton(ui->btSprite, filter->usedInSprite);
@@ -134,8 +140,8 @@ void FragmentTiles::loadTiles(QList<Tile*> const * tiles, TilesFilter * filter)
 
             for (auto t : *tiles)
             {
-                if (filter->sceneID!=-1)
-                    if (t->sceneId!=filter->sceneID)
+                if (sceneID!=-1)
+                    if (t->sceneId!=sceneID)
                         continue;
 
                 if (filter->isUnlinked!=2)

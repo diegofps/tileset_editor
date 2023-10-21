@@ -14,22 +14,52 @@ FragmentTilesets::FragmentTilesets(QWidget *parent) :
     ui->btMoveUp->setStyleSheet(App::getStyles()->get("button_click"));
     ui->btMoveDown->setStyleSheet(App::getStyles()->get("button_click"));
 
+    connect(App::getState(), &AppState::onProjectSelectedSceneIDChanged, this, [&](int value){
+        auto tilesets = App::getState()->projectTilesets();
+
+        filterTilesets(App::getState()->projectSelectedSceneID(), tilesets);
+        updateTilesetsWidget();
+
+        if (!_tilesets.isEmpty())
+            ui->listTilesets->setCurrentRow(0);
+    });
+
     connect(App::getState(), &AppState::onProjectTilesetsChanged, this, [&](QList<Tileset*> const * value)
     {
-        loadTilesets(value);
-        if (value != nullptr && ui->listTilesets->currentRow() < 0 && !value->isEmpty())
+        auto oldTileset = App::getState()->tilesetsSelectedItem();
+        auto oldID = oldTileset == nullptr ? 0 : oldTileset->id;
+        auto oldPosition = ui->listTilesets->currentRow();
+
+        filterTilesets(App::getState()->projectSelectedSceneID(), value);
+        updateTilesetsWidget();
+
+        if (_tilesets.isEmpty())
+            return;
+
+        for (qsizetype i=0;i!=_tilesets.count();++i)
+            if (_tilesets[i]->id == oldID)
+            {
+                ui->listTilesets->setCurrentRow(i);
+                return;
+            }
+
+        if (oldPosition >= 0 && oldPosition < _tilesets.count())
+            ui->listTilesets->setCurrentRow(oldPosition);
+        else
             ui->listTilesets->setCurrentRow(0);
     });
 
     connect(App::getState(), &AppState::onProjectTilesetsInserted, this, [&](QList<Tileset*> const * value, int const position)
     {
-        loadTilesets(value);
+        filterTilesets(App::getState()->projectSelectedSceneID(), value);
+        updateTilesetsWidget();
         ui->listTilesets->setCurrentRow(position);
     });
 
     connect(App::getState(), &AppState::onProjectTilesetsRemoved, this, [&](QList<Tileset*> const * value, int const position)
     {
-        loadTilesets(value);
+        filterTilesets(App::getState()->projectSelectedSceneID(), value);
+        updateTilesetsWidget();
         if (value->size() != 0)
             ui->listTilesets->setCurrentRow(position >= value->size() ? value->size()-1 : position);
     });
@@ -37,14 +67,18 @@ FragmentTilesets::FragmentTilesets(QWidget *parent) :
     connect(App::getState(), &AppState::onProjectTilesetsMoved, this, [&](QList<Tileset*> const * value, int const oldPosition, int const newPosition)
     {
         (void)oldPosition;
-        loadTilesets(value);
+        filterTilesets(App::getState()->projectSelectedSceneID(), value);
+        updateTilesetsWidget();
         ui->listTilesets->setCurrentRow(newPosition);
     });
 
     connect(ui->btNew, &QPushButton::clicked, this, [&]()
     {
+        int sceneID = App::getState()->projectSelectedSceneID();
+
         auto ts = new Tileset();
         ts->id = ++App::getState()->project()->lastTilesetID;
+        ts->sceneId = sceneID==-1?0:sceneID;
         ts->name = "Noname";
         ts->gridW = 10;
         ts->gridH = 10;
@@ -84,12 +118,10 @@ FragmentTilesets::FragmentTilesets(QWidget *parent) :
 
     connect(ui->listTilesets, &QListWidget::currentRowChanged, this, [&](int position) {
 
-        auto tilesets = App::getState()->projectTilesets();
-
-        if (position < 0 || position >= tilesets->size())
+        if (position < 0 || position >= _tilesets.size())
             App::getState()->setTilesetsSelectedItem(nullptr);
         else
-            App::getState()->setTilesetsSelectedItem(tilesets->at(position));
+            App::getState()->setTilesetsSelectedItem(_tilesets[position]);
     });
 
     connect(App::getState(), &AppState::onTilesetsSelectedItemChanged, this, [&](Tileset * ts) {
@@ -101,14 +133,15 @@ FragmentTilesets::FragmentTilesets(QWidget *parent) :
         auto item = ui->listTilesets->item(ui->listTilesets->currentRow());
 
         QString number = QString::number(ts->id).rightJustified(3, '0');
-        QString newText = QString("%1: %2").arg(number).arg(ts->name);
+        QString newText = QString("%1: %2").arg(number, ts->name);
 
         if (item->text() != newText)
             item->setText(newText);
     });
 
     auto tilesets = App::getState()->projectTilesets();
-    loadTilesets(tilesets);
+    filterTilesets(App::getState()->projectSelectedSceneID(), tilesets);
+    updateTilesetsWidget();
     if (tilesets->size() != 0)
         ui->listTilesets->setCurrentRow(0);
 
@@ -119,17 +152,31 @@ FragmentTilesets::~FragmentTilesets()
     delete ui;
 }
 
-void FragmentTilesets::loadTilesets(QList<Tileset*> const * value)
+void FragmentTilesets::filterTilesets(int sceneID, const QList<Tileset *> *value)
 {
-    ui->listTilesets->clear();
+    _tilesets.clear();
 
     if (value == nullptr)
         return;
 
     for (auto ts : *value)
     {
+        if (sceneID != -1)
+            if (sceneID != ts->sceneId)
+                continue;
+
+        _tilesets.append(ts);
+    }
+}
+
+void FragmentTilesets::updateTilesetsWidget()
+{
+    ui->listTilesets->clear();
+
+    for (auto ts : _tilesets)
+    {
         QString number = QString::number(ts->id).rightJustified(3, '0');
-        QString newText = QString("%1: %2").arg(number).arg(ts->name);
+        QString newText = QString("%1: %2").arg(number, ts->name);
         ui->listTilesets->addItem(newText);
     }
 }

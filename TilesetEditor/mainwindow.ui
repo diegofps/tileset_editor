@@ -169,6 +169,8 @@ QMenu::item:selected {
      <string>&amp;Help</string>
     </property>
     <addaction name="action_Help_About"/>
+    <addaction name="actionVerify_Inconsistencies"/>
+    <addaction name="actionStatistics"/>
    </widget>
    <widget class="QMenu" name="menuView">
     <property name="title">
@@ -302,7 +304,7 @@ QMenu::item:selected {
     <string>&amp;Scenes</string>
    </property>
    <property name="shortcut">
-    <string>C</string>
+    <string>S</string>
    </property>
   </action>
   <action name="action_Edit_MoveTileToScene">
@@ -343,6 +345,16 @@ QMenu::item:selected {
    </property>
    <property name="shortcut">
     <string>3</string>
+   </property>
+  </action>
+  <action name="actionVerify_Inconsistencies">
+   <property name="text">
+    <string>Verify Inconsistencies</string>
+   </property>
+  </action>
+  <action name="actionStatistics">
+   <property name="text">
+    <string>Statistics</string>
    </property>
   </action>
  </widget>
