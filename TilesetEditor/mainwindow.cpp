@@ -1,5 +1,5 @@
 #include "app.h"
-#include "dialogeditclusters.h"
+#include "dialogeditscenes.h"
 #include "mainwindow.h"
 #include "qlayout.h"
 #include "servicecontext.h"
@@ -173,9 +173,9 @@ void MainWindow::onAction_Edit_References()
 
 void MainWindow::onAction_Edit_Clusters()
 {
-    DialogEditClusters dialog(this);
+    DialogEditScenes dialog(this);
     if (dialog.exec())
-        App::getState()->setProjectClusters(App::getState()->projectClusters());
+        App::getState()->setProjectScenes(App::getState()->projectClusters());
 }
 
 void MainWindow::onAction_Edit_MoveToCluster()

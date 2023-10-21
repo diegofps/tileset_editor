@@ -1,12 +1,12 @@
-#include "cluster.h"
+#include "scene.h"
 #include "errors.h"
 
-Cluster::Cluster() : id(0)
+Scene::Scene() : id(0)
 {
 
 }
 
-Cluster::Cluster(QJsonObject & data)
+Scene::Scene(QJsonObject & data)
 {
     // ID
 
@@ -30,7 +30,7 @@ Cluster::Cluster(QJsonObject & data)
 
 }
 
-QJsonObject Cluster::exportAsJson()
+QJsonObject Scene::exportAsJson()
 {
     QJsonObject jTile;
     jTile["ID"] = id;

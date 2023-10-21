@@ -134,8 +134,8 @@ void FragmentTiles::loadTiles(QList<Tile*> const * tiles, TilesFilter * filter)
 
             for (auto t : *tiles)
             {
-                if (filter->clusterID!=-1)
-                    if (t->clusterId!=filter->clusterID)
+                if (filter->sceneID!=-1)
+                    if (t->sceneId!=filter->sceneID)
                         continue;
 
                 if (filter->isUnlinked!=2)

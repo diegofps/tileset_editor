@@ -29,7 +29,7 @@ void ServiceContext::create(const QString & folderpath, ContextReport * report)
     QList<Palette*>* palettes = new QList<Palette*>();
     QList<Reference*>* references = new QList<Reference*>();
     QList<Screenshot*>* screenshots = new QList<Screenshot*>();
-    QList<Cluster*>* clusters = new QList<Cluster*>();
+    QList<Scene*>* scenes = new QList<Scene*>();
 
     project->path = folderpath;
 
@@ -46,7 +46,7 @@ void ServiceContext::create(const QString & folderpath, ContextReport * report)
     App::getState()->setProjectPalettes(palettes);
     App::getState()->setProjectReferences(references);
     App::getState()->setProjectScreenshots(screenshots);
-    App::getState()->setProjectClusters(clusters);
+    App::getState()->setProjectScenes(scenes);
     App::getState()->setProjectHasChanges(false);
     App::getState()->setProject(project);
     App::getOriginalTileCache()->clear();
@@ -76,7 +76,7 @@ void ServiceContext::close(ContextReport * report)
     App::getState()->setProjectPalettes(nullptr);
     App::getState()->setProjectReferences(nullptr);
     App::getState()->setProjectScreenshots(nullptr);
-    App::getState()->setProjectClusters(nullptr);
+    App::getState()->setProjectScenes(nullptr);
     App::getOriginalTileCache()->clear();
 
     if (report != nullptr)
@@ -86,7 +86,6 @@ void ServiceContext::close(ContextReport * report)
 void ServiceContext::load(const QString & folderpath, ContextReport * report)
 {
     qInfo() << "Loading project";
-    QDir baseDir(folderpath);
 
     Project* context = new Project();
     QList<Tile*>* tiles = new QList<Tile*>();
@@ -94,14 +93,16 @@ void ServiceContext::load(const QString & folderpath, ContextReport * report)
     QList<Palette*>* palettes = new QList<Palette*>();
     QList<Reference*>* references = new QList<Reference*>();
     QList<Screenshot*>* screenshots = new QList<Screenshot*>();
-    QList<Cluster*>* clusters = new QList<Cluster*>();
+    QList<Scene*>* scenes = new QList<Scene*>();
+
+    QDir baseDir(folderpath);
 
     if (loadContext(baseDir, context) &&
         loadTiles(baseDir, tiles) &&
         loadTilesets(baseDir, tilesets) &&
         loadPalettes(baseDir, palettes) &&
         loadReferences(baseDir, references) &&
-        loadClusters(baseDir, clusters)
+        loadScenes(baseDir, scenes)
     )
     {
         App::getState()->setProjectTiles(tiles);
@@ -109,7 +110,7 @@ void ServiceContext::load(const QString & folderpath, ContextReport * report)
         App::getState()->setProjectPalettes(palettes);
         App::getState()->setProjectReferences(references);
         App::getState()->setProjectScreenshots(screenshots);
-        App::getState()->setProjectClusters(clusters);
+        App::getState()->setProjectScenes(scenes);
         App::getState()->setProjectHasChanges(false);
         App::getState()->setProject(context);
         App::getOriginalTileCache()->clear();
@@ -137,19 +138,23 @@ void ServiceContext::load(const QString & folderpath, ContextReport * report)
         for (auto item : *screenshots)
             delete item;
 
+        for (auto item : *scenes)
+            delete item;
+
         delete context;
         delete tiles;
         delete tilesets;
         delete palettes;
         delete references;
         delete screenshots;
+        delete scenes;
     }
 }
 
 void ServiceContext::save(ContextReport * report)
 {
     qInfo() << "Saving project";
-    // TODO: Prevent partial save
+    // TODO: Prevent partial save on errors
 
     QDir contextDir(App::getState()->project()->path);
 
@@ -162,7 +167,7 @@ void ServiceContext::save(ContextReport * report)
         saveReferences(contextDir, App::getState()->projectReferences()) &&
         saveTilesets(contextDir, App::getState()->projectTilesets()) &&
         saveScreenshots(contextDir, App::getState()->projectScreenshots()) &&
-        saveClusters(contextDir, App::getState()->projectClusters()) )
+        saveScenes(contextDir, App::getState()->projectClusters()) )
     {
         App::getState()->setProjectHasChanges(false);
 
@@ -181,7 +186,7 @@ void ServiceContext::save(ContextReport * report)
 void ServiceContext::importDump(QString const & folderpath, ContextReport * report)
 {
     qInfo() << "Importing dump";
-    // TODO: Prevent partial save?
+    // TODO: Prevent partial import on errors
 
     QDir dumpDir(folderpath);
     QDir screenshotsDir(folderpath);
@@ -452,9 +457,9 @@ bool ServiceContext::loadReferences(QDir baseDir, QList<Reference*> * references
     return loadItems(baseDir, "references", references);
 }
 
-bool ServiceContext::loadClusters(QDir baseDir, QList<Cluster*> * clusters)
+bool ServiceContext::loadScenes(QDir baseDir, QList<Scene*> * scenes)
 {
-    return loadItems(baseDir, "clusters", clusters);
+    return loadItems(baseDir, "scenes", scenes);
 }
 
 bool ServiceContext::loadTilesets(QDir baseDir, QList<Tileset*> * tilesets)
@@ -545,9 +550,9 @@ bool ServiceContext::saveReferences(QDir contextDir, QList<Reference*> * referen
     return saveItems(contextDir, "references", references);
 }
 
-bool ServiceContext::saveClusters(QDir contextDir, QList<Cluster*> * clusters)
+bool ServiceContext::saveScenes(QDir contextDir, QList<Scene*> * scenes)
 {
-    return saveItems(contextDir, "clusters", clusters);
+    return saveItems(contextDir, "scenes", scenes);
 }
 
 bool ServiceContext::saveScreenshots(QDir contextDir, QList<Screenshot*> * screenshots)

@@ -13,7 +13,7 @@ bool Project::initFromJson(QJsonObject data)
     lastTilesetID = data["lastTilesetID"].toInt();
     lastReferenceID = data["lastReferenceID"].toInt();
     lastScreenshotID = data["lastScreenshotID"].toInt();
-    lastClusterID = data["lastClusterID"].toInt();
+    lastSceneID = data["lastSceneID"].toInt();
     return true;
 }
 
@@ -26,7 +26,7 @@ QJsonObject Project::exportAsJson()
     data["lastTilesetID"] = lastTilesetID;
     data["lastReferenceID"] = lastReferenceID;
     data["lastScreenshotID"] = lastScreenshotID;
-    data["lastClusterID"] = lastClusterID;
+    data["lastSceneID"] = lastSceneID;
     return data;
 }
 
@@ -38,5 +38,5 @@ void Project::clear()
     lastTilesetID = 0;
     lastReferenceID = 0;
     lastScreenshotID = 0;
-    lastClusterID = 0;
+    lastSceneID = 0;
 }

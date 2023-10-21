@@ -28,7 +28,7 @@ AppState::AppState()
     _projectTilesets = nullptr;
     _projectReferences = nullptr;
     _projectScreenshots = nullptr;
-    _projectClusters = nullptr;
+    _projectScenes = nullptr;
 
 }
 
@@ -126,11 +126,11 @@ void AppState::setProjectScreenshots(QList<Screenshot*> *value)
     emit onProjectScreenshotsChanged(value);
 }
 
-void AppState::setProjectClusters(QList<Cluster *> *value)
+void AppState::setProjectScenes(QList<Scene *> *value)
 {
-    deleteItemsAndQListIfNotNullptr(_projectClusters, value);
-    _projectClusters = value;
-    recreateIndex(value, _index_Cluster_ID, [](Cluster * item){ return item->id; });
+    deleteItemsAndQListIfNotNullptr(_projectScenes, value);
+    _projectScenes = value;
+    recreateIndex(value, _index_Scene_ID, [](Scene * item){ return item->id; });
     emit onProjectClustersChanged(value);
 }
 
@@ -164,10 +164,10 @@ Screenshot *AppState::getProjectScreenshotById(int id)
     return it == _index_Screenshot_ID.end() ? nullptr : it.value();
 }
 
-Cluster *AppState::getProjectClusterById(int id)
+Scene *AppState::getProjectSceneById(int id)
 {
-    auto it = _index_Cluster_ID.find(id);
-    return it == _index_Cluster_ID.end() ? nullptr : it.value();
+    auto it = _index_Scene_ID.find(id);
+    return it == _index_Scene_ID.end() ? nullptr : it.value();
 }
 
 QList<Reference *> AppState::getProjectReferencesByTileId(int tileId)
@@ -210,60 +210,60 @@ void AppState::appendProjectScreenshot(Screenshot *value)
     _index_Screenshot_ID[value->id] = value;
 }
 
-void AppState::appendProjectCluster(Cluster *value)
+void AppState::appendProjectScene(Scene *value)
 {
-    _projectClusters->append(value);
-    _index_Cluster_ID[value->id] = value;
+    _projectScenes->append(value);
+    _index_Scene_ID[value->id] = value;
 }
 
-void AppState::insertProjectCluster(const int position, Cluster *value)
+void AppState::insertProjectScene(const int position, Scene *value)
 {
     if (value == nullptr)
         return;
 
-    _projectClusters->insert(position, value);
-    _index_Cluster_ID[value->id] = value;
+    _projectScenes->insert(position, value);
+    _index_Scene_ID[value->id] = value;
 
-    emit onProjectClustersInserted(_projectClusters, position);
+    emit onProjectClustersInserted(_projectScenes, position);
 }
 
-void AppState::removeProjectCluster(const int position)
+void AppState::removeProjectScene(const int position)
 {
-    if (position < 0 || position >= _projectClusters->size())
+    if (position < 0 || position >= _projectScenes->size())
         return;
 
-    auto value = _projectClusters->at(position);
-    _projectClusters->remove(position);
-    _index_Cluster_ID.remove(value->id);
+    auto value = _projectScenes->at(position);
+    _projectScenes->remove(position);
+    _index_Scene_ID.remove(value->id);
 
     for (auto t : *_projectTiles)
-        if (t->clusterId == value->id)
-            t->clusterId = 0;
+        if (t->sceneId == value->id)
+            t->sceneId = 0;
 
-    emit onProjectClustersRemoved(_projectClusters, position);
+    emit onProjectClustersRemoved(_projectScenes, position);
     delete value;
 }
 
-void AppState::moveUpProjectCluster(const int position)
+void AppState::moveUpProjectScene(const int position)
 {
-    if (position < 0 || position >= _projectClusters->size()-1)
+    if (position < 0 || position >= _projectScenes->size()-1)
         return;
 
-    auto ts = _projectClusters->takeAt(position);
-    _projectClusters->insert(position+1, ts);
+    auto ts = _projectScenes->takeAt(position);
+    _projectScenes->insert(position+1, ts);
 
-    emit onProjectClustersMoved(_projectClusters, position, position+1);
+    emit onProjectClustersMoved(_projectScenes, position, position+1);
 }
 
-void AppState::moveDownProjectCluster(const int position)
+void AppState::moveDownProjectScene(const int position)
 {
-    if (position <= 0 || position >= _projectClusters->size())
+    if (position <= 0 || position >= _projectScenes->size())
         return;
 
-    auto ts = _projectClusters->takeAt(position);
-    _projectClusters->insert(position-1, ts);
+    auto ts = _projectScenes->takeAt(position);
+    _projectScenes->insert(position-1, ts);
 
-    emit onProjectClustersMoved(_projectClusters, position, position-1);
+    emit onProjectClustersMoved(_projectScenes, position, position-1);
 }
 
 void AppState::insertProjectTileset(int const position, Tileset * value)
@@ -347,9 +347,9 @@ QList<Screenshot *> * AppState::projectScreenshots() const
     return _projectScreenshots;
 }
 
-QList<Cluster *> *AppState::projectClusters() const
+QList<Scene *> *AppState::projectClusters() const
 {
-    return _projectClusters;
+    return _projectScenes;
 }
 
 QList<Tileset *> * AppState::projectTilesets() const

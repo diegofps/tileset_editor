@@ -17,7 +17,7 @@ Tile::Tile(QJsonObject & data)
 
     // ClusterID
 
-    clusterId = data.contains("ClusterID") ? data["ClusterID"].toInt(0) : 0;
+    sceneId = data.contains("ClusterID") ? data["ClusterID"].toInt(0) : 0;
 
     // Pixels
 
@@ -117,7 +117,7 @@ QJsonObject Tile::exportAsJson()
 
     QJsonObject jTile;
     jTile["ID"] = id;
-    jTile["ClusterID"] = clusterId;
+    jTile["ClusterID"] = sceneId;
     jTile["Pixels"] = jPixels;
     jTile["Palettes"] = jPalettes;
     jTile["PalettesSeen"] = palettesUsed.size();

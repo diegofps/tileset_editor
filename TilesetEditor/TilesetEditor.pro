@@ -12,7 +12,7 @@ SOURCES += \
     app.cpp \
     appstate.cpp \
     appstyles.cpp \
-    dialogeditclusters.cpp \
+    dialogeditscenes.cpp \
     fragmentcontextclosed.cpp \
     fragmentcontextopen.cpp \
     fragmenteditor.cpp \
@@ -26,10 +26,10 @@ SOURCES += \
     layoutabsolute.cpp \
     main.cpp \
     mainwindow.cpp \
-    model/cluster.cpp \
     model/palette.cpp \
     model/project.cpp \
     model/reference.cpp \
+    model/scene.cpp \
     model/screenshot.cpp \
     model/tile.cpp \
     model/tileset.cpp \
@@ -45,7 +45,7 @@ HEADERS += \
     app.h \
     appstate.h \
     appstyles.h \
-    dialogeditclusters.h \
+    dialogeditscenes.h \
     errors.h \
     fragmentcontextclosed.h \
     fragmentcontextopen.h \
@@ -59,10 +59,10 @@ HEADERS += \
     fragmenttilesets.h \
     layoutabsolute.h \
     mainwindow.h \
-    model/cluster.h \
     model/palette.h \
     model/project.h \
     model/reference.h \
+    model/scene.h \
     model/screenshot.h \
     model/tile.h \
     model/tileset.h \
@@ -75,7 +75,7 @@ HEADERS += \
     widgetpalette.h
 
 FORMS += \
-    dialogeditclusters.ui \
+    dialogeditscenes.ui \
     fragmentcontextclosed.ui \
     fragmentcontextopen.ui \
     fragmenteditor.ui \

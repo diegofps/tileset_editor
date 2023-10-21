@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>DialogEditClusters</class>
- <widget class="QDialog" name="DialogEditClusters">
+ <class>DialogEditScenes</class>
+ <widget class="QDialog" name="DialogEditScenes">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Clusters</string>
+   <string>Scenes</string>
   </property>
   <property name="styleSheet">
    <string notr="true">background-color: rgb(52, 66, 74);
@@ -71,7 +71,7 @@
     </layout>
    </item>
    <item>
-    <widget class="QListWidget" name="listClusters">
+    <widget class="QListWidget" name="listScenes">
      <property name="frameShape">
       <enum>QFrame::NoFrame</enum>
      </property>
@@ -118,7 +118,7 @@ border-radius: 10px;</string>
   <tabstop>btRemove</tabstop>
   <tabstop>btMoveUp</tabstop>
   <tabstop>btMoveDown</tabstop>
-  <tabstop>listClusters</tabstop>
+  <tabstop>listScenes</tabstop>
  </tabstops>
  <resources/>
  <connections/>

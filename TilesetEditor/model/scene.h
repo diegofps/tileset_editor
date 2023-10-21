@@ -1,20 +1,20 @@
-#ifndef CLUSTER_H
-#define CLUSTER_H
+#ifndef SCENE_H
+#define SCENE_H
 
 #include <QJsonObject>
 #include <QString>
 
-class Cluster
+class Scene
 {
 public:
     int id;
     QString name;
 
 public:
-    Cluster();
-    Cluster(QJsonObject & data);
+    Scene();
+    Scene(QJsonObject & data);
     QJsonObject exportAsJson();
 
 };
 
-#endif // CLUSTER_H
+#endif // SCENE_H
