@@ -6,8 +6,8 @@ AppState::AppState()
 
     _tilePreviewShow = "original";
 
-    _palettesShow = "all";
-    _palettesSelectedItem = nullptr;
+    _palettesShow = "used";
+    _selectedPalette = nullptr;
 
     _tilesFilter = new TilesFilter();
 
@@ -551,10 +551,10 @@ void AppState::setPalettesShow(QString const & value)
     }
 }
 
-void AppState::setPalettesSelectedItem(Palette * value)
+void AppState::setSelectedPalette(Palette * value)
 {
-    _palettesSelectedItem = value;
-    emit onPaletteSelectedItemChanged(value);
+    _selectedPalette = value;
+    emit onSelectedPaletteChanged(value);
 }
 
 const QString &AppState::palettesShow() const
@@ -562,9 +562,9 @@ const QString &AppState::palettesShow() const
     return _palettesShow;
 }
 
-Palette * AppState::palettesSelectedItem()
+Palette * AppState::selectedPalette()
 {
-    return _palettesSelectedItem;
+    return _selectedPalette;
 }
 
 // TilePreview

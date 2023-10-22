@@ -41,12 +41,12 @@ FragmentTilePreview::FragmentTilePreview(QWidget *parent) :
 
         QString const & mode = App::getState()->tilePreviewShow();
         QList<Tile*> const * tiles = App::getState()->tilesElectedItems();
-        Palette * palette = App::getState()->palettesSelectedItem();
+        Palette * palette = App::getState()->selectedPalette();
 
         loadTile(mode, tiles, palette);
     });
 
-    connect(App::getState(), &AppState::onPaletteSelectedItemChanged, this, [&](Palette * value) {
+    connect(App::getState(), &AppState::onSelectedPaletteChanged, this, [&](Palette * value) {
         loadPalette(value);
 
         QString const & mode = App::getState()->tilePreviewShow();
@@ -60,12 +60,12 @@ FragmentTilePreview::FragmentTilePreview(QWidget *parent) :
 
         QString const & mode = App::getState()->tilePreviewShow();
 //        QList<Tile*> const * tiles = App::getState()->tilesElectedItems();
-        Palette * palette = App::getState()->palettesSelectedItem();
+        Palette * palette = App::getState()->selectedPalette();
 
         loadTile(mode, value, palette);
     });
 
-    loadPalette(App::getState()->palettesSelectedItem());
+    loadPalette(App::getState()->selectedPalette());
 }
 
 void FragmentTilePreview::loadTile(QString mode, QList<Tile*> const * tiles, Palette * palette)

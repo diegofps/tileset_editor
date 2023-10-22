@@ -228,6 +228,22 @@ void ServiceContext::importDump(QString const & folderpath, ContextReport * repo
             << dumpedReferences.size() << "references, and"
             << dumpedScreenshots.size() << "screenshots.";
 
+    std::sort(dumpedTiles.begin(), dumpedTiles.end(), [](Tile * const a, Tile * const b) {
+        return a->id < b->id;
+    });
+
+    std::sort(dumpedPalettes.begin(), dumpedPalettes.end(), [](Palette * const a, Palette * const b) {
+        return a->id < b->id;
+    });
+
+    std::sort(dumpedReferences.begin(), dumpedReferences.end(), [](Reference * const a, Reference * const b) {
+        return a->id < b->id;
+    });
+
+    std::sort(dumpedScreenshots.begin(), dumpedScreenshots.end(), [](Screenshot * const a, Screenshot * const b) {
+        return a->id < b->id;
+    });
+
     QHash<QByteArray,Palette*> statePaletteByKey;
     QHash<QByteArray,Tile*> stateTileByKey;
     QHash<int,int> tileStateId;

@@ -2,6 +2,7 @@
 #define FRAGMENTPALETTES_H
 
 #include "model/palette.h"
+#include "model/tile.h"
 #include <QWidget>
 
 namespace Ui {
@@ -17,11 +18,16 @@ public:
     ~FragmentPalettes();
 
 private:
-    void loadPalettes(QList<Palette*> const * value);
+    void filterPalettes(QList<Tile*> const * selectedTiles, QList<Palette*> const * value, QString paletteMode);
+    void styleButtons(const QString &value);
+    void updatePalettesWidget();
+    void saveSelectedPalette();
+    void restoreSelectedPalette(QList<Tile*> const * selectedTiles);
 
 private:
     Ui::FragmentPalettes *ui;
-    void styleButtons(const QString &value);
+    QList<Palette*> _palettes;
+    int _lastSelectedItemID;
 };
 
 #endif // FRAGMENTPALETTES_H

@@ -226,12 +226,15 @@ void FragmentTiles::saveSelectedTile()
 
 void FragmentTiles::restoreSelectedTile()
 {
+    if (_tiles.isEmpty())
+        return;
+
     if (_lastSelectedItemID != 0)
-    for (qsizetype i=0;i!=_tiles.size();++i)
-        if (_tiles[i]->id == _lastSelectedItemID)
-        {
-            _gridTiles->setSelection(i,i);
-            return;
-        }
+        for (qsizetype i=0;i!=_tiles.size();++i)
+            if (_tiles[i]->id == _lastSelectedItemID)
+            {
+                _gridTiles->setSelection(i,i);
+                return;
+            }
     _gridTiles->setSelection(0,0);
 };

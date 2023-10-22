@@ -31,8 +31,18 @@ QPixmap * TileCache::getTilePixmap(Tile * tile, Palette * palette)
             QRgb * line = reinterpret_cast<QRgb*>(img.scanLine(i));
             for (int j=0;j!=8;++j)
             {
-                QColor & color = srcColors[srcPixels[k]];
-                line[j] = qRgba(color.red(), color.green(), color.blue(), 255);
+                auto & idx = srcPixels[k];
+
+                if (idx >=palette->size)
+                {
+                    qWarning() << "Color index is higher then palette size: idx=" << idx << ", size=" << palette->size;
+                    line[j] = qRgba(255, 0, 0, 255);
+                }
+                else
+                {
+                    QColor & color = srcColors[idx];
+                    line[j] = qRgba(color.red(), color.green(), color.blue(), 255);
+                }
                 ++k;
             }
         }
