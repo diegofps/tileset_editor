@@ -3,7 +3,10 @@
 #include <QPainter>
 
 WidgetPicture::WidgetPicture(QWidget *parent)
-    : QWidget{parent}
+    : QWidget{parent},
+
+      _rect(0,0,0,0),
+      _pixmap(nullptr)
 {
 
 }

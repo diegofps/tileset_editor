@@ -20,7 +20,7 @@ void FragmentTiles::styleButton(QPushButton * btn, int const value)
     }
 }
 
-inline void nextState(int & s)
+inline void nextButtonState(int & s)
 {
     if (s == 0) s = 1;
     else if (s == 1) s = 2;
@@ -44,43 +44,45 @@ FragmentTiles::FragmentTiles(QWidget *parent) :
     connect(ui->btSprite, &QPushButton::clicked, this, [&]()
     {
         auto filter = App::getState()->tilesFilter();
-        nextState(filter->usedInSprite);
+        nextButtonState(filter->usedInSprite);
         App::getState()->setTilesFilter(filter);
     });
 
     connect(ui->btBackground, &QPushButton::clicked, this, [&]()
     {
         auto filter = App::getState()->tilesFilter();
-        nextState(filter->usedInBackground);
+        nextButtonState(filter->usedInBackground);
         App::getState()->setTilesFilter(filter);
     });
 
     connect(ui->btHFlip, &QPushButton::clicked, this, [&]()
     {
         auto filter = App::getState()->tilesFilter();
-        nextState(filter->usedWithHFlip);
+        nextButtonState(filter->usedWithHFlip);
         App::getState()->setTilesFilter(filter);
     });
 
     connect(ui->btVFlip, &QPushButton::clicked, this, [&]()
     {
         auto filter = App::getState()->tilesFilter();
-        nextState(filter->usedWithVFlip);
+        nextButtonState(filter->usedWithVFlip);
         App::getState()->setTilesFilter(filter);
     });
 
     connect(ui->btUnlinked, &QPushButton::clicked, this, [&]()
     {
         auto filter = App::getState()->tilesFilter();
-        nextState(filter->isUnlinked);
+        nextButtonState(filter->isUnlinked);
         App::getState()->setTilesFilter(filter);
     });
 
-    connect(App::getState(), &AppState::onProjectSelectedSceneIDChanged, this, [&](int value){
+    connect(App::getState(), &AppState::onProjectSelectedSceneIDChanged, this, [&](int value) {
         auto tiles = App::getState()->projectTiles();
         auto filter = App::getState()->tilesFilter();
+
         filterTiles(value, tiles, filter);
         updateTilesWidget();
+        _gridTiles->setSelection(0,0);
     });
 
     connect(App::getState(), &AppState::onTilesFilterChanged, this, [&](TilesFilter * filter)
@@ -91,14 +93,18 @@ FragmentTiles::FragmentTiles(QWidget *parent) :
         styleButton(ui->btHFlip, filter->usedWithHFlip);
         styleButton(ui->btVFlip, filter->usedWithVFlip);
 
+        saveSelectedTile();
         filterTiles(App::getState()->projectSelectedSceneID(), App::getState()->projectTiles(), filter);
         updateTilesWidget();
+        restoreSelectedTile();
     });
 
     connect(App::getState(), &AppState::onProjectTilesChanged, this, [&](QList<Tile*> const * value)
     {
+        saveSelectedTile();
         filterTiles(App::getState()->projectSelectedSceneID(), value, App::getState()->tilesFilter());
         updateTilesWidget();
+        restoreSelectedTile();
     });
 
     _gridTiles = new WidgetGridTiles(this);
@@ -116,11 +122,18 @@ FragmentTiles::FragmentTiles(QWidget *parent) :
     updateTilesWidget();
 
     connect(_gridTiles, &WidgetGridTiles::onSelectedTileChanged, this, [&](int start, int end) {
+        if (start<0 || end <0)
+            return;
+
         QList<Tile*> selectedTiles;
+
         for (int i=start;i<=end;++i)
             selectedTiles.append(_tiles[i]);
-        App::getState()->setTilesSelectedItems(selectedTiles);
+
+        App::getState()->setTilesSelectedItems(&selectedTiles);
     });
+
+    _gridTiles->setSelection(0,0);
 
 }
 
@@ -197,3 +210,28 @@ void FragmentTiles::updateTilesWidget()
     _gridTiles->repack();
     _gridTiles->update();
 }
+
+void FragmentTiles::saveSelectedTile()
+{
+    auto selectedItems = App::getState()->tilesElectedItems();
+    if (selectedItems == nullptr || selectedItems->isEmpty())
+    {
+        _lastSelectedItemID = 0;
+        return;
+    }
+
+    auto item = (*selectedItems)[0];
+    _lastSelectedItemID = item->id;
+};
+
+void FragmentTiles::restoreSelectedTile()
+{
+    if (_lastSelectedItemID != 0)
+    for (qsizetype i=0;i!=_tiles.size();++i)
+        if (_tiles[i]->id == _lastSelectedItemID)
+        {
+            _gridTiles->setSelection(i,i);
+            return;
+        }
+    _gridTiles->setSelection(0,0);
+};

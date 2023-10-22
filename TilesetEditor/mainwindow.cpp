@@ -243,7 +243,31 @@ void MainWindow::onAction_Edit_Scenes()
 
 void MainWindow::onAction_Edit_MoveTileToScene()
 {
+    auto selectedTiles = App::getState()->tilesElectedItems();
 
+    if (selectedTiles == nullptr || selectedTiles->isEmpty())
+        return;
+
+    auto scenes = App::getState()->projectScenes();
+
+    QStringList options;
+    options.append("NULL Scene");
+    for (auto item : *scenes)
+        options.append(item->name);
+
+    DialogOptions dialog;
+    dialog.setOptions(options, App::getState()->lastMoveToSceneResult());
+    dialog.setWindowTitle("Move Tile(s) to Scene");
+
+    if (dialog.exec() && dialog.selectedOption() >= 0 && dialog.selectedOption() <= scenes->size())
+    {
+        App::getState()->setLastMoveToSceneResult(dialog.selectedOption());
+
+        if (dialog.selectedOption() == 0)
+            App::getState()->tilesMoveSelectedItemsToScene(0);
+        else
+            App::getState()->tilesMoveSelectedItemsToScene((*scenes)[dialog.selectedOption()-1]->id);
+    }
 }
 
 void MainWindow::onAction_Edit_MoveTilesetToScene()
@@ -259,12 +283,12 @@ void MainWindow::onAction_Edit_MoveTilesetToScene()
         options.append(item->name);
 
     DialogOptions dialog;
-    dialog.setOptions(options, App::getState()->lastTilesetMoveToSceneResult());
+    dialog.setOptions(options, App::getState()->lastMoveToSceneResult());
     dialog.setWindowTitle("Move Tileset to Scene");
 
     if (dialog.exec() && dialog.selectedOption() >= 0 && dialog.selectedOption() <= scenes->size())
     {
-        App::getState()->setLastTilesetMoveToSceneResult(dialog.selectedOption());
+        App::getState()->setLastMoveToSceneResult(dialog.selectedOption());
 
         if (dialog.selectedOption() == 0)
             App::getState()->tilesetsMoveSelectedItemToScene(0);

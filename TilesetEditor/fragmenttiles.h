@@ -23,11 +23,14 @@ private:
     void filterTiles(int sceneID, const QList<Tile *> *tiles, TilesFilter *filter);
     void updateTilesWidget();
     void styleButton(QPushButton * btn, int value);
+    void restoreSelectedTile();
+    void saveSelectedTile();
 
 private:
     Ui::FragmentTiles *ui;
     QList<Tile*> _tiles;
     WidgetGridTiles * _gridTiles;
+    int _lastSelectedItemID;
 };
 
 #endif // FRAGMENTTILES_H

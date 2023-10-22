@@ -23,7 +23,7 @@ WidgetGridTiles::WidgetGridTiles(QWidget *parent)
     _pen.setStyle(Qt::SolidLine);
     _pen.setWidth(3);
 
-    _brush.setColor(QColor::fromRgba(qRgba(0,0,255,160)));
+    _brush.setColor(QColor::fromRgba(qRgba(128,128,255,160)));
     _brush.setStyle(Qt::SolidPattern);
 }
 
@@ -46,6 +46,9 @@ void WidgetGridTiles::setTiles(QList<Tile*> const * value)
         view.pixmap = App::getOriginalTileCache()->getTilePixmap(tile, palette);
         view.rect = QRect();
     }
+
+    _selectionStart = -1;
+    _selectionEnd = -1;
 }
 
 void WidgetGridTiles::repack()
@@ -74,6 +77,9 @@ void WidgetGridTiles::repack()
 
 void WidgetGridTiles::setSelection(int start, int end)
 {
+    start = std::max(-1, start);
+    end = std::min((int)_tiles.size()-1, end);
+
     _selectionStart = start;
     _selectionEnd = end;
     emit onSelectedTileChanged(_selectionStart, _selectionEnd);
@@ -95,6 +101,9 @@ void WidgetGridTiles::paintEvent(QPaintEvent * event)
             painter.setPen(Qt::NoPen);
             painter.setBrush(_brush);
             painter.drawRect(view.rect);
+
+            if (i == _selectionStart)
+                painter.drawRect(view.rect);
         }
     }
 }

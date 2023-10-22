@@ -56,7 +56,7 @@ private:
     QList<Screenshot*> * _projectScreenshots;
     QList<Scene*>      * _projectScenes;
     int                  _projectSelectedSceneID;
-    int                  _lastTilesetMoveToSceneResult;
+    int                  _lastMoveToSceneResult;
 
     QHash<int, Tile*>       _index_Tile_ID;
     QHash<int, Tileset*>    _index_Tileset_ID;
@@ -146,8 +146,8 @@ public:
     void moveDownProjectTileset(const int position);
 
 
-    void setLastTilesetMoveToSceneResult(int value);
-    int lastTilesetMoveToSceneResult();
+    void setLastMoveToSceneResult(int value);
+    int lastMoveToSceneResult();
 
     // Editor Toolbox
     EditorTool editorTool() const;
@@ -174,7 +174,8 @@ public:
     TilesFilter * tilesFilter() const;
     QList<Tile*> const * tilesElectedItems() const;
     void setTilesFilter(TilesFilter * value);
-    void setTilesSelectedItems(QList<Tile*> & value);
+    void setTilesSelectedItems(QList<Tile*> * value);
+    void tilesMoveSelectedItemsToScene(int sceneID);
 
     // Palettes
     const QString & palettesShow() const;

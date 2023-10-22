@@ -30,7 +30,7 @@ AppState::AppState()
     _projectScreenshots = nullptr;
     _projectScenes = nullptr;
     _projectSelectedSceneID = 0;
-    _lastTilesetMoveToSceneResult = 0;
+    _lastMoveToSceneResult = 0;
 
 }
 
@@ -324,14 +324,14 @@ void AppState::moveDownProjectTileset(int const position)
     emit onProjectTilesetsMoved(_projectTilesets, position, position-1);
 }
 
-void AppState::setLastTilesetMoveToSceneResult(int value)
+void AppState::setLastMoveToSceneResult(int value)
 {
-    _lastTilesetMoveToSceneResult = value;
+    _lastMoveToSceneResult = value;
 }
 
-int AppState::lastTilesetMoveToSceneResult()
+int AppState::lastMoveToSceneResult()
 {
-    return _lastTilesetMoveToSceneResult;
+    return _lastMoveToSceneResult;
 }
 
 Project * AppState::project() const
@@ -500,9 +500,12 @@ void AppState::setTilesFilter(TilesFilter * value)
     emit onTilesFilterChanged(value);
 }
 
-void AppState::setTilesSelectedItems(QList<Tile*> & value)
+void AppState::setTilesSelectedItems(QList<Tile*> * value)
 {
-    _tilesSelectedItems = std::move(value);
+    if (value == nullptr)
+        _tilesSelectedItems.clear();
+    else
+        _tilesSelectedItems = std::move(*value);
     emit onTilesSelectedItemsChanged(&_tilesSelectedItems);
 }
 
@@ -514,6 +517,27 @@ TilesFilter * AppState::tilesFilter() const
 QList<Tile *> const * AppState::tilesElectedItems() const
 {
     return &_tilesSelectedItems;
+}
+
+void AppState::tilesMoveSelectedItemsToScene(int sceneID)
+{
+    if (_tilesSelectedItems.isEmpty())
+        return;
+
+    if (sceneID == -1)
+    {
+        for (auto tile : _tilesSelectedItems)
+            tile->sceneId = 0;
+    }
+    else
+    {
+        for (auto tile : _tilesSelectedItems)
+            tile->sceneId = sceneID;
+    }
+
+    _projectHasChanges = true;
+
+    emit onProjectTilesChanged(_projectTiles);
 }
 
 // Palettes
