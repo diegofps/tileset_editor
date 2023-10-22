@@ -105,6 +105,8 @@ void ServiceContext::load(const QString & folderpath, ContextReport * report)
         loadScenes(baseDir, scenes)
     )
     {
+        close();
+
         App::getState()->setProjectTiles(tiles);
         App::getState()->setProjectTilesets(tilesets);
         App::getState()->setProjectPalettes(palettes);
@@ -113,7 +115,6 @@ void ServiceContext::load(const QString & folderpath, ContextReport * report)
         App::getState()->setProjectScenes(scenes);
         App::getState()->setProjectHasChanges(false);
         App::getState()->setProject(context);
-        App::getOriginalTileCache()->clear();
 
         if (report != nullptr)
             report->success(QString("Project loaded successfully: %1").arg(folderpath));

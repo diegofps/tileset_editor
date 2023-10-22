@@ -500,9 +500,20 @@ void AppState::setTilesFilter(TilesFilter * value)
     emit onTilesFilterChanged(value);
 }
 
+void AppState::setTilesSelectedItems(QList<Tile*> & value)
+{
+    _tilesSelectedItems = std::move(value);
+    emit onTilesSelectedItemsChanged(&_tilesSelectedItems);
+}
+
 TilesFilter * AppState::tilesFilter() const
 {
     return _tilesFilter;
+}
+
+QList<Tile *> const * AppState::tilesElectedItems() const
+{
+    return &_tilesSelectedItems;
 }
 
 // Palettes

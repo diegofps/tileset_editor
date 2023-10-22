@@ -3,6 +3,7 @@
 AppState * App::appState = nullptr;
 AppStyles * App::appStyles = nullptr;
 TileCache * App::originalTileCache = nullptr;
+TileCacheHD * App::hdTileCache = nullptr;
 
 App::App()
 {
@@ -28,4 +29,11 @@ TileCache *App::getOriginalTileCache()
     if (originalTileCache == nullptr)
         originalTileCache = new TileCache();
     return originalTileCache;
+}
+
+TileCacheHD *App::getHDTileCache()
+{
+    if (hdTileCache == nullptr)
+        hdTileCache = new TileCacheHD();
+    return hdTileCache;
 }

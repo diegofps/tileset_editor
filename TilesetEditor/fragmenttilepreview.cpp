@@ -35,10 +35,54 @@ FragmentTilePreview::FragmentTilePreview(QWidget *parent) :
 
     connect(ui->btOriginal, &QPushButton::clicked, this, [&](){ App::getState()->setTilePreviewShow("original"); });
     connect(ui->btHD, &QPushButton::clicked, this, [&](){ App::getState()->setTilePreviewShow("hd"); });
-    connect(App::getState(), &AppState::onTilePreviewShowChanged, this, [&](QString const & value) { styleButtons(value); });
-    connect(App::getState(), &AppState::onPaletteSelectedItemChanged, this, [&](Palette * value) { loadPalette(value); });
+
+    connect(App::getState(), &AppState::onTilePreviewShowChanged, this, [&](QString const & value) {
+        styleButtons(value);
+
+        QString const & mode = App::getState()->tilePreviewShow();
+        QList<Tile*> const * tiles = App::getState()->tilesElectedItems();
+        Palette * palette = App::getState()->palettesSelectedItem();
+
+        loadTile(mode, tiles, palette);
+    });
+
+    connect(App::getState(), &AppState::onPaletteSelectedItemChanged, this, [&](Palette * value) {
+        loadPalette(value);
+
+        QString const & mode = App::getState()->tilePreviewShow();
+        QList<Tile*> const * tiles = App::getState()->tilesElectedItems();
+//        Palette * palette = App::getState()->palettesSelectedItem();
+
+        loadTile(mode, tiles, value);
+    });
+
+    connect(App::getState(), &AppState::onTilesSelectedItemsChanged, this, [&](QList<Tile*> * value) {
+
+        QString const & mode = App::getState()->tilePreviewShow();
+//        QList<Tile*> const * tiles = App::getState()->tilesElectedItems();
+        Palette * palette = App::getState()->palettesSelectedItem();
+
+        loadTile(mode, value, palette);
+    });
 
     loadPalette(App::getState()->palettesSelectedItem());
+}
+
+void FragmentTilePreview::loadTile(QString mode, QList<Tile*> const * tiles, Palette * palette)
+{
+    if (tiles == nullptr || tiles->isEmpty() || palette == nullptr || (mode!="hd" && mode!="original"))
+    {
+        ui->picture->setPixmap(nullptr);
+        return;
+    }
+
+    Tile * tile = (*tiles)[0];
+
+    QPixmap * img = mode == "original"
+            ? App::getOriginalTileCache()->getTilePixmap(tile, palette)
+            : App::getHDTileCache()->getTilePixmap(tile, palette);
+
+    ui->picture->setPixmap(img);
 }
 
 void FragmentTilePreview::loadPalette(Palette * value)

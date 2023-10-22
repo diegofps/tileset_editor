@@ -1,10 +1,10 @@
-#include "qverticalscrollarea.h"
+#include "widgetvscrollarea.h"
 
 #include <QVBoxLayout>
 #include <QScrollBar>
 #include <QEvent>
 
-QVerticalScrollArea::QVerticalScrollArea(QWidget * content, QWidget * parent)
+WidgetVScrollArea::WidgetVScrollArea(QWidget * content, QWidget * parent)
     : QScrollArea(parent),
     _content(content)
 {
@@ -18,7 +18,7 @@ QVerticalScrollArea::QVerticalScrollArea(QWidget * content, QWidget * parent)
     setWidget(content);
 }
 
-bool QVerticalScrollArea::eventFilter(QObject *watched, QEvent *event)
+bool WidgetVScrollArea::eventFilter(QObject *watched, QEvent *event)
 {
     if (watched == _content && event->type() == QEvent::Resize)
         setMinimumWidth(_content->minimumSizeHint().width()+verticalScrollBar()->width());

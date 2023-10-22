@@ -81,6 +81,7 @@ private:
 
     // Tiles
     TilesFilter * _tilesFilter;
+    QList<Tile*>  _tilesSelectedItems;
 
     // Palettes
     QString   _palettesShow;
@@ -171,7 +172,9 @@ public:
 
     // Tiles
     TilesFilter * tilesFilter() const;
+    QList<Tile*> const * tilesElectedItems() const;
     void setTilesFilter(TilesFilter * value);
+    void setTilesSelectedItems(QList<Tile*> & value);
 
     // Palettes
     const QString & palettesShow() const;
@@ -225,6 +228,7 @@ signals:
 
     // Tiles
     void onTilesFilterChanged(TilesFilter * value);
+    void onTilesSelectedItemsChanged(QList<Tile*> * value);
 
     // Palettes
     void onPalettesShowChanged(QString const & value);

@@ -41,6 +41,9 @@
         <verstretch>1</verstretch>
        </sizepolicy>
       </property>
+      <property name="styleSheet">
+       <string notr="true">background-color: rgb(65, 81, 92);</string>
+      </property>
       <property name="frameShape">
        <enum>QFrame::NoFrame</enum>
       </property>
@@ -157,7 +160,7 @@ QMenu::item:selected {
    </widget>
    <widget class="QMenu" name="menuExecute">
     <property name="title">
-     <string>&amp;Execute</string>
+     <string>E&amp;xecute</string>
     </property>
     <addaction name="action_Execute_BuildTilesets"/>
     <addaction name="action_Execute_Pipelines"/>
@@ -174,7 +177,7 @@ QMenu::item:selected {
    </widget>
    <widget class="QMenu" name="menuView">
     <property name="title">
-     <string>Edit</string>
+     <string>&amp;Edit</string>
     </property>
     <addaction name="action_Edit_Scenes"/>
     <addaction name="action_Edit_MoveTileToScene"/>
@@ -182,7 +185,7 @@ QMenu::item:selected {
    </widget>
    <widget class="QMenu" name="menuView_2">
     <property name="title">
-     <string>View</string>
+     <string>&amp;View</string>
     </property>
     <addaction name="action_View_NextTileUsage"/>
     <addaction name="action_View_Reference1"/>

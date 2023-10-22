@@ -2,6 +2,7 @@
 #define FRAGMENTTILEPREVIEW_H
 
 #include "model/palette.h"
+#include "model/tile.h"
 #include <QWidget>
 
 namespace Ui {
@@ -17,6 +18,7 @@ public:
     ~FragmentTilePreview();
 
 private:
+    void loadTile(QString previewMode, QList<Tile*> const * tile, Palette * palette);
     void styleButtons(QString const & value);
     void loadPalette(Palette * value);
 

@@ -14,10 +14,8 @@ FragmentTilesets::FragmentTilesets(QWidget *parent) :
     ui->btMoveUp->setStyleSheet(App::getStyles()->get("button_click"));
     ui->btMoveDown->setStyleSheet(App::getStyles()->get("button_click"));
 
-    connect(App::getState(), &AppState::onProjectSelectedSceneIDChanged, this, [&](int value){
-        auto tilesets = App::getState()->projectTilesets();
-
-        filterTilesets(App::getState()->projectSelectedSceneID(), tilesets);
+    connect(App::getState(), &AppState::onProjectSelectedSceneIDChanged, this, [&](int value) {
+        filterTilesets(value, App::getState()->projectTilesets());
         updateTilesetsWidget();
 
         if (!_tilesets.isEmpty())

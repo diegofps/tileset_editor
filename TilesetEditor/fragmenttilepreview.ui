@@ -84,7 +84,7 @@
        <number>0</number>
       </property>
       <item>
-       <widget class="QLabel" name="label_2">
+       <widget class="QLabel" name="lbTitle">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -156,7 +156,7 @@ font: 9pt;</string>
          </layout>
         </item>
         <item>
-         <widget class="QWidget" name="widget_2" native="true">
+         <widget class="WidgetPicture" name="picture" native="true">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
             <horstretch>0</horstretch>
@@ -232,6 +232,12 @@ font: 9pt;</string>
    <class>WidgetItemPalette</class>
    <extends>QWidget</extends>
    <header>widgetitempalette.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>WidgetPicture</class>
+   <extends>QWidget</extends>
+   <header>widgetpicture.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

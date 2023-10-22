@@ -34,13 +34,15 @@ SOURCES += \
     model/screenshot.cpp \
     model/tile.cpp \
     model/tileset.cpp \
-    qverticalscrollarea.cpp \
     servicecontext.cpp \
     tilecache.cpp \
+    tilecachehd.cpp \
     tilesgridlist.cpp \
     widgetgridtiles.cpp \
     widgetitempalette.cpp \
-    widgetpalette.cpp
+    widgetpalette.cpp \
+    widgetpicture.cpp \
+    widgetvscrollarea.cpp
 
 HEADERS += \
     app.h \
@@ -68,13 +70,15 @@ HEADERS += \
     model/screenshot.h \
     model/tile.h \
     model/tileset.h \
-    qverticalscrollarea.h \
     servicecontext.h \
     tilecache.h \
+    tilecachehd.h \
     tilesgridlist.h \
     widgetgridtiles.h \
     widgetitempalette.h \
-    widgetpalette.h
+    widgetpalette.h \
+    widgetpicture.h \
+    widgetvscrollarea.h
 
 FORMS += \
     dialogeditscenes.ui \
