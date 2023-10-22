@@ -5,8 +5,8 @@
 WidgetPicture::WidgetPicture(QWidget *parent)
     : QWidget{parent},
 
-      _rect(0,0,0,0),
-      _pixmap(nullptr)
+      _pixmap(nullptr),
+      _rect(0,0,0,0)
 {
 
 }

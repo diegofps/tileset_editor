@@ -67,12 +67,12 @@ FragmentPreview::FragmentPreview(QWidget *parent) :
 
     // Configure Editor and References page buttons
 
-    styleButtons(App::getState()->previewPage());
+    styleButtons(App::getState()->previewMode());
 
-    connect(btEditor, &QPushButton::clicked, this, [&](){ App::getState()->setPreviewPage("editor"); });
-    connect(btReferences, &QPushButton::clicked, this, [&](){ App::getState()->setPreviewPage("references"); });
+    connect(btEditor, &QPushButton::clicked, this, [&](){ App::getState()->setPreviewMode("editor"); });
+    connect(btReferences, &QPushButton::clicked, this, [&](){ App::getState()->setPreviewMode("references"); });
 
-    connect(App::getState(), &AppState::onPreviewPageChanged, this, [&](QString const & page)
+    connect(App::getState(), &AppState::onPreviewModeChanged, this, [&](QString const & page)
     {
         styleButtons(page);
 

@@ -77,7 +77,7 @@ void ServiceContext::close(ContextReport * report)
     App::getState()->setProjectReferences(nullptr);
     App::getState()->setProjectScreenshots(nullptr);
     App::getState()->setProjectScenes(nullptr);
-    App::getState()->setTilesetsSelectedItem(nullptr);
+    App::getState()->setSelectedTileset(nullptr);
     App::getState()->setTilesSelectedItems(nullptr);
     App::getOriginalTileCache()->clear();
 

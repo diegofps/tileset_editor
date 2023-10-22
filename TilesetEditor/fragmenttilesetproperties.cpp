@@ -14,19 +14,19 @@ FragmentTilesetProperties::FragmentTilesetProperties(QWidget *parent) :
     ui->setupUi(this);
 
     connect(ui->leName, &QLineEdit::textChanged, this, [&](QString const & text) {
-        auto ts = App::getState()->tilesetsSelectedItem();
+        auto ts = App::getState()->selectedTileset();
         if (ts != nullptr && ts->name != text) {
             ts->name = text;
-            App::getState()->setTilesetsSelectedItem(ts);
+            App::getState()->setSelectedTileset(ts);
             App::getState()->setProjectHasChanges(true);
         }
     });
 
     connect(ui->sbGridW, &QSpinBox::valueChanged, this, [&](int value) {
-        auto ts = App::getState()->tilesetsSelectedItem();
+        auto ts = App::getState()->selectedTileset();
         if (ts != nullptr && ts->gridW != value) {
             ts->gridW = value;
-            App::getState()->setTilesetsSelectedItem(ts);
+            App::getState()->setSelectedTileset(ts);
             App::getState()->setProjectHasChanges(true);
         }
 
@@ -35,10 +35,10 @@ FragmentTilesetProperties::FragmentTilesetProperties(QWidget *parent) :
     });
 
     connect(ui->sbGridH, &QSpinBox::valueChanged, this, [&](int value) {
-        auto ts = App::getState()->tilesetsSelectedItem();
+        auto ts = App::getState()->selectedTileset();
         if (ts != nullptr && ts->gridH != value) {
             ts->gridH = value;
-            App::getState()->setTilesetsSelectedItem(ts);
+            App::getState()->setSelectedTileset(ts);
             App::getState()->setProjectHasChanges(true);
         }
 
@@ -47,7 +47,7 @@ FragmentTilesetProperties::FragmentTilesetProperties(QWidget *parent) :
     });
 
     connect(ui->btColor, &QPushButton::clicked, this, [&](bool) {
-        auto ts = App::getState()->tilesetsSelectedItem();
+        auto ts = App::getState()->selectedTileset();
         if (ts == nullptr)
             return;
 
@@ -56,14 +56,14 @@ FragmentTilesetProperties::FragmentTilesetProperties(QWidget *parent) :
 
         if (dialog.exec() && ts->bgColor != dialog.selectedColor()) {
             ts->bgColor = dialog.selectedColor();
-            App::getState()->setTilesetsSelectedItem(ts);
+            App::getState()->setSelectedTileset(ts);
             App::getState()->setProjectHasChanges(true);
         }
     });
 
-    connect(App::getState(), &AppState::onTilesetsSelectedItemChanged, this, &FragmentTilesetProperties::loadTileset);
+    connect(App::getState(), &AppState::onSelectedTilesetChanged, this, &FragmentTilesetProperties::loadTileset);
 
-    loadTileset(App::getState()->tilesetsSelectedItem());
+    loadTileset(App::getState()->selectedTileset());
 }
 
 void FragmentTilesetProperties::loadTileset(Tileset * ts)

@@ -77,21 +77,21 @@ private:
     bool _referenceHighlightPosition;
 
     // Preview
-    QString _previewPage;
+    QString _previewMode;
 
     // Tiles
     TilesFilter * _tilesFilter;
     QList<Tile*>  _tilesSelectedItems;
 
     // Palettes
-    QString   _palettesShow;
+    QString   _palettesMode;
     Palette * _selectedPalette;
 
     // Tile Preview
-    QString _tilePreviewShow;
+    QString _tilePreviewMode;
 
     // Tilesets
-    Tileset * _tilesetsSelectedItem;
+    Tileset * _selectedTileset;
 
 public:
 
@@ -167,8 +167,8 @@ public:
     void setReferenceHighlightPosition(bool value);
 
     // Preview
-    const QString & previewPage() const;
-    void setPreviewPage(QString value);
+    const QString & previewMode() const;
+    void setPreviewMode(QString value);
 
     // Tiles
     TilesFilter * tilesFilter() const;
@@ -184,13 +184,13 @@ public:
     void setSelectedPalette(Palette * value);
 
     // Tile Preview
-    const QString & tilePreviewShow() const;
-    void setTilePreviewShow(QString const & value);
+    const QString & tilePreviewMode() const;
+    void setTilePreviewMode(QString const & value);
 
     // Tilesets
-    Tileset * tilesetsSelectedItem() const;
-    void setTilesetsSelectedItem(Tileset * value);
-    void tilesetsMoveSelectedItemToScene(int sceneID);
+    Tileset * selectedTileset() const;
+    void setSelectedTileset(Tileset * value);
+    void moveSelectedTilesetToScene(int sceneID);
 
 signals:
 
@@ -225,7 +225,7 @@ signals:
     void onReferenceHighlightPositionChanged(bool const value);
 
     // Preview
-    void onPreviewPageChanged(QString const & value);
+    void onPreviewModeChanged(QString const & value);
 
     // Tiles
     void onTilesFilterChanged(TilesFilter * value);
@@ -236,10 +236,10 @@ signals:
     void onSelectedPaletteChanged(Palette * value);
 
     // Tile Preview
-    void onTilePreviewShowChanged(QString const & value);
+    void onTilePreviewModeChanged(QString const & value);
 
     // Tilesets
-    void onTilesetsSelectedItemChanged(Tileset * value);
+    void onSelectedTilesetChanged(Tileset * value);
 
 };
 

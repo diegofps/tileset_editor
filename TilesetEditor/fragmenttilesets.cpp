@@ -24,7 +24,7 @@ FragmentTilesets::FragmentTilesets(QWidget *parent) :
 
     connect(App::getState(), &AppState::onProjectTilesetsChanged, this, [&](QList<Tileset*> const * value)
     {
-        auto oldTileset = App::getState()->tilesetsSelectedItem();
+        auto oldTileset = App::getState()->selectedTileset();
         auto oldID = oldTileset == nullptr ? 0 : oldTileset->id;
         auto oldPosition = ui->listTilesets->currentRow();
 
@@ -117,12 +117,12 @@ FragmentTilesets::FragmentTilesets(QWidget *parent) :
     connect(ui->listTilesets, &QListWidget::currentRowChanged, this, [&](int position) {
 
         if (position < 0 || position >= _tilesets.size())
-            App::getState()->setTilesetsSelectedItem(nullptr);
+            App::getState()->setSelectedTileset(nullptr);
         else
-            App::getState()->setTilesetsSelectedItem(_tilesets[position]);
+            App::getState()->setSelectedTileset(_tilesets[position]);
     });
 
-    connect(App::getState(), &AppState::onTilesetsSelectedItemChanged, this, [&](Tileset * ts) {
+    connect(App::getState(), &AppState::onSelectedTilesetChanged, this, [&](Tileset * ts) {
         if (ui->listTilesets->currentRow() < 0 || ts == nullptr)
             return;
 

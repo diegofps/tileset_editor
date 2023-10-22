@@ -220,17 +220,17 @@ void MainWindow::onAction_File_QuitProject()
 
 void MainWindow::onAction_View_Reference(int position)
 {
-    if (App::getState()->previewPage() == "references")
+    if (App::getState()->previewMode() == "references")
     {
         if (App::getState()->referenceScreenshot() == position)
-            App::getState()->setPreviewPage("editor");
+            App::getState()->setPreviewMode("editor");
         else
             App::getState()->setReferenceScreenshot(position);
     }
     else
     {
         App::getState()->setReferenceScreenshot(position);
-        App::getState()->setPreviewPage("references");
+        App::getState()->setPreviewMode("references");
     }
 }
 
@@ -272,7 +272,7 @@ void MainWindow::onAction_Edit_MoveTileToScene()
 
 void MainWindow::onAction_Edit_MoveTilesetToScene()
 {
-    if (App::getState()->tilesetsSelectedItem() == nullptr)
+    if (App::getState()->selectedTileset() == nullptr)
         return;
 
     auto scenes = App::getState()->projectScenes();
@@ -291,9 +291,9 @@ void MainWindow::onAction_Edit_MoveTilesetToScene()
         App::getState()->setLastMoveToSceneResult(dialog.selectedOption());
 
         if (dialog.selectedOption() == 0)
-            App::getState()->tilesetsMoveSelectedItemToScene(0);
+            App::getState()->moveSelectedTilesetToScene(0);
         else
-            App::getState()->tilesetsMoveSelectedItemToScene((*scenes)[dialog.selectedOption()-1]->id);
+            App::getState()->moveSelectedTilesetToScene((*scenes)[dialog.selectedOption()-1]->id);
     }
 }
 

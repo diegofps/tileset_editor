@@ -31,15 +31,15 @@ FragmentTilePreview::FragmentTilePreview(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    styleButtons(App::getState()->tilePreviewShow());
+    styleButtons(App::getState()->tilePreviewMode());
 
-    connect(ui->btOriginal, &QPushButton::clicked, this, [&](){ App::getState()->setTilePreviewShow("original"); });
-    connect(ui->btHD, &QPushButton::clicked, this, [&](){ App::getState()->setTilePreviewShow("hd"); });
+    connect(ui->btOriginal, &QPushButton::clicked, this, [&](){ App::getState()->setTilePreviewMode("original"); });
+    connect(ui->btHD, &QPushButton::clicked, this, [&](){ App::getState()->setTilePreviewMode("hd"); });
 
-    connect(App::getState(), &AppState::onTilePreviewShowChanged, this, [&](QString const & value) {
+    connect(App::getState(), &AppState::onTilePreviewModeChanged, this, [&](QString const & value) {
         styleButtons(value);
 
-        QString const & mode = App::getState()->tilePreviewShow();
+        QString const & mode = App::getState()->tilePreviewMode();
         QList<Tile*> const * tiles = App::getState()->tilesElectedItems();
         Palette * palette = App::getState()->selectedPalette();
 
@@ -49,7 +49,7 @@ FragmentTilePreview::FragmentTilePreview(QWidget *parent) :
     connect(App::getState(), &AppState::onSelectedPaletteChanged, this, [&](Palette * value) {
         loadPalette(value);
 
-        QString const & mode = App::getState()->tilePreviewShow();
+        QString const & mode = App::getState()->tilePreviewMode();
         QList<Tile*> const * tiles = App::getState()->tilesElectedItems();
 //        Palette * palette = App::getState()->palettesSelectedItem();
 
@@ -58,7 +58,7 @@ FragmentTilePreview::FragmentTilePreview(QWidget *parent) :
 
     connect(App::getState(), &AppState::onTilesSelectedItemsChanged, this, [&](QList<Tile*> * value) {
 
-        QString const & mode = App::getState()->tilePreviewShow();
+        QString const & mode = App::getState()->tilePreviewMode();
 //        QList<Tile*> const * tiles = App::getState()->tilesElectedItems();
         Palette * palette = App::getState()->selectedPalette();
 
