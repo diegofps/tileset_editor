@@ -19,8 +19,14 @@ public:
     int  seenOnFrames;    // Number of different frames it was seen, used to capture reference screenshots;
     bool usedInSprite;
     bool usedInBackground;
-    bool usedWithHFlip;
-    bool usedWithVFlip;
+    int  ref1ID;
+    int  ref10ID;
+    int  ref100ID;
+    int  ref1000ID;
+    int  refNNID;
+    int  refFNID;
+    int  refNFID;
+    int  refFFID;
     int  preferredPalette; // The palette id most used by this tile
 
     QHash<int, int> palettesUsed; // Memorizes the palette colors and frequency they were used
@@ -30,7 +36,8 @@ public:
     Tile(QJsonObject & data);
     QJsonObject exportAsJson();
     QByteArray & uniqueKey();
-//    void import(Tile * other);
+    bool usedWithHFlip();
+    bool usedWithVFlip();
 
 };
 

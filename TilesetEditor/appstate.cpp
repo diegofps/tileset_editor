@@ -178,15 +178,15 @@ Scene *AppState::getProjectSceneById(int id)
     return it == _index_Scene_ID.end() ? nullptr : it.value();
 }
 
-QList<Reference *> AppState::getProjectReferencesByTileId(int tileId)
-{
-    QList<Reference*> result;
-    if (_projectReferences != nullptr)
-        for (auto r : *_projectReferences)
-            if (r->tileId == tileId)
-                result.append(r);
-    return result;
-}
+//QList<Reference *> AppState::getProjectReferencesByTileId(int tileId)
+//{
+//    QList<Reference*> result;
+//    if (_projectReferences != nullptr)
+//        for (auto r : *_projectReferences)
+//            if (r->tileId == tileId)
+//                result.append(r);
+//    return result;
+//}
 
 void AppState::appendProjectTile(Tile *value)
 {

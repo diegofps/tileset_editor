@@ -63,6 +63,7 @@ HEADERS += \
     fragmenttilesets.h \
     layoutabsolute.h \
     mainwindow.h \
+    model/jsonhelpers.h \
     model/palette.h \
     model/project.h \
     model/reference.h \

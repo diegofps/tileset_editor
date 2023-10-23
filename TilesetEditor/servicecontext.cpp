@@ -248,7 +248,7 @@ void ServiceContext::importDump(QString const & folderpath, ContextReport * repo
     QHash<QByteArray,Tile*> stateTileByKey;
     QHash<int,int> tileStateId;
     QHash<int,int> paletteStateId;
-    QHash<int,int> stateTileNumReferencesById;
+    QHash<int,int> referencesStateId;
     QHash<int,int> screenshotsStateId;
 
     for (auto item : *App::getState()->projectPalettes())
@@ -256,9 +256,6 @@ void ServiceContext::importDump(QString const & folderpath, ContextReport * repo
 
     for (auto item : *App::getState()->projectTiles())
         stateTileByKey[item->uniqueKey()] = item;
-
-    for (auto ref : *App::getState()->projectReferences())
-        ++stateTileNumReferencesById[ref->tileId];
 
     for (auto dPalette : dumpedPalettes)
     {
@@ -277,44 +274,90 @@ void ServiceContext::importDump(QString const & folderpath, ContextReport * repo
         ++palettesImported;
     }
 
+#define IMPORT_REFERENCE_1(refName) \
+    if (dTile->refName != 0 && tile->refName == 0) \
+    { \
+        int const newID = ++App::getState()->project()->lastReferenceID; \
+        referencesStateId.emplace(dTile->refName, newID); \
+        tile->refName = newID; \
+    }
+
+#define IMPORT_REFERENCE_2(refName) \
+    if (dTile->refName != 0) \
+    { \
+        int const newID = ++App::getState()->project()->lastReferenceID; \
+        referencesStateId.emplace(dTile->refName, newID); \
+        dTile->refName = newID; \
+    }
+
     for (auto dTile : dumpedTiles)
     {
         if (stateTileByKey.contains(dTile->uniqueKey()))
         {
-            tileStateId[dTile->id] = stateTileByKey[dTile->uniqueKey()]->id;
+            auto tile = stateTileByKey[dTile->uniqueKey()];
+            tileStateId[dTile->id] = tile->id;
+
+            if (dTile->usedInSprite)
+                tile->usedInSprite= true;
+
+            if (dTile->usedInBackground)
+                tile->usedInBackground = true;
+
+            tile->seenOnFrames += dTile->seenOnFrames;
+
+//            for (auto pair : dTile->palettesUsed.asKeyValueRange())
+//                tile->palettesUsed[pair.first] += pair.second;
+
+            IMPORT_REFERENCE_1(ref1ID);
+            IMPORT_REFERENCE_1(ref10ID);
+            IMPORT_REFERENCE_1(ref100ID);
+            IMPORT_REFERENCE_1(ref1000ID);
+            IMPORT_REFERENCE_1(refNNID);
+            IMPORT_REFERENCE_1(refNFID);
+            IMPORT_REFERENCE_1(refFNID);
+            IMPORT_REFERENCE_1(refFFID);
+
             delete dTile;
             continue;
         }
+        else
+        {
+            int const newID = ++App::getState()->project()->lastTileID;
+            tileStateId[dTile->id] = newID;
+            dTile->id = newID;
 
-        int const newID = ++App::getState()->project()->lastTileID;
-        tileStateId[dTile->id] = newID;
-        dTile->id = newID;
+            IMPORT_REFERENCE_2(ref1ID);
+            IMPORT_REFERENCE_2(ref10ID);
+            IMPORT_REFERENCE_2(ref100ID);
+            IMPORT_REFERENCE_2(ref1000ID);
+            IMPORT_REFERENCE_2(refNNID);
+            IMPORT_REFERENCE_2(refNFID);
+            IMPORT_REFERENCE_2(refFNID);
+            IMPORT_REFERENCE_2(refFFID);
 
-        QHash<int, int> newPalettesUsed;
-        for (auto pair : dTile->palettesUsed.asKeyValueRange())
-            newPalettesUsed[paletteStateId[pair.first]] = pair.second;
-        dTile->palettesUsed = std::move(newPalettesUsed);
+            QHash<int, int> newPalettesUsed;
+            for (auto pair : dTile->palettesUsed.asKeyValueRange())
+                newPalettesUsed[paletteStateId[pair.first]] = pair.second;
+            dTile->palettesUsed = std::move(newPalettesUsed);
 
-        App::getState()->appendProjectTile(dTile);
-        ++tilesImported;
+            App::getState()->appendProjectTile(dTile);
+            ++tilesImported;
+        }
     }
 
     for (auto dReference : dumpedReferences)
     {
-        if (stateTileNumReferencesById[tileStateId[dReference->tileId]] >= 3)
+        if (!referencesStateId.contains(dReference->id))
         {
             delete dReference;
             continue;
         }
 
-        ++stateTileNumReferencesById[tileStateId[dReference->tileId]];
-
         if (!screenshotsStateId.contains(dReference->screenshotId))
             screenshotsStateId[dReference->screenshotId] = ++App::getState()->project()->lastScreenshotID;
 
-        dReference->id = ++App::getState()->project()->lastReferenceID;
+        dReference->id = referencesStateId[dReference->id];
         dReference->screenshotId = screenshotsStateId[dReference->screenshotId];
-        dReference->tileId = tileStateId[dReference->tileId];
 
         App::getState()->appendProjectReference(dReference);
         ++referencesImported;
@@ -322,24 +365,23 @@ void ServiceContext::importDump(QString const & folderpath, ContextReport * repo
 
     for (auto dScreenshot : dumpedScreenshots)
     {
-        if (screenshotsStateId.contains(dScreenshot->id))
-        {
-            QFile file(screenshotsDir.filePath(dScreenshot->filename));
-
-            if (!file.open(QIODevice::ReadOnly))
-                qWarning() << "Failed to open required screenshot file: " << file.fileName();
-
-            dScreenshot->id = screenshotsStateId[dScreenshot->id];
-            dScreenshot->filename = QString::number(dScreenshot->id).rightJustified(6, '0') + ".png";
-            dScreenshot->data = file.readAll();
-
-            App::getState()->appendProjectScreenshot(dScreenshot);
-            ++screenshotsImported;
-        }
-        else
+        if (!screenshotsStateId.contains(dScreenshot->id))
         {
             delete dScreenshot;
+            continue;
         }
+
+        QFile file(screenshotsDir.filePath(dScreenshot->filename));
+
+        if (!file.open(QIODevice::ReadOnly))
+            qWarning() << "Failed to open required screenshot file: " << file.fileName();
+
+        dScreenshot->id = screenshotsStateId[dScreenshot->id];
+        dScreenshot->filename = QString::number(dScreenshot->id).rightJustified(6, '0') + ".png";
+        dScreenshot->data = file.readAll();
+
+        App::getState()->appendProjectScreenshot(dScreenshot);
+        ++screenshotsImported;
     }
 
     auto project = App::getState()->project();

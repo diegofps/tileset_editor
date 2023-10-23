@@ -3,7 +3,7 @@
 Reference::Reference(QJsonObject & data)
 {
     id = data["ID"].toInt();
-    tileId = data["TileID"].toInt();
+    tile = data["Tile"].toInteger();
     screenshotId = data["ScreenshotID"].toInt();
     frame = data["Frame"].toInt();
     x = data["X"].toInt();
@@ -22,7 +22,7 @@ QJsonObject Reference::exportAsJson() const
 {
     QJsonObject data;
     data["ID"] = id;
-    data["TileID"] = tileId;
+    data["Tile"] = (qint64) tile;
     data["ScreenshotID"] = screenshotId;
     data["Frame"] = frame;
     data["X"] = x;

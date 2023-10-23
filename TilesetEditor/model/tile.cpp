@@ -1,90 +1,26 @@
 #include "tile.h"
-#include "errors.h"
-
-#include <QJsonArray>
+#include "model/jsonhelpers.h"
 
 Tile::Tile(QJsonObject & data)
 {
-    // ID
+    getIntOrFail(id, data, "Tile", "ID");
+    getIntOrDefault(sceneId, data, "Tile", "SceneID", 0);
+    getIntArrayOrFail(pixels, data, "Tile", "Pixels", 64);
+    getIntIntQHashOrFail(palettesUsed, data, "Tile", "Palettes");
+    getIntOrFail(paletteSize, data, "Tile", "PaletteSize");
+    getBoolOrFail(usedInSprite, data, "Tile", "UsedInSprite");
+    getBoolOrFail(usedInBackground, data, "Tile", "UsedInBackground");
+    getIntOrDefault(seenOnFrames, data, "Tile", "SeenOnFrames", -1);
 
-    if (!data.contains("ID"))
-        throw ContextError("Tile is missing attribute 'ID'");
+    getIntOrFail(ref1ID, data, "Tile", "Ref1ID");
+    getIntOrFail(ref10ID, data, "Tile", "Ref10ID");
+    getIntOrFail(ref100ID, data, "Tile", "Ref100ID");
+    getIntOrFail(ref1000ID, data, "Tile", "Ref1000ID");
 
-    if (!data["ID"].isDouble())
-        throw ContextError("Tile has the wrong value type associated to 'ID'");
-
-    id = data["ID"].toInt();
-
-    // ClusterID
-
-    sceneId = data.contains("ClusterID") ? data["ClusterID"].toInt(0) : 0;
-
-    // Pixels
-
-    if (!data.contains("Pixels"))
-        throw ContextError("Tile is missing attribute 'Pixels'");
-
-    auto jPixels = data["Pixels"].toArray();
-    if (jPixels.size() != 64)
-        throw ContextError(QString("Wrong number of values in Pixels attribute. Expected 64, got %1.").arg(jPixels.size()));
-
-    for (int i=0;i!=64;++i)
-        pixels[i] = jPixels[i].toInt();
-
-    // Palettes
-
-    if (!data.contains("Palettes"))
-        throw ContextError("Tile is missing the attribute 'Palettes'");
-
-    if (!data["Palettes"].isObject())
-        throw ContextError("Tile has an invalid value for 'Palettes'");
-
-    auto jPalettes = data["Palettes"].toObject();
-
-    for (QString const & key : jPalettes.keys())
-        palettesUsed[key.toInt()] = jPalettes[key].toInt();
-
-    // PaletteSize
-
-    if (!data.contains("PaletteSize"))
-        throw ContextError("Tile is missing attribute 'PaletteSize'");
-
-    if (!data["PaletteSize"].isDouble())
-        throw ContextError("Tile has the wrong value associated to 'PaletteSize'");
-
-    paletteSize = data["PaletteSize"].toInt();
-
-    // UsedInSprite
-
-    if (!data.contains("UsedInSprite"))
-        throw ContextError("Tile is missing attribute 'UsedInSprite'");
-
-    if (!data["UsedInSprite"].isBool())
-        throw ContextError("Tile has the wrong value type associated to 'UsedInSprite'");
-
-    usedInSprite = data["UsedInSprite"].toBool();
-
-    // UsedInBackground
-
-    if (!data.contains("UsedInBackground"))
-        throw ContextError("Tile is missing attribute 'UsedInBackground'");
-
-    if (!data["UsedInBackground"].isBool())
-        throw ContextError("Tile has the wrong value type associated to 'UsedInBackground'");
-
-    usedInBackground = data["UsedInBackground"].toBool();
-
-    // UsedWithHFlip
-
-    usedWithHFlip = data.contains("UsedWithHFlip") ? data["UsedWithHFlip"].toBool() : false;
-
-    // UsedWithVFlip
-
-    usedWithVFlip = data.contains("UsedWithVFlip") ? data["UsedWithVFlip"].toBool() : false;
-
-    // SeenOnFrames
-
-    seenOnFrames = data.contains("SeenOnFrames") ? data["SeenOnFrames"].toInt(-1) : -1;
+    getIntOrFail(refNNID, data, "Tile", "RefNNID");
+    getIntOrFail(refNFID, data, "Tile", "RefNFID");
+    getIntOrFail(refFNID, data, "Tile", "RefFNID");
+    getIntOrFail(refFFID, data, "Tile", "RefFFID");
 
     // Unique key
 
@@ -94,6 +30,7 @@ Tile::Tile(QJsonObject & data)
 
     int bestID = 0;
     int bestFreq = 0;
+
     for (auto pair : palettesUsed.asKeyValueRange())
     {
         if (pair.second > bestFreq)
@@ -102,6 +39,7 @@ Tile::Tile(QJsonObject & data)
             bestID = pair.first;
         }
     }
+
     preferredPalette = bestID;
 }
 
@@ -117,7 +55,7 @@ QJsonObject Tile::exportAsJson()
 
     QJsonObject jTile;
     jTile["ID"] = id;
-    jTile["ClusterID"] = sceneId;
+    jTile["SceneID"] = sceneId;
     jTile["Pixels"] = jPixels;
     jTile["Palettes"] = jPalettes;
     jTile["PalettesSeen"] = palettesUsed.size();
@@ -126,9 +64,14 @@ QJsonObject Tile::exportAsJson()
     jTile["SeenOnFrames"] = seenOnFrames;
     jTile["UsedInBackground"] = usedInBackground;
     jTile["UsedInSprite"] = usedInSprite;
-    jTile["UsedWithHFlip"] = usedWithHFlip;
-    jTile["UsedWithVFlip"] = usedWithVFlip;
-
+    jTile["Ref1ID"] = ref1ID;
+    jTile["Ref10ID"] = ref10ID;
+    jTile["Ref100ID"] = ref100ID;
+    jTile["Ref1000ID"] = ref1000ID;
+    jTile["RefNNID"] = refNNID;
+    jTile["RefNFID"] = refNFID;
+    jTile["RefFNID"] = refFNID;
+    jTile["RefFFID"] = refFFID;
     return jTile;
 }
 
@@ -148,23 +91,14 @@ QByteArray & Tile::uniqueKey()
     return _uniqueKey;
 }
 
-//void Tile::import(Tile * other,
-//                  QHash<int, int> & oldPaletteID2NewPaletteID,
-//                  QHash<int, int> & oldReferenceID2NewReferenceID)
-//{
-//    for (auto pair : other->palettesUsed.asKeyValueRange())
-//    {
-//        int newPaletteId = oldPaletteID2NewPaletteID[pair.first];
-//        if (palettesUsed.contains(newPaletteId))
-//            palettesUsed[newPaletteId] += pair.second;
-//        else
-//            palettesUsed[newPaletteId] = pair.second;
-//    }
+bool Tile::usedWithHFlip()
+{
+    return refFNID != 0 || refFFID != 0;
+}
 
-//    seenOnFrames += other->seenOnFrames;
+bool Tile::usedWithVFlip()
+{
+    return refNFID != 0 || refFFID != 0;
+}
 
-//    for (int i=0;i!=3;++i)
-//        if (references[i].isEmpty() && !other->references[i].isEmpty())
-//            references[i].import(other->references[i], oldPaletteID2NewPaletteID, oldReferenceID2NewReferenceID);
-//}
 

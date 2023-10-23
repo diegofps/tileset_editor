@@ -192,11 +192,11 @@ void FragmentTiles::filterTiles(int sceneID, QList<Tile*> const * tiles, TilesFi
                     continue;
 
             if (filter->usedWithHFlip!=2)
-                if ((filter->usedWithHFlip==0 && t->usedWithHFlip) || (filter->usedWithHFlip==1 && !t->usedWithHFlip))
+                if ((filter->usedWithHFlip==0 && t->usedWithHFlip()) || (filter->usedWithHFlip==1 && !t->usedWithHFlip()))
                     continue;
 
             if (filter->usedWithVFlip!=2)
-                if ((filter->usedWithVFlip==0 && t->usedWithVFlip) || (filter->usedWithVFlip==1 && !t->usedWithVFlip))
+                if ((filter->usedWithVFlip==0 && t->usedWithVFlip()) || (filter->usedWithVFlip==1 && !t->usedWithVFlip()))
                     continue;
 
             _tiles.append(t);

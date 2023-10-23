@@ -370,6 +370,6 @@ void MainWindow::showMessage(QString msg)
 {
     ui->lbStatusBar->setText(msg);
     if (msg != "")
-        QTimer::singleShot(2000, [&](){ showMessage("") ;});
+        QTimer::singleShot(5000, [&](){ showMessage("") ;});
 }
 

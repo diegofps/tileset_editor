@@ -80,8 +80,3 @@ QByteArray & Palette::uniqueKey()
 
     return _uniqueKey;
 }
-
-//void Palette::import(Palette *other)
-//{
-//    frequency += other->frequency;
-//}

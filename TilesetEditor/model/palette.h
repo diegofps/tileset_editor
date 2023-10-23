@@ -23,7 +23,6 @@ public:
     Palette(QJsonObject & data);
     QJsonObject exportAsJson();
     QByteArray & uniqueKey();
-//    void import(Palette * other);
 
 };
 

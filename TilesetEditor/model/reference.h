@@ -9,7 +9,7 @@ class Reference
 public:
 
     int id;
-    int tileId;
+    uint32_t tile;
     int screenshotId;    // Number of first frame it appeared, as XGFX.ReferenceScreenshotID
     int frame; // Number of first frame it appeared, as IPPU.TotalEmulatedFrames
     int x;     // X coordinate in the screenshot

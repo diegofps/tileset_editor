@@ -126,7 +126,7 @@ public:
     Reference* getProjectReferenceById(int id);
     Screenshot * getProjectScreenshotById(int id);
     Scene * getProjectSceneById(int id);
-    QList<Reference*> getProjectReferencesByTileId(int tileId);
+//    QList<Reference*> getProjectReferencesByTileId(int tileId);
 
     void appendProjectTile(Tile * value);
     void appendProjectPalette(Palette * value);
