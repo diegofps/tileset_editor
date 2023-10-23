@@ -1,21 +1,23 @@
 #include "reference.h"
+#include "jsonhelpers.h"
+
 
 Reference::Reference(QJsonObject & data)
 {
-    id = data["ID"].toInt();
-    tile = data["Tile"].toInteger();
-    screenshotId = data["ScreenshotID"].toInt();
-    frame = data["Frame"].toInt();
-    x = data["X"].toInt();
-    y = data["Y"].toInt();
-    startLine = data["StartLine"].toInt();
-    lineCount = data["LineCount"].toInt();
-    colorPaletteID = data["ColorPaletteID"].toInt();
-    MATH = data["MATH"].toString();
-    PIXEL = data["PIXEL"].toString();
-    OP = data["OP"].toString();
-    BPSTART = data["BPSTART"].toString();
-    TILE = data["TILE"].toString();
+    getIntOrFail(id, data, "Reference", "ID");
+    getIntegerOrFail(tile, data, "Reference", "Tile");
+    getIntOrFail(screenshotId, data, "Reference", "ScreenshotID");
+    getIntOrFail(frame, data, "Reference", "Frame");
+    getIntOrFail(x, data, "Reference", "X");
+    getIntOrFail(y, data, "Reference", "Y");
+    getIntOrFail(startLine, data, "Reference", "StartLine");
+    getIntOrFail(lineCount, data, "Reference", "LineCount");
+    getIntOrFail(colorPaletteID, data, "Reference", "ColorPaletteID");
+    getQStringOrFail(MATH, data, "Reference", "MATH");
+    getQStringOrFail(PIXEL, data, "Reference", "PIXEL");
+    getQStringOrFail(OP, data, "Reference", "OP");
+    getQStringOrFail(BPSTART, data, "Reference", "BPSTART");
+    getQStringOrFail(TILE, data, "Reference", "TILE");
 }
 
 QJsonObject Reference::exportAsJson() const
@@ -37,24 +39,6 @@ QJsonObject Reference::exportAsJson() const
     data["TILE"] = TILE;
     return data;
 }
-
-//void Reference::import(Reference const & other,
-//                       QHash<int, int> & oldPaletteID2NewPaletteID,
-//                       QHash<int, int> & oldReferenceID2NewReferenceID)
-//{
-//    screenshotId = other.screenshotId;
-//    frame = other.frame;
-//    x = other.x;
-//    y = other.y;
-//    startLine = other.startLine;
-//    lineCount = other.lineCount;
-//    colorPaletteID = oldPaletteID2NewPaletteID[other.colorPaletteID];
-//    MATH = other.MATH;
-//    PIXEL = other.PIXEL;
-//    OP = other.OP;
-//    BPSTART = other.BPSTART;
-//    TILE = other.TILE;
-//}
 
 void Reference::clear()
 {

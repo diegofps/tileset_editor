@@ -1,42 +1,14 @@
 #include "palette.h"
-#include "errors.h"
+#include "jsonhelpers.h"
 
 #include <QJsonArray>
 
 Palette::Palette(QJsonObject & data)
 {
-    id = data["ID"].toInt();
-    size = data["Size"].toInt();
-    frequency = data["Frequency"].toInt();
-
-    if (!data.contains("Colors"))
-        throw ContextError("Palette is missing the attribute Colors");
-
-    if (!data["Colors"].isArray())
-        throw ContextError("Palette has the wrong value type for Colors");
-
-    QJsonArray jColors = data["Colors"].toArray();
-
-    if (jColors.size() != size)
-        throw ContextError("Invalid size of Palette attribute Colors");
-
-    for (int i=0;i!=size;++i)
-    {
-        QJsonValue jValue = jColors.at(i);
-
-        if (!jValue.isArray())
-            throw ContextError("A Palette color must be an array with 3 values");
-
-        QJsonArray jColor = jValue.toArray();
-
-        if (jColor.size() != 3)
-            throw ContextError("A Palette color must be an array with 3 values");
-
-        colors[i] = QColor(
-                    jColor.at(0).toInt(),
-                    jColor.at(1).toInt(),
-                    jColor.at(2).toInt());
-    }
+    getIntOrFail(id, data, "Palette", "ID");
+    getIntOrFail(size, data, "Palette", "Size");
+    getIntOrFail(frequency, data, "Palette", "Frequency");
+    getQColorArrayOrFail(colors, data, "Palette", "Colors", size);
 }
 
 QJsonObject Palette::exportAsJson()

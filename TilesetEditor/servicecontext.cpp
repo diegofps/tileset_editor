@@ -36,6 +36,7 @@ void ServiceContext::create(const QString & folderpath, ContextReport * report)
     auto ts = new Tileset();
     ts->id = ++project->lastTilesetID;
     ts->name = "Noname";
+    ts->sceneId = 0;
     ts->gridW = 10;
     ts->gridH = 10;
     ts->bgColor = QColor::fromRgb(0,0,0);

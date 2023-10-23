@@ -1,5 +1,7 @@
 #include "project.h"
 
+#include "jsonhelpers.h"
+
 Project::Project()
 {
     clear();
@@ -7,13 +9,14 @@ Project::Project()
 
 bool Project::initFromJson(QJsonObject data)
 {
-    dbVersion = data["DBVersion"].toInt(1);
-    lastTileID = data["lastTileID"].toInt();
-    lastPaletteID = data["lastPaletteID"].toInt();
-    lastTilesetID = data["lastTilesetID"].toInt();
-    lastReferenceID = data["lastReferenceID"].toInt();
-    lastScreenshotID = data["lastScreenshotID"].toInt();
-    lastSceneID = data["lastSceneID"].toInt();
+    getIntOrFail(dbVersion, data, "Project", "DBVersion");
+    getIntOrFail(lastTileID, data, "Project", "LastTileID");
+    getIntOrFail(lastPaletteID, data, "Project", "LastPaletteID");
+    getIntOrFail(lastTilesetID, data, "Project", "LastTilesetID");
+    getIntOrFail(lastReferenceID, data, "Project", "LastReferenceID");
+    getIntOrFail(lastScreenshotID, data, "Project", "LastScreenshotID");
+    getIntOrFail(lastSceneID, data, "Project", "LastSceneID");
+
     return true;
 }
 
@@ -21,12 +24,12 @@ QJsonObject Project::exportAsJson()
 {
     QJsonObject data;
     data["DBVersion"] = dbVersion;
-    data["lastTileID"] = lastTileID;
-    data["lastPaletteID"] = lastPaletteID;
-    data["lastTilesetID"] = lastTilesetID;
-    data["lastReferenceID"] = lastReferenceID;
-    data["lastScreenshotID"] = lastScreenshotID;
-    data["lastSceneID"] = lastSceneID;
+    data["LastTileID"] = lastTileID;
+    data["LastPaletteID"] = lastPaletteID;
+    data["LastTilesetID"] = lastTilesetID;
+    data["LastReferenceID"] = lastReferenceID;
+    data["LastScreenshotID"] = lastScreenshotID;
+    data["LastSceneID"] = lastSceneID;
     return data;
 }
 
