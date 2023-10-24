@@ -4,7 +4,7 @@ AppState::AppState()
 {
     _selectedTileset = nullptr;
 
-    _tilePreviewMode = "original";
+//    _tilePreviewMode = "original";
 
     _palettesMode = "used";
     _selectedPalette = nullptr;
@@ -542,7 +542,7 @@ void AppState::tilesMoveSelectedItemsToScene(int sceneID)
 
 // Palettes
 
-void AppState::setPalettesShow(QString const & value)
+void AppState::setPalettesMode(QString const & value)
 {
     if (value != _palettesMode)
     {
@@ -557,7 +557,12 @@ void AppState::setSelectedPalette(Palette * value)
     emit onSelectedPaletteChanged(value);
 }
 
-const QString &AppState::palettesShow() const
+TileMode & AppState::tileMode()
+{
+    return _tileMode;
+}
+
+const QString &AppState::palettesMode() const
 {
     return _palettesMode;
 }
@@ -569,23 +574,18 @@ Palette * AppState::selectedPalette()
 
 // TilePreview
 
-void AppState::setTilePreviewMode(QString const & value)
+void AppState::setTileMode(TileMode const & value)
 {
-    if (value != _tilePreviewMode)
+    if (value != _tileMode)
     {
-        _tilePreviewMode = value;
-        emit onTilePreviewModeChanged(value);
+        _tileMode = value;
+        emit onTileModeChanged(value);
     }
 }
 
 Tileset * AppState::selectedTileset() const
 {
     return _selectedTileset;
-}
-
-const QString &AppState::tilePreviewMode() const
-{
-    return _tilePreviewMode;
 }
 
 // Tilesets

@@ -39,6 +39,26 @@ public:
 
 };
 
+class TileMode
+{
+public:
+    bool hFlip;
+    bool vFlip;
+
+public:
+    TileMode() : hFlip(false), vFlip(false) {}
+
+    bool operator!=(TileMode const & other) const
+    {
+        return !(*this == other);
+    }
+
+    bool operator==(TileMode const & other) const
+    {
+        return hFlip == other.hFlip && vFlip == other.vFlip;
+    }
+};
+
 class AppState : public QObject
 {
 private:
@@ -88,7 +108,8 @@ private:
     Palette * _selectedPalette;
 
     // Tile Preview
-    QString _tilePreviewMode;
+//    QString _tilePreviewMode;
+    TileMode _tileMode;
 
     // Tilesets
     Tileset * _selectedTileset;
@@ -126,7 +147,6 @@ public:
     Reference* getProjectReferenceById(int id);
     Screenshot * getProjectScreenshotById(int id);
     Scene * getProjectSceneById(int id);
-//    QList<Reference*> getProjectReferencesByTileId(int tileId);
 
     void appendProjectTile(Tile * value);
     void appendProjectPalette(Palette * value);
@@ -178,14 +198,14 @@ public:
     void tilesMoveSelectedItemsToScene(int sceneID);
 
     // Palettes
-    const QString & palettesShow() const;
+    const QString & palettesMode() const;
     Palette * selectedPalette();
-    void setPalettesShow(QString const & value);
+    void setPalettesMode(QString const & value);
     void setSelectedPalette(Palette * value);
 
     // Tile Preview
-    const QString & tilePreviewMode() const;
-    void setTilePreviewMode(QString const & value);
+    TileMode & tileMode();
+    void setTileMode(TileMode const & value);
 
     // Tilesets
     Tileset * selectedTileset() const;
@@ -236,7 +256,7 @@ signals:
     void onSelectedPaletteChanged(Palette * value);
 
     // Tile Preview
-    void onTilePreviewModeChanged(QString const & value);
+    void onTileModeChanged(TileMode const & value);
 
     // Tilesets
     void onSelectedTilesetChanged(Tileset * value);

@@ -43,7 +43,7 @@ void WidgetGridTiles::setTiles(QList<Tile*> const * value)
         view.i = 0;
         view.j = 0;
         view.tile = tile;
-        view.pixmap = App::getOriginalTileCache()->getTilePixmap(tile, palette);
+        view.pixmap = App::getOriginalTileCache()->getTilePixmap(tile, palette, false, false);
         view.rect = QRect();
     }
 

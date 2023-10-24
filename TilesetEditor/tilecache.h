@@ -11,10 +11,10 @@ class TileCache
 public:
     TileCache();
     void clear();
-    QPixmap * getTilePixmap(Tile * tile, Palette * palette);
+    QPixmap * getTilePixmap(Tile * tile, Palette * palette, bool const hFlip, bool const vFlip);
 
 private:
-    QHash<QPair<int,int>,QPixmap*> _cache;
+    QHash<QPair<QPair<int,int>,QPair<bool,bool>>,QPixmap*> _cache;
 
 };
 

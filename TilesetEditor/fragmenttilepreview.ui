@@ -119,9 +119,9 @@ font: 9pt;</string>
         <item>
          <layout class="QHBoxLayout" name="horizontalLayout_2">
           <item>
-           <widget class="QPushButton" name="btOriginal">
+           <widget class="QPushButton" name="btHFlip">
             <property name="text">
-             <string>Original</string>
+             <string>HFlip</string>
             </property>
             <property name="checkable">
              <bool>false</bool>
@@ -141,9 +141,9 @@ font: 9pt;</string>
            </widget>
           </item>
           <item>
-           <widget class="QPushButton" name="btHD">
+           <widget class="QPushButton" name="btVFlip">
             <property name="text">
-             <string>HD</string>
+             <string>VFlip</string>
             </property>
             <property name="checkable">
              <bool>false</bool>

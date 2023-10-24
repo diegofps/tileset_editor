@@ -1,8 +1,10 @@
 #ifndef FRAGMENTTILEPREVIEW_H
 #define FRAGMENTTILEPREVIEW_H
 
+#include "appstate.h"
 #include "model/palette.h"
 #include "model/tile.h"
+#include <QPushButton>
 #include <QWidget>
 
 namespace Ui {
@@ -18,9 +20,9 @@ public:
     ~FragmentTilePreview();
 
 private:
-    void loadTile(QString previewMode, QList<Tile*> const * tile, Palette * palette);
-    void styleButtons(QString const & value);
-    void loadPalette(Palette * value);
+    void updateTileWidget(TileMode const & mode, QList<Tile*> const * tiles, Palette * palette);
+    void styleButton(QPushButton *btn, bool value);
+    void updatePaletteWidget(Palette * value);
 
 private:
     Ui::FragmentTilePreview *ui;

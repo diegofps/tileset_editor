@@ -32,16 +32,16 @@ FragmentPalettes::FragmentPalettes(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    styleButtons(App::getState()->palettesShow());
+    styleButtons(App::getState()->palettesMode());
 
     connect(ui->btAll, &QPushButton::clicked, this, [&]()
     {
-        App::getState()->setPalettesShow("all");
+        App::getState()->setPalettesMode("all");
     });
 
     connect(ui->btUsedWithTile, &QPushButton::clicked, this, [&]()
     {
-        App::getState()->setPalettesShow("used");
+        App::getState()->setPalettesMode("used");
     });
 
     connect(App::getState(), &AppState::onPalettesShowChanged, this, [&](QString const & value)
@@ -50,7 +50,7 @@ FragmentPalettes::FragmentPalettes(QWidget *parent) :
 
         auto selectedTiles = App::getState()->tilesElectedItems();
         auto palettes = App::getState()->projectPalettes();
-        auto paletteMode = App::getState()->palettesShow();
+        auto paletteMode = App::getState()->palettesMode();
 
         saveSelectedPalette();
         filterPalettes(selectedTiles, palettes, paletteMode);
@@ -62,7 +62,7 @@ FragmentPalettes::FragmentPalettes(QWidget *parent) :
     {
         auto selectedTiles = App::getState()->tilesElectedItems();
         auto palettes = App::getState()->projectPalettes();
-        auto paletteMode = App::getState()->palettesShow();
+        auto paletteMode = App::getState()->palettesMode();
 
         saveSelectedPalette();
         filterPalettes(selectedTiles, palettes, paletteMode);
@@ -75,7 +75,7 @@ FragmentPalettes::FragmentPalettes(QWidget *parent) :
     {
         auto selectedTiles = App::getState()->tilesElectedItems();
         auto palettes = App::getState()->projectPalettes();
-        auto paletteMode = App::getState()->palettesShow();
+        auto paletteMode = App::getState()->palettesMode();
 
         saveSelectedPalette();
         filterPalettes(selectedTiles, palettes, paletteMode);
@@ -94,7 +94,7 @@ FragmentPalettes::FragmentPalettes(QWidget *parent) :
 
     auto selectedTiles = App::getState()->tilesElectedItems();
     auto palettes = App::getState()->projectPalettes();
-    auto paletteMode = App::getState()->palettesShow();
+    auto paletteMode = App::getState()->palettesMode();
 
 //    saveSelectedPalette();
     filterPalettes(selectedTiles, palettes, paletteMode);
