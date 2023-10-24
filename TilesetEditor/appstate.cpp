@@ -11,9 +11,9 @@ AppState::AppState()
 
     _tilesFilter = new TilesFilter();
 
-    _previewMode = "editor";
+//    _previewMode = "editor";
 
-    _referenceScreenshot = 0;
+    _referenceMode = REF_1;
     _referenceHighlightPosition = true;
 
     _editorTool = PENCIL;
@@ -334,6 +334,64 @@ int AppState::lastMoveToSceneResult()
     return _lastMoveToSceneResult;
 }
 
+void AppState::moveEditorRoot(int rx, int ry)
+{
+    _editorRoot.setX(_editorRoot.x() + rx);
+    _editorRoot.setY(_editorRoot.y() + ry);
+    emit onEditorRootChanged(_editorRoot);
+}
+
+void AppState::moveEditorRootHome()
+{
+    _editorRoot.setX(0);
+    _editorRoot.setY(0);
+    emit onEditorRootChanged(_editorRoot);
+}
+
+void AppState::moveReferenceOffset(int rx, int ry)
+{
+    _referenceOffset.setX(_referenceOffset.x() + rx);
+    _referenceOffset.setY(_referenceOffset.y() + ry);
+    emit onReferenceOffsetChanged(_editorRoot);
+}
+
+void AppState::moveReferenceOffsetHome()
+{
+    _referenceOffset.setX(0);
+    _referenceOffset.setY(0);
+    emit onReferenceOffsetChanged(_editorRoot);
+}
+
+void AppState::drawNearestReferenceTile()
+{
+    // TODO
+}
+
+void AppState::drawTile()
+{
+    // TODO
+}
+
+void AppState::eraseTile()
+{
+    // TODO
+}
+
+void AppState::linkTile()
+{
+    // TODO
+}
+
+void AppState::undo()
+{
+    // TODO
+}
+
+void AppState::redo()
+{
+    // TODO
+}
+
 Project * AppState::project() const
 {
     return _project;
@@ -445,9 +503,9 @@ bool AppState::editorShowGrid() const
 
 // References Toolbox
 
-int AppState::referenceScreenshot() const
+ReferenceMode AppState::referenceMode() const
 {
-    return _referenceScreenshot;
+    return _referenceMode;
 }
 
 bool AppState::referenceHighlightPosition() const
@@ -455,12 +513,12 @@ bool AppState::referenceHighlightPosition() const
     return _referenceHighlightPosition;
 }
 
-void AppState::setReferenceScreenshot(int value)
+void AppState::setReferenceMode(ReferenceMode value)
 {
-    if (value != _referenceScreenshot)
+    if (value != _referenceMode)
     {
-        _referenceScreenshot = value;
-        emit onReferenceScreenshotChanged(value);
+        _referenceMode = value;
+        emit onReferenceModeChanged(value);
     }
 }
 
@@ -475,19 +533,19 @@ void AppState::setReferenceHighlightPosition(bool value)
 
 // Preview
 
-void AppState::setPreviewMode(QString value)
-{
-    if (value != _previewMode)
-    {
-        _previewMode = value;
-        emit onPreviewModeChanged(value);
-    }
-}
+//void AppState::setPreviewMode(QString value)
+//{
+//    if (value != _previewMode)
+//    {
+//        _previewMode = value;
+//        emit onPreviewModeChanged(value);
+//    }
+//}
 
-const QString & AppState::previewMode() const
-{
-    return _previewMode;
-}
+//const QString & AppState::previewMode() const
+//{
+//    return _previewMode;
+//}
 
 // Tiles
 

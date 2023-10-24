@@ -8,11 +8,11 @@ class AppStyles
 {
 private:
 
-    QMap<QString, QString> cachedStylesheets;
+    QMap<QString, QString> _cachedStylesheets;
 
 public:
 
-    QString get(QString key);
+    QString & get(QString key);
 
 };
 

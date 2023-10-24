@@ -88,14 +88,38 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->action_File_Quit, &QAction::triggered, this, &MainWindow::onAction_File_QuitProject);
 
     // Edit menu
+    connect(ui->action_Edit_Undo, &QAction::triggered, this, [](){ App::getState()->undo(); });
+    connect(ui->action_Edit_Redo, &QAction::triggered, this, [](){ App::getState()->redo(); });
     connect(ui->action_Edit_Scenes, &QAction::triggered, this, &MainWindow::onAction_Edit_Scenes);
     connect(ui->action_Edit_MoveTileToScene, &QAction::triggered, this, &MainWindow::onAction_Edit_MoveTileToScene);
     connect(ui->action_Edit_MoveTilesetToScene, &QAction::triggered, this, &MainWindow::onAction_Edit_MoveTilesetToScene);
+    connect(ui->action_Edit_InsertNearestReferenceTile, &QAction::triggered, this, [](){ App::getState()->drawNearestReferenceTile(); });
+
 
     // View menu
-    connect(ui->action_View_Reference1, &QAction::triggered, this, [&](){onAction_View_Reference(0); });
-    connect(ui->action_View_Reference2, &QAction::triggered, this, [&](){onAction_View_Reference(1); });
-    connect(ui->action_View_Reference3, &QAction::triggered, this, [&](){onAction_View_Reference(2); });
+    connect(ui->action_View_Reference_1, &QAction::triggered, this, [&](){ App::getState()->setReferenceMode(REF_1); });
+    connect(ui->action_View_Reference_10, &QAction::triggered, this, [&](){ App::getState()->setReferenceMode(REF_10); });
+    connect(ui->action_View_Reference_100, &QAction::triggered, this, [&](){ App::getState()->setReferenceMode(REF_100); });
+    connect(ui->action_View_Reference_1000, &QAction::triggered, this, [&](){ App::getState()->setReferenceMode(REF_1000); });
+
+    connect(ui->action_View_Reference_NN, &QAction::triggered, this, [&](){ App::getState()->setReferenceMode(REF_NN); });
+    connect(ui->action_View_Reference_NF, &QAction::triggered, this, [&](){ App::getState()->setReferenceMode(REF_NF); });
+    connect(ui->action_View_Reference_FN, &QAction::triggered, this, [&](){ App::getState()->setReferenceMode(REF_FN); });
+    connect(ui->action_View_Reference_FF, &QAction::triggered, this, [&](){ App::getState()->setReferenceMode(REF_FF); });
+
+    //Navigate menu
+    connect(ui->action_Navigate_Editor_Down, &QAction::triggered, this, [&](){ App::getState()->moveEditorRoot( 0,+1); });
+    connect(ui->action_Navigate_Editor_Up, &QAction::triggered, this, [&](){ App::getState()->moveEditorRoot( 0,-1); });
+    connect(ui->action_Navigate_Editor_Left, &QAction::triggered, this, [&](){ App::getState()->moveEditorRoot(-1, 0); });
+    connect(ui->action_Navigate_Editor_Right, &QAction::triggered, this, [&](){ App::getState()->moveEditorRoot(+1, 0); });
+
+    connect(ui->action_Navigate_References_Down, &QAction::triggered, this, [&](){ App::getState()->moveReferenceOffset( 0,+1); });
+    connect(ui->action_Navigate_References_Up, &QAction::triggered, this, [&](){ App::getState()->moveReferenceOffset( 0,-1); });
+    connect(ui->action_Navigate_References_Left, &QAction::triggered, this, [&](){ App::getState()->moveReferenceOffset(-1, 0); });
+    connect(ui->action_Navigate_References_Right, &QAction::triggered, this, [&](){ App::getState()->moveReferenceOffset(+1, 0); });
+
+    connect(ui->action_Navigate_Editor_Home, &QAction::triggered, this, [&](){ App::getState()->moveEditorRootHome(); });
+    connect(ui->action_Navigate_References_Home, &QAction::triggered, this, [&](){ App::getState()->moveReferenceOffsetHome(); });
 
     // Execute menu
 
@@ -218,21 +242,24 @@ void MainWindow::onAction_File_QuitProject()
     close();
 }
 
-void MainWindow::onAction_View_Reference(int position)
-{
-    if (App::getState()->previewMode() == "references")
-    {
-        if (App::getState()->referenceScreenshot() == position)
-            App::getState()->setPreviewMode("editor");
-        else
-            App::getState()->setReferenceScreenshot(position);
-    }
-    else
-    {
-        App::getState()->setReferenceScreenshot(position);
-        App::getState()->setPreviewMode("references");
-    }
-}
+//void MainWindow::onAction_View_Reference(ReferenceMode mode)
+//{
+//    App::getState()->setReferenceMode(mode);
+
+//    if (App::getState()->referenceMode() != mode)
+//    if (App::getState()->previewMode() == "references")
+//    {
+//        if (App::getState()->referenceMode() == position)
+//            App::getState()->setPreviewMode("editor");
+//        else
+//            App::getState()->setReferenceScreenshot(position);
+//    }
+//    else
+//    {
+//        App::getState()->setReferenceScreenshot(position);
+//        App::getState()->setPreviewMode("references");
+//    }
+//}
 
 void MainWindow::onAction_Edit_Scenes()
 {
@@ -327,9 +354,14 @@ void MainWindow::prepareUIForProject(Project * value)
     ui->action_Execute_Pipelines->setEnabled(hasProject);
 
     ui->action_View_NextTileUsage->setEnabled(hasProject);
-    ui->action_View_Reference1->setEnabled(hasProject);
-    ui->action_View_Reference2->setEnabled(hasProject);
-    ui->action_View_Reference3->setEnabled(hasProject);
+    ui->action_View_Reference_1->setEnabled(hasProject);
+    ui->action_View_Reference_10->setEnabled(hasProject);
+    ui->action_View_Reference_100->setEnabled(hasProject);
+    ui->action_View_Reference_1000->setEnabled(hasProject);
+    ui->action_View_Reference_NN->setEnabled(hasProject);
+    ui->action_View_Reference_NF->setEnabled(hasProject);
+    ui->action_View_Reference_FN->setEnabled(hasProject);
+    ui->action_View_Reference_FF->setEnabled(hasProject);
 
     ui->action_Edit_Scenes->setEnabled(hasProject);
     ui->action_Edit_MoveTileToScene->setEnabled(hasProject);

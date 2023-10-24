@@ -1,10 +1,10 @@
 #include "appstyles.h"
 #include <QFile>
 
-QString AppStyles::get(QString key)
+QString & AppStyles::get(QString key)
 {
-    if (cachedStylesheets.contains(key))
-        return cachedStylesheets.value(key);
+    if (_cachedStylesheets.contains(key))
+        return _cachedStylesheets[key];
 
     QFile file(QString(":/style/") + key + ".qss");
     file.open(QFile::ReadOnly);
@@ -12,11 +12,13 @@ QString AppStyles::get(QString key)
     if (!file.isReadable())
     {
         qWarning("Could not read style file %s", qUtf8Printable(key));
-        cachedStylesheets[key] = "";
-        return "";
+        _cachedStylesheets[key] = "";
+    }
+    else
+    {
+        QString stylesheet = QLatin1String(file.readAll());
+        _cachedStylesheets[key] = stylesheet;
     }
 
-    QString stylesheet = QLatin1String(file.readAll());
-    cachedStylesheets[key] = stylesheet;
-    return stylesheet;
+    return _cachedStylesheets[key];
 }

@@ -102,7 +102,18 @@ FragmentPalettes::FragmentPalettes(QWidget *parent) :
 //    restoreSelectedPalette();
 
     if (!palettes->isEmpty())
-        ui->listPalettes->setCurrentRow(0);
+    {
+        int bestI = 0;
+        int bestF = _palettes[0]->frequency;
+        for (qsizetype i=1;i!=_palettes.size();++i)
+            if (_palettes[i]->frequency > bestF)
+            {
+                bestF = _palettes[i]->frequency;
+                bestI = i;
+            }
+        ui->listPalettes->setCurrentRow(bestI);
+    }
+//    ui->listPalettes->setCurrentRow(0);
 }
 
 void FragmentPalettes::filterPalettes(QList<Tile*> const * selectedTiles, QList<Palette*> const * value, QString paletteMode)

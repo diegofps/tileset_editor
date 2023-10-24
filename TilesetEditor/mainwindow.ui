@@ -172,29 +172,66 @@ QMenu::item:selected {
      <string>&amp;Help</string>
     </property>
     <addaction name="action_Help_About"/>
-    <addaction name="actionVerify_Inconsistencies"/>
-    <addaction name="actionStatistics"/>
+    <addaction name="action_Help_VerifyInconsistencies"/>
+    <addaction name="action_Help_Statistics"/>
    </widget>
-   <widget class="QMenu" name="menuView">
+   <widget class="QMenu" name="menuEdit">
     <property name="title">
      <string>&amp;Edit</string>
     </property>
+    <addaction name="action_Edit_Undo"/>
+    <addaction name="action_Edit_Redo"/>
+    <addaction name="separator"/>
     <addaction name="action_Edit_Scenes"/>
     <addaction name="action_Edit_MoveTileToScene"/>
     <addaction name="action_Edit_MoveTilesetToScene"/>
+    <addaction name="action_Edit_InsertNearestReferenceTile"/>
    </widget>
-   <widget class="QMenu" name="menuView_2">
+   <widget class="QMenu" name="menuView">
     <property name="title">
      <string>&amp;View</string>
     </property>
     <addaction name="action_View_NextTileUsage"/>
-    <addaction name="action_View_Reference1"/>
-    <addaction name="action_View_Reference2"/>
-    <addaction name="action_View_Reference3"/>
+    <addaction name="action_View_Reference_1"/>
+    <addaction name="action_View_Reference_10"/>
+    <addaction name="action_View_Reference_100"/>
+    <addaction name="action_View_Reference_1000"/>
+    <addaction name="action_View_Reference_NN"/>
+    <addaction name="action_View_Reference_NF"/>
+    <addaction name="action_View_Reference_FN"/>
+    <addaction name="action_View_Reference_FF"/>
+   </widget>
+   <widget class="QMenu" name="menuNavigate">
+    <property name="title">
+     <string>Navigate</string>
+    </property>
+    <widget class="QMenu" name="menuNavigateReferences">
+     <property name="title">
+      <string>References</string>
+     </property>
+     <addaction name="action_Navigate_References_Left"/>
+     <addaction name="action_Navigate_References_Up"/>
+     <addaction name="action_Navigate_References_Right"/>
+     <addaction name="action_Navigate_References_Down"/>
+     <addaction name="action_Navigate_References_Home"/>
+    </widget>
+    <widget class="QMenu" name="menuNavigateEditor">
+     <property name="title">
+      <string>Editor</string>
+     </property>
+     <addaction name="action_Navigate_Editor_Left"/>
+     <addaction name="action_Navigate_Editor_Up"/>
+     <addaction name="action_Navigate_Editor_Right"/>
+     <addaction name="action_Navigate_Editor_Down"/>
+     <addaction name="action_Navigate_Editor_Home"/>
+    </widget>
+    <addaction name="menuNavigateReferences"/>
+    <addaction name="menuNavigateEditor"/>
    </widget>
    <addaction name="menuFile"/>
+   <addaction name="menuEdit"/>
    <addaction name="menuView"/>
-   <addaction name="menuView_2"/>
+   <addaction name="menuNavigate"/>
    <addaction name="menuExecute"/>
    <addaction name="menuHelp"/>
   </widget>
@@ -326,38 +363,176 @@ QMenu::item:selected {
     <string>Alt+S</string>
    </property>
   </action>
-  <action name="action_View_Reference1">
+  <action name="action_View_Reference_1">
    <property name="text">
-    <string>Reference &amp;1</string>
+    <string>&amp;Reference 1</string>
    </property>
    <property name="shortcut">
     <string>1</string>
    </property>
   </action>
-  <action name="action_View_Reference2">
+  <action name="action_View_Reference_10">
    <property name="text">
-    <string>Reference &amp;2</string>
+    <string>Reference 10</string>
    </property>
    <property name="shortcut">
     <string>2</string>
    </property>
   </action>
-  <action name="action_View_Reference3">
+  <action name="action_View_Reference_100">
    <property name="text">
-    <string>Reference &amp;3</string>
+    <string>Re&amp;ference 100</string>
    </property>
    <property name="shortcut">
     <string>3</string>
    </property>
   </action>
-  <action name="actionVerify_Inconsistencies">
+  <action name="action_Help_VerifyInconsistencies">
    <property name="text">
     <string>Verify Inconsistencies</string>
    </property>
   </action>
-  <action name="actionStatistics">
+  <action name="action_Help_Statistics">
    <property name="text">
     <string>Statistics</string>
+   </property>
+  </action>
+  <action name="action_View_Reference_1000">
+   <property name="text">
+    <string>Refe&amp;rence 1000</string>
+   </property>
+   <property name="shortcut">
+    <string>4</string>
+   </property>
+  </action>
+  <action name="action_View_Reference_NN">
+   <property name="text">
+    <string>Reference NN</string>
+   </property>
+   <property name="shortcut">
+    <string>5</string>
+   </property>
+  </action>
+  <action name="action_View_Reference_NF">
+   <property name="text">
+    <string>Reference NF</string>
+   </property>
+   <property name="shortcut">
+    <string>6</string>
+   </property>
+  </action>
+  <action name="action_View_Reference_FN">
+   <property name="text">
+    <string>Reference FN</string>
+   </property>
+   <property name="shortcut">
+    <string>7</string>
+   </property>
+  </action>
+  <action name="action_View_Reference_FF">
+   <property name="text">
+    <string>Reference FF</string>
+   </property>
+   <property name="shortcut">
+    <string>8</string>
+   </property>
+  </action>
+  <action name="action_Navigate_References_Left">
+   <property name="text">
+    <string>Left</string>
+   </property>
+   <property name="shortcut">
+    <string>Shift+Left</string>
+   </property>
+  </action>
+  <action name="action_Navigate_References_Up">
+   <property name="text">
+    <string>Up</string>
+   </property>
+   <property name="shortcut">
+    <string>Shift+Up</string>
+   </property>
+  </action>
+  <action name="action_Navigate_References_Right">
+   <property name="text">
+    <string>Right</string>
+   </property>
+   <property name="shortcut">
+    <string>Shift+Right</string>
+   </property>
+  </action>
+  <action name="action_Navigate_References_Down">
+   <property name="text">
+    <string>Down</string>
+   </property>
+   <property name="shortcut">
+    <string>Shift+Down</string>
+   </property>
+  </action>
+  <action name="action_Navigate_References_Home">
+   <property name="text">
+    <string>Home</string>
+   </property>
+   <property name="shortcut">
+    <string>Shift+Home</string>
+   </property>
+  </action>
+  <action name="action_Navigate_Editor_Left">
+   <property name="text">
+    <string>Left</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Left</string>
+   </property>
+  </action>
+  <action name="action_Navigate_Editor_Up">
+   <property name="text">
+    <string>Up</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Up</string>
+   </property>
+  </action>
+  <action name="action_Navigate_Editor_Right">
+   <property name="text">
+    <string>Right</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Right</string>
+   </property>
+  </action>
+  <action name="action_Navigate_Editor_Down">
+   <property name="text">
+    <string>Down</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Down</string>
+   </property>
+  </action>
+  <action name="action_Navigate_Editor_Home">
+   <property name="text">
+    <string>Home</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Home</string>
+   </property>
+  </action>
+  <action name="action_Edit_InsertNearestReferenceTile">
+   <property name="text">
+    <string>Insert Nearest Reference Tile</string>
+   </property>
+   <property name="shortcut">
+    <string>Shift+Return</string>
+   </property>
+  </action>
+  <action name="action_Edit_Undo">
+   <property name="text">
+    <string>Undo</string>
+   </property>
+  </action>
+  <action name="action_Edit_Redo">
+   <property name="text">
+    <string>Redo</string>
    </property>
   </action>
  </widget>

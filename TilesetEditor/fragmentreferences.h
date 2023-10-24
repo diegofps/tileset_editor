@@ -1,6 +1,7 @@
 #ifndef FRAGMENTREFERENCES_H
 #define FRAGMENTREFERENCES_H
 
+#include "appstate.h"
 #include <QWidget>
 
 namespace Ui {
@@ -16,7 +17,7 @@ public:
     ~FragmentReferences();
 
 private:
-    void styleScreenshotButtons(const int value);
+    void styleScreenshotButtons(ReferenceMode const value);
     void styleHighlightPositionButton(const bool value);
 
 private:

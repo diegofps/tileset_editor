@@ -1,6 +1,8 @@
 #include "fragmentcontextopen.h"
+#include "fragmenteditor.h"
 #include "fragmentpalettes.h"
 #include "fragmentpreview.h"
+#include "fragmentreferences.h"
 #include "fragmenttilepreview.h"
 #include "fragmenttiles.h"
 #include "fragmenttilesetproperties.h"
@@ -22,18 +24,23 @@ FragmentContextOpen::FragmentContextOpen(QWidget *parent) :
     QSplitter * splitterH = new QSplitter(this);
     QSplitter * splitterVL = new QSplitter(splitterH);
     QSplitter * splitterVR = new QSplitter(splitterH);
+    QSplitter * splitterVC = new QSplitter(splitterH);
 
     splitterH->setStyleSheet(splitterStylesheet);
     splitterVL->setStyleSheet(splitterStylesheet);
     splitterVR->setStyleSheet(splitterStylesheet);
+    splitterVC->setStyleSheet(splitterStylesheet);
 
+    splitterH->setOrientation(Qt::Horizontal);
     splitterVL->setOrientation(Qt::Vertical);
     splitterVR->setOrientation(Qt::Vertical);
-    splitterH->setOrientation(Qt::Horizontal);
+    splitterVC->setOrientation(Qt::Vertical);
 
     QWidget * fgTiles = new FragmentTiles(splitterVL);
     QWidget * fgPalettes = new FragmentPalettes(splitterVL);
-    QWidget * fgPreview = new FragmentPreview(splitterH);
+//    QWidget * fgPreview = new FragmentPreview(splitterH);
+    QWidget * fgReferences = new FragmentReferences(splitterVC);
+    QWidget * fgEditor = new FragmentEditor(splitterVC);
     QWidget * fgTilePreview = new FragmentTilePreview(splitterVR);
     QWidget * fgTilesets = new FragmentTilesets(splitterVR);
     QWidget * fgTilesetProperties = new FragmentTilesetProperties(splitterVR);
@@ -41,12 +48,15 @@ FragmentContextOpen::FragmentContextOpen(QWidget *parent) :
     splitterVL->addWidget(fgTiles);
     splitterVL->addWidget(fgPalettes);
 
+    splitterVC->addWidget(fgReferences);
+    splitterVC->addWidget(fgEditor);
+
     splitterVR->addWidget(fgTilePreview);
     splitterVR->addWidget(fgTilesets);
     splitterVR->addWidget(fgTilesetProperties);
 
     splitterH->addWidget(splitterVL);
-    splitterH->addWidget(fgPreview);
+    splitterH->addWidget(splitterVC);
     splitterH->addWidget(splitterVR);
 
     QVBoxLayout * layout = new QVBoxLayout();

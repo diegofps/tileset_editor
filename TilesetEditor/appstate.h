@@ -11,12 +11,25 @@
 
 #include <QObject>
 #include <string>
+#include <QPoint>
 
 enum EditorTool
 {
     PENCIL,
     ERASER,
     LINKER
+};
+
+enum ReferenceMode
+{
+    REF_1,
+    REF_10,
+    REF_100,
+    REF_1000,
+    REF_NN,
+    REF_NF,
+    REF_FN,
+    REF_FF
 };
 
 class TilesFilter
@@ -85,6 +98,8 @@ private:
     QHash<int, Reference*>  _index_Reference_ID;
     QHash<int, Scene*>      _index_Scene_ID;
 
+    QPoint _editorRoot;
+    QPoint _referenceOffset;
 
     // Editor Toolbox
     EditorTool _editorTool;
@@ -93,11 +108,11 @@ private:
     bool       _editorShowGrid;
 
     // References Toolbox
-    int  _referenceScreenshot;
+    ReferenceMode _referenceMode;
     bool _referenceHighlightPosition;
 
     // Preview
-    QString _previewMode;
+//    QString _previewMode;
 
     // Tiles
     TilesFilter * _tilesFilter;
@@ -165,9 +180,21 @@ public:
     void moveUpProjectTileset(const int position);
     void moveDownProjectTileset(const int position);
 
-
     void setLastMoveToSceneResult(int value);
     int lastMoveToSceneResult();
+
+    void moveEditorRoot(int rx, int ry);
+    void moveEditorRootHome();
+
+    void moveReferenceOffset(int rx, int ry);
+    void moveReferenceOffsetHome();
+
+    void drawNearestReferenceTile();
+    void drawTile();
+    void eraseTile();
+    void linkTile();
+    void undo();
+    void redo();
 
     // Editor Toolbox
     EditorTool editorTool() const;
@@ -181,14 +208,14 @@ public:
     void setEditorShowGrid(bool value);
 
     // References Toolbox
-    int referenceScreenshot() const;
+    ReferenceMode referenceMode() const;
     bool referenceHighlightPosition() const;
-    void setReferenceScreenshot(int value);
+    void setReferenceMode(ReferenceMode value);
     void setReferenceHighlightPosition(bool value);
 
     // Preview
-    const QString & previewMode() const;
-    void setPreviewMode(QString value);
+//    const QString & previewMode() const;
+//    void setPreviewMode(QString value);
 
     // Tiles
     TilesFilter * tilesFilter() const;
@@ -234,6 +261,9 @@ signals:
     void onProjectTilesetsRemoved(QList<Tileset *> const * value, int const position);
     void onProjectTilesetsMoved(QList<Tileset *> const * value, int const oldPosition, int const newPosition);
 
+    void onEditorRootChanged(QPoint const value);
+    void onReferenceOffsetChanged(QPoint const value);
+
     // Editor Toolbox
     void onEditorToolChanged(EditorTool const value);
     void onEditorShowLinkedTilesChanged(bool const value);
@@ -241,11 +271,11 @@ signals:
     void onEditorShowGridChanged(bool const value);
 
     // References Toolbox
-    void onReferenceScreenshotChanged(int const value);
+    void onReferenceModeChanged(ReferenceMode const value);
     void onReferenceHighlightPositionChanged(bool const value);
 
     // Preview
-    void onPreviewModeChanged(QString const & value);
+//    void onPreviewModeChanged(QString const & value);
 
     // Tiles
     void onTilesFilterChanged(TilesFilter * value);

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1118</width>
-    <height>396</height>
+    <width>927</width>
+    <height>395</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -47,6 +47,9 @@
       <number>0</number>
      </property>
      <layout class="QVBoxLayout" name="verticalLayout">
+      <property name="spacing">
+       <number>0</number>
+      </property>
       <property name="leftMargin">
        <number>0</number>
       </property>
@@ -60,6 +63,31 @@
        <number>0</number>
       </property>
       <item>
+       <widget class="QLabel" name="lbTitle">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">background-color: #151515;
+color: #ffffff;
+padding: 4px;
+font: 9pt;</string>
+        </property>
+        <property name="text">
+         <string>References</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+        <property name="margin">
+         <number>0</number>
+        </property>
+       </widget>
+      </item>
+      <item>
        <layout class="QHBoxLayout" name="horizontalLayout_2">
         <property name="spacing">
          <number>6</number>
@@ -67,8 +95,14 @@
         <property name="leftMargin">
          <number>9</number>
         </property>
+        <property name="topMargin">
+         <number>6</number>
+        </property>
         <property name="rightMargin">
          <number>9</number>
+        </property>
+        <property name="bottomMargin">
+         <number>6</number>
         </property>
         <item>
          <widget class="QPushButton" name="btRef1">
@@ -143,6 +177,41 @@
           </property>
           <property name="text">
            <string>Ref100</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="btRef1000">
+          <property name="text">
+           <string>Ref1000</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="btRefNN">
+          <property name="text">
+           <string>RefNN</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="btRefNF">
+          <property name="text">
+           <string>RefNF</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="btRefFN">
+          <property name="text">
+           <string>RefFN</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="btRefFF">
+          <property name="text">
+           <string>RefFF</string>
           </property>
          </widget>
         </item>

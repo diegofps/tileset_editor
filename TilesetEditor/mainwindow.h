@@ -34,7 +34,7 @@ private slots:
     void onAction_Edit_MoveTileToScene();
     void onAction_Edit_MoveTilesetToScene();
 
-    void onAction_View_Reference(int position);
+//    void onAction_View_Reference(int position);
 
 private:
     void prepareUIForProject(Project * value);

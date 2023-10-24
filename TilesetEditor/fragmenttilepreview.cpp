@@ -64,6 +64,10 @@ FragmentTilePreview::FragmentTilePreview(QWidget * parent) :
         updateTileWidget(tileMode, tiles, palette);
     });
 
+    QList<Tile*> const * tiles = App::getState()->tilesElectedItems();
+    Palette * palette = App::getState()->selectedPalette();
+
+    updateTileWidget(tileMode, tiles, palette);
     updatePaletteWidget(App::getState()->selectedPalette());
 }
 

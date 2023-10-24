@@ -67,28 +67,28 @@ FragmentPreview::FragmentPreview(QWidget *parent) :
 
     // Configure Editor and References page buttons
 
-    styleButtons(App::getState()->previewMode());
+//    styleButtons(App::getState()->previewMode());
 
-    connect(btEditor, &QPushButton::clicked, this, [&](){ App::getState()->setPreviewMode("editor"); });
-    connect(btReferences, &QPushButton::clicked, this, [&](){ App::getState()->setPreviewMode("references"); });
+//    connect(btEditor, &QPushButton::clicked, this, [&](){ App::getState()->setPreviewMode("editor"); });
+//    connect(btReferences, &QPushButton::clicked, this, [&](){ App::getState()->setPreviewMode("references"); });
 
-    connect(App::getState(), &AppState::onPreviewModeChanged, this, [&](QString const & page)
-    {
-        styleButtons(page);
+//    connect(App::getState(), &AppState::onPreviewModeChanged, this, [&](QString const & page)
+//    {
+//        styleButtons(page);
 
-        if (page == "editor")
-        {
-            pageContent->layout()->replaceWidget(
-                        pageContent->layout()->itemAt(0)->widget(),
-                        new FragmentEditor(this));
-        }
-        else if (page == "references")
-        {
-            pageContent->layout()->replaceWidget(
-                        pageContent->layout()->itemAt(0)->widget(),
-                        new FragmentReferences(this));
-        }
-    });
+//        if (page == "editor")
+//        {
+//            pageContent->layout()->replaceWidget(
+//                        pageContent->layout()->itemAt(0)->widget(),
+//                        new FragmentEditor(this));
+//        }
+//        else if (page == "references")
+//        {
+//            pageContent->layout()->replaceWidget(
+//                        pageContent->layout()->itemAt(0)->widget(),
+//                        new FragmentReferences(this));
+//        }
+//    });
 
 }
 
