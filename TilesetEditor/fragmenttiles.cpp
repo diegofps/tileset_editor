@@ -76,7 +76,7 @@ FragmentTiles::FragmentTiles(QWidget *parent) :
         App::getState()->setTilesFilter(filter);
     });
 
-    connect(App::getState(), &AppState::onProjectSelectedSceneIDChanged, this, [&](int value) {
+    connect(App::getState(), &AppState::onSelectedSceneIDChanged, this, [&](int value) {
         auto tiles = App::getState()->projectTiles();
         auto filter = App::getState()->tilesFilter();
 
@@ -94,7 +94,7 @@ FragmentTiles::FragmentTiles(QWidget *parent) :
         styleButton(ui->btVFlip, filter->usedWithVFlip);
 
         saveSelectedTile();
-        filterTiles(App::getState()->projectSelectedSceneID(), App::getState()->projectTiles(), filter);
+        filterTiles(App::getState()->selectedSceneID(), App::getState()->projectTiles(), filter);
         updateTilesWidget();
         restoreSelectedTile();
     });
@@ -102,7 +102,7 @@ FragmentTiles::FragmentTiles(QWidget *parent) :
     connect(App::getState(), &AppState::onProjectTilesChanged, this, [&](QList<Tile*> const * value)
     {
         saveSelectedTile();
-        filterTiles(App::getState()->projectSelectedSceneID(), value, App::getState()->tilesFilter());
+        filterTiles(App::getState()->selectedSceneID(), value, App::getState()->tilesFilter());
         updateTilesWidget();
         restoreSelectedTile();
     });
@@ -118,7 +118,7 @@ FragmentTiles::FragmentTiles(QWidget *parent) :
 
     ui->listFrame->setLayout(layout2);
 
-    filterTiles(App::getState()->projectSelectedSceneID(), App::getState()->projectTiles(), App::getState()->tilesFilter());
+    filterTiles(App::getState()->selectedSceneID(), App::getState()->projectTiles(), App::getState()->tilesFilter());
     updateTilesWidget();
 
     connect(_gridTiles, &WidgetGridTiles::onSelectedTileChanged, this, [&](int start, int end) {
@@ -130,7 +130,7 @@ FragmentTiles::FragmentTiles(QWidget *parent) :
         for (int i=start;i<=end;++i)
             selectedTiles.append(_tiles[i]);
 
-        App::getState()->setTilesSelectedItems(&selectedTiles);
+        App::getState()->setSelectedTiles(&selectedTiles);
     });
 
     _gridTiles->setSelection(0,0);
@@ -213,7 +213,7 @@ void FragmentTiles::updateTilesWidget()
 
 void FragmentTiles::saveSelectedTile()
 {
-    auto selectedItems = App::getState()->tilesElectedItems();
+    auto selectedItems = App::getState()->selectedTiles();
     if (selectedItems == nullptr || selectedItems->isEmpty())
     {
         _lastSelectedItemID = 0;

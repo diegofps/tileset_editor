@@ -200,6 +200,8 @@ QMenu::item:selected {
     <addaction name="action_View_Reference_NF"/>
     <addaction name="action_View_Reference_FN"/>
     <addaction name="action_View_Reference_FF"/>
+    <addaction name="action_View_ZoomIn"/>
+    <addaction name="action_View_ZoomOut"/>
    </widget>
    <widget class="QMenu" name="menuNavigate">
     <property name="title">
@@ -529,10 +531,32 @@ QMenu::item:selected {
    <property name="text">
     <string>Undo</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+Z</string>
+   </property>
   </action>
   <action name="action_Edit_Redo">
    <property name="text">
     <string>Redo</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+Z</string>
+   </property>
+  </action>
+  <action name="action_View_ZoomIn">
+   <property name="text">
+    <string>Zoom in</string>
+   </property>
+   <property name="shortcut">
+    <string>=</string>
+   </property>
+  </action>
+  <action name="action_View_ZoomOut">
+   <property name="text">
+    <string>Zoom out</string>
+   </property>
+   <property name="shortcut">
+    <string>-</string>
    </property>
   </action>
  </widget>

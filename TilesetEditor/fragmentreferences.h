@@ -19,6 +19,7 @@ public:
 private:
     void styleScreenshotButtons(ReferenceMode const value);
     void styleHighlightPositionButton(const bool value);
+    void updateReferenceWidget(const QList<Tile *> *tiles, const ReferenceMode value);
 
 private:
     Ui::FragmentReferences *ui;

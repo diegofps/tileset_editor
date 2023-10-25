@@ -44,13 +44,13 @@ MainWindow::MainWindow(QWidget *parent)
 
     connect(ui->cbScenes, &QComboBox::currentIndexChanged, this, [&](int index) {
         int newSceneID = index < 2 ? index-1 : App::getState()->projectScenes()->at(index-2)->id;
-        if (newSceneID != App::getState()->projectSelectedSceneID())
-            App::getState()->setProjectSelectedSceneID(newSceneID);
+        if (newSceneID != App::getState()->selectedSceneID())
+            App::getState()->setSelectedSceneID(newSceneID);
     });
 
     connect(App::getState(), &AppState::onProjectScenesChanged, this, [&](QList<Scene*> const * value)
     {
-        int oldSceneID = App::getState()->projectSelectedSceneID();
+        int oldSceneID = App::getState()->selectedSceneID();
 
         loadScenes(value);
 
@@ -106,6 +106,9 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->action_View_Reference_NF, &QAction::triggered, this, [&](){ App::getState()->setReferenceMode(REF_NF); });
     connect(ui->action_View_Reference_FN, &QAction::triggered, this, [&](){ App::getState()->setReferenceMode(REF_FN); });
     connect(ui->action_View_Reference_FF, &QAction::triggered, this, [&](){ App::getState()->setReferenceMode(REF_FF); });
+
+    connect(ui->action_View_ZoomIn, &QAction::triggered, this, [&](){ App::getState()->zoomInReference(); });
+    connect(ui->action_View_ZoomOut, &QAction::triggered, this, [&](){ App::getState()->zoomOutReference(); });
 
     //Navigate menu
     connect(ui->action_Navigate_Editor_Down, &QAction::triggered, this, [&](){ App::getState()->moveEditorRoot( 0,+1); });
@@ -270,7 +273,7 @@ void MainWindow::onAction_Edit_Scenes()
 
 void MainWindow::onAction_Edit_MoveTileToScene()
 {
-    auto selectedTiles = App::getState()->tilesElectedItems();
+    auto selectedTiles = App::getState()->selectedTiles();
 
     if (selectedTiles == nullptr || selectedTiles->isEmpty())
         return;
@@ -291,9 +294,9 @@ void MainWindow::onAction_Edit_MoveTileToScene()
         App::getState()->setLastMoveToSceneResult(dialog.selectedOption());
 
         if (dialog.selectedOption() == 0)
-            App::getState()->tilesMoveSelectedItemsToScene(0);
+            App::getState()->tilesMoveSelectedTilesToScene(0);
         else
-            App::getState()->tilesMoveSelectedItemsToScene((*scenes)[dialog.selectedOption()-1]->id);
+            App::getState()->tilesMoveSelectedTilesToScene((*scenes)[dialog.selectedOption()-1]->id);
     }
 }
 

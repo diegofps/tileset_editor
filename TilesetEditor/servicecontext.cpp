@@ -1,5 +1,6 @@
 #include "servicecontext.h"
 #include "app.h"
+#include "errors.h"
 #include "model/reference.h"
 #include "model/screenshot.h"
 
@@ -79,7 +80,7 @@ void ServiceContext::close(ContextReport * report)
     App::getState()->setProjectScreenshots(nullptr);
     App::getState()->setProjectScenes(nullptr);
     App::getState()->setSelectedTileset(nullptr);
-    App::getState()->setTilesSelectedItems(nullptr);
+    App::getState()->setSelectedTiles(nullptr);
     App::getOriginalTileCache()->clear();
 
     if (report != nullptr)
@@ -493,13 +494,19 @@ bool loadItems(QDir baseDir, QString name, QList<ITEM*> * items)
 
     QJsonArray array = doc.array();
 
-    for (qsizetype i=0;i!=array.size();++i)
+    try
     {
-        auto jItem = array.at(i).toObject();
-        items->append(new ITEM(jItem));
+        for (qsizetype i=0;i!=array.size();++i)
+        {
+            auto jItem = array.at(i).toObject();
+            items->append(new ITEM(jItem));
+        }
     }
-
-//    qDebug() << "Loaded " << items->size() << " " << name;
+    catch (ContextError & e)
+    {
+        qWarning() << "ContextError during loadItems: " << e.msg();
+        return false;
+    }
 
     return true;
 }

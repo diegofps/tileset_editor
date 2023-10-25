@@ -39,36 +39,36 @@ FragmentTilePreview::FragmentTilePreview(QWidget * parent) :
         styleButton(ui->btVFlip, value.vFlip);
 
         TileMode const & tileMode = App::getState()->tileMode();
-        QList<Tile*> const * tiles = App::getState()->tilesElectedItems();
+        QList<Tile*> const * tiles = App::getState()->selectedTiles();
         Palette * palette = App::getState()->selectedPalette();
 
         updateTileWidget(tileMode, tiles, palette);
     });
 
     connect(App::getState(), &AppState::onSelectedPaletteChanged, this, [&](Palette * value) {
-        updatePaletteWidget(value);
 
         TileMode const & tileMode = App::getState()->tileMode();
-        QList<Tile*> const * tiles = App::getState()->tilesElectedItems();
+        QList<Tile*> const * tiles = App::getState()->selectedTiles();
+        Palette * palette = App::getState()->selectedPalette();
+
+        updateTileWidget(tileMode, tiles, palette);
+        updatePaletteWidget(value, tiles);
+    });
+
+    connect(App::getState(), &AppState::onSelectedTilesChanged, this, [&](QList<Tile*> *) {
+
+        TileMode const & tileMode = App::getState()->tileMode();
+        QList<Tile*> const * tiles = App::getState()->selectedTiles();
         Palette * palette = App::getState()->selectedPalette();
 
         updateTileWidget(tileMode, tiles, palette);
     });
 
-    connect(App::getState(), &AppState::onTilesSelectedItemsChanged, this, [&](QList<Tile*> *) {
-
-        TileMode const & tileMode = App::getState()->tileMode();
-        QList<Tile*> const * tiles = App::getState()->tilesElectedItems();
-        Palette * palette = App::getState()->selectedPalette();
-
-        updateTileWidget(tileMode, tiles, palette);
-    });
-
-    QList<Tile*> const * tiles = App::getState()->tilesElectedItems();
+    QList<Tile*> const * tiles = App::getState()->selectedTiles();
     Palette * palette = App::getState()->selectedPalette();
 
     updateTileWidget(tileMode, tiles, palette);
-    updatePaletteWidget(App::getState()->selectedPalette());
+    updatePaletteWidget(App::getState()->selectedPalette(), tiles);
 }
 
 void FragmentTilePreview::updateTileWidget(TileMode const & mode, QList<Tile*> const * tiles, Palette * palette)
@@ -90,14 +90,9 @@ void FragmentTilePreview::updateTileWidget(TileMode const & mode, QList<Tile*> c
     ui->picture->setPixmap(img);
 }
 
-void FragmentTilePreview::updatePaletteWidget(Palette * value)
+void FragmentTilePreview::updatePaletteWidget(Palette * value, QList<Tile*> const * tiles)
 {
-    if (value == nullptr)
-        qDebug() << "Changed palette to nullptr";
-    else
-        qDebug() << "Changed palette to " << value->id;
-
-    ui->palettePreview->setPalette(value);
+    ui->palettePreview->setPalette(value, tiles);
 }
 
 FragmentTilePreview::~FragmentTilePreview()

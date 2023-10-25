@@ -42,6 +42,7 @@ SOURCES += \
     widgetitempalette.cpp \
     widgetpalette.cpp \
     widgetpicture.cpp \
+    widgetreference.cpp \
     widgetvscrollarea.cpp
 
 HEADERS += \
@@ -79,6 +80,7 @@ HEADERS += \
     widgetitempalette.h \
     widgetpalette.h \
     widgetpicture.h \
+    widgetreference.h \
     widgetvscrollarea.h
 
 FORMS += \

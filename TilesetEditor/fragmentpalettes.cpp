@@ -4,14 +4,14 @@
 #include "app.h"
 #include "widgetitempalette.h"
 
-void FragmentPalettes::styleButtons(QString const & value)
+void FragmentPalettes::styleButtons(PaletteMode value)
 {
-    if (value == "all")
+    if (value == ALL)
     {
         ui->btAll->setStyleSheet(App::getStyles()->get("button_checked"));
         ui->btUsedWithTile->setStyleSheet(App::getStyles()->get("button_unchecked"));
     }
-    else if (value == "used")
+    else if (value == USED_BY_TILE)
     {
         ui->btAll->setStyleSheet(App::getStyles()->get("button_unchecked"));
         ui->btUsedWithTile->setStyleSheet(App::getStyles()->get("button_checked"));
@@ -36,50 +36,50 @@ FragmentPalettes::FragmentPalettes(QWidget *parent) :
 
     connect(ui->btAll, &QPushButton::clicked, this, [&]()
     {
-        App::getState()->setPalettesMode("all");
+        App::getState()->setPalettesMode(ALL);
     });
 
     connect(ui->btUsedWithTile, &QPushButton::clicked, this, [&]()
     {
-        App::getState()->setPalettesMode("used");
+        App::getState()->setPalettesMode(USED_BY_TILE);
     });
 
-    connect(App::getState(), &AppState::onPalettesShowChanged, this, [&](QString const & value)
+    connect(App::getState(), &AppState::onPalettesModeChanged, this, [&](PaletteMode value)
     {
         styleButtons(value);
 
-        auto selectedTiles = App::getState()->tilesElectedItems();
+        auto selectedTiles = App::getState()->selectedTiles();
         auto palettes = App::getState()->projectPalettes();
         auto paletteMode = App::getState()->palettesMode();
 
         saveSelectedPalette();
         filterPalettes(selectedTiles, palettes, paletteMode);
-        updatePalettesWidget();
+        updatePalettesWidget(selectedTiles);
         restoreSelectedPalette(selectedTiles);
     });
 
-    connect(App::getState(), &AppState::onTilesSelectedItemsChanged, this, [&](QList<Tile*> const *)
+    connect(App::getState(), &AppState::onSelectedTilesChanged, this, [&](QList<Tile*> const *)
     {
-        auto selectedTiles = App::getState()->tilesElectedItems();
+        auto selectedTiles = App::getState()->selectedTiles();
         auto palettes = App::getState()->projectPalettes();
         auto paletteMode = App::getState()->palettesMode();
 
         saveSelectedPalette();
         filterPalettes(selectedTiles, palettes, paletteMode);
-        updatePalettesWidget();
+        updatePalettesWidget(selectedTiles);
         restoreSelectedPalette(selectedTiles);
 
     });
 
     connect(App::getState(), &AppState::onProjectPalettesChanged, this, [&](QList<Palette*> const *)
     {
-        auto selectedTiles = App::getState()->tilesElectedItems();
+        auto selectedTiles = App::getState()->selectedTiles();
         auto palettes = App::getState()->projectPalettes();
         auto paletteMode = App::getState()->palettesMode();
 
         saveSelectedPalette();
         filterPalettes(selectedTiles, palettes, paletteMode);
-        updatePalettesWidget();
+        updatePalettesWidget(selectedTiles);
         restoreSelectedPalette(selectedTiles);
     });
 
@@ -92,13 +92,13 @@ FragmentPalettes::FragmentPalettes(QWidget *parent) :
     });
 
 
-    auto selectedTiles = App::getState()->tilesElectedItems();
+    auto selectedTiles = App::getState()->selectedTiles();
     auto palettes = App::getState()->projectPalettes();
     auto paletteMode = App::getState()->palettesMode();
 
 //    saveSelectedPalette();
     filterPalettes(selectedTiles, palettes, paletteMode);
-    updatePalettesWidget();
+    updatePalettesWidget(selectedTiles);
 //    restoreSelectedPalette();
 
     if (!palettes->isEmpty())
@@ -116,14 +116,14 @@ FragmentPalettes::FragmentPalettes(QWidget *parent) :
 //    ui->listPalettes->setCurrentRow(0);
 }
 
-void FragmentPalettes::filterPalettes(QList<Tile*> const * selectedTiles, QList<Palette*> const * value, QString paletteMode)
+void FragmentPalettes::filterPalettes(QList<Tile*> const * selectedTiles, QList<Palette*> const * value, PaletteMode paletteMode)
 {
     _palettes.clear();
 
     if (value == nullptr || selectedTiles == nullptr)
         return;
 
-    if (paletteMode == "all")
+    if (paletteMode == ALL)
     {
         for (auto item : *value)
             _palettes.append(item);
@@ -154,14 +154,14 @@ void FragmentPalettes::filterPalettes(QList<Tile*> const * selectedTiles, QList<
     qDebug() << "Filter found " << _palettes.size() << " palettes not using all";
 }
 
-void FragmentPalettes::updatePalettesWidget()
+void FragmentPalettes::updatePalettesWidget(QList<Tile*> const * tiles)
 {
     ui->listPalettes->clear();
 
     for (auto p : _palettes)
     {
         auto itemWidget = new WidgetItemPalette(this);
-        itemWidget->setPalette(p);
+        itemWidget->setPalette(p, tiles);
 
         auto item = new QListWidgetItem();
         item->setSizeHint(itemWidget->sizeHint());

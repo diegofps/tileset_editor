@@ -22,7 +22,7 @@ public:
 private:
     void updateTileWidget(TileMode const & mode, QList<Tile*> const * tiles, Palette * palette);
     void styleButton(QPushButton *btn, bool value);
-    void updatePaletteWidget(Palette * value);
+    void updatePaletteWidget(Palette * value, QList<Tile*> const * tiles);
 
 private:
     Ui::FragmentTilePreview *ui;

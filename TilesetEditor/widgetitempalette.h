@@ -2,6 +2,7 @@
 #define WIDGETITEMPALETTE_H
 
 #include "model/palette.h"
+#include "model/tile.h"
 #include <QWidget>
 
 namespace Ui {
@@ -17,7 +18,7 @@ public:
     ~WidgetItemPalette();
 
 public slots:
-    void setPalette(Palette * palette);
+    void setPalette(Palette * palette, QList<Tile*> const * selectedTiles);
 
 private:
     Ui::WidgetItemPalette *ui;

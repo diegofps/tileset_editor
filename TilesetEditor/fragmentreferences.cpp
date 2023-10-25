@@ -1,7 +1,10 @@
 #include "fragmentreferences.h"
 #include "ui_fragmentreferences.h"
-
 #include "app.h"
+
+#include <QFile>
+#include <QDir>
+
 
 void FragmentReferences::styleScreenshotButtons(ReferenceMode const value)
 {
@@ -54,15 +57,122 @@ FragmentReferences::FragmentReferences(QWidget *parent) :
     connect(ui->btRefFN, &QPushButton::clicked, this, [&](){ App::getState()->setReferenceMode(REF_FN); });
     connect(ui->btRefFF, &QPushButton::clicked, this, [&](){ App::getState()->setReferenceMode(REF_FF); });
 
-    connect(ui->btShowGrid, &QPushButton::clicked, this, [&]() {
+    connect(ui->btShowGrid, &QPushButton::clicked, this, [&]()
+    {
         App::getState()->setReferenceHighlightPosition(!App::getState()->referenceHighlightPosition());
     });
 
-    connect(App::getState(), &AppState::onReferenceModeChanged, this, [&](ReferenceMode const value) { styleScreenshotButtons(value); });
-    connect(App::getState(), &AppState::onReferenceHighlightPositionChanged, this, [&](bool const value) { styleHighlightPositionButton(value); });
+    connect(App::getState(), &AppState::onReferenceModeChanged, this, [&](ReferenceMode const value)
+    {
+        styleScreenshotButtons(value);
+        updateReferenceWidget(App::getState()->selectedTiles(), value);
+    });
+
+    connect(App::getState(), &AppState::onSelectedTilesChanged, this, [&](QList<Tile*> const * value)
+    {
+        updateReferenceWidget(value, App::getState()->referenceMode());
+    });
+
+    connect(App::getState(), &AppState::onReferenceOffsetChanged, this, [&](QPoint const value)
+    {
+        ui->widgetReference->setOffset(value.x()*8, value.y()*8);
+    });
+
+    connect(App::getState(), &AppState::onReferenceZoomChanged, this, [&](int value)
+    {
+        ui->widgetReference->setZoom(value);
+    });
+
+    connect(App::getState(), &AppState::onReferenceHighlightPositionChanged, this, [&](bool const value)
+    {
+        styleHighlightPositionButton(value);
+    });
+
+    updateReferenceWidget(App::getState()->selectedTiles(), App::getState()->referenceMode());
 }
 
 FragmentReferences::~FragmentReferences()
 {
     delete ui;
+}
+
+inline QPixmap * loadScreenshot(Reference const * const reference)
+{
+    if (reference == nullptr)
+        return nullptr;
+
+    auto project = App::getState()->project();
+
+    if (project == nullptr)
+        return nullptr;
+
+    QDir dir(project->path);
+
+    if (!dir.cd("screenshots"))
+    {
+        qWarning() << "Missing screenshots directory in project path";
+        return nullptr;
+    }
+
+    QString basename = QString::number(reference->screenshotId).rightJustified(6, '0');
+    QString filename = QString("%1.png").arg(basename);
+    QFile file = dir.filePath(filename);
+
+    file.open(QFile::ReadOnly);
+
+    if (!file.isOpen())
+    {
+        qWarning() << "Could not load screenshot file: " << QFileInfo(file).absoluteFilePath();
+        return nullptr;
+    }
+
+    return new QPixmap(QPixmap::fromImage(QImage::fromData(file.readAll())));
+}
+
+void FragmentReferences::updateReferenceWidget(QList<Tile *> const * tiles, ReferenceMode const value)
+{
+    ui->widgetReference->setPixmap(nullptr);
+    ui->lbExtraInfo->setText("");
+
+    if (tiles == nullptr || tiles->isEmpty() || tiles->at(0) == nullptr)
+        return;
+
+    Tile * tile = tiles->at(0);
+    int referenceID;
+
+    switch (value)
+    {
+    case REF_1: referenceID = tile->ref1ID; break;
+    case REF_10: referenceID = tile->ref10ID; break;
+    case REF_100: referenceID = tile->ref100ID; break;
+    case REF_1000: referenceID = tile->ref1000ID; break;
+    case REF_NN: referenceID = tile->refNNID; break;
+    case REF_NF: referenceID = tile->refNFID; break;
+    case REF_FN: referenceID = tile->refFNID; break;
+    case REF_FF: referenceID = tile->refFFID; break;
+    default: referenceID = 0;
+    }
+
+    Reference const * const reference = App::getState()->getProjectReferenceById(referenceID);
+
+    if (reference == nullptr)
+    {
+        qWarning() << "Could not find reference referred by tile, referenceID: " << referenceID;
+        return;
+    }
+
+    ui->widgetReference->setRoot(reference->x, reference->y);
+    ui->widgetReference->setPixmap(loadScreenshot(reference));
+
+    ui->lbExtraInfo->setText(QString("TileID:%1, PaletteID:%2, HFlip:%3, VFlip:%4, LineCout:%5, MATH:%6, PIXEL:%7, OP:%8, BPSTART:%9, TILE:%10")
+                             .arg(tile->id)
+                             .arg(reference->colorPaletteID)
+                             .arg(reference->hFlip)
+                             .arg(reference->vFlip)
+                             .arg(reference->lineCount)
+                             .arg(reference->MATH)
+                             .arg(reference->PIXEL)
+                             .arg(reference->OP)
+                             .arg(reference->BPSTART)
+                             .arg(reference->TILE));
 }

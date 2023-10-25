@@ -13,6 +13,8 @@ Reference::Reference(QJsonObject & data)
     getIntOrFail(startLine, data, "Reference", "StartLine");
     getIntOrFail(lineCount, data, "Reference", "LineCount");
     getIntOrFail(colorPaletteID, data, "Reference", "ColorPaletteID");
+    getBoolOrFail(hFlip, data, "Reference", "HFlip");
+    getBoolOrFail(vFlip, data, "Reference", "VFlip");
     getQStringOrFail(MATH, data, "Reference", "MATH");
     getQStringOrFail(PIXEL, data, "Reference", "PIXEL");
     getQStringOrFail(OP, data, "Reference", "OP");
@@ -32,6 +34,8 @@ QJsonObject Reference::exportAsJson() const
     data["StartLine"] = startLine;
     data["LineCount"] = lineCount;
     data["ColorPaletteID"] = colorPaletteID;
+    data["HFlip"] = hFlip;
+    data["VFlip"] = vFlip;
     data["MATH"] = MATH;
     data["PIXEL"] = PIXEL;
     data["OP"] = OP;

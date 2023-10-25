@@ -6,7 +6,7 @@ AppState::AppState()
 
 //    _tilePreviewMode = "original";
 
-    _palettesMode = "used";
+    _palettesMode = USED_BY_TILE;
     _selectedPalette = nullptr;
 
     _tilesFilter = new TilesFilter();
@@ -15,6 +15,7 @@ AppState::AppState()
 
     _referenceMode = REF_1;
     _referenceHighlightPosition = true;
+    _referenceZoom = 8;
 
     _editorTool = PENCIL;
     _editorShowLinkedTiles = true;
@@ -29,7 +30,7 @@ AppState::AppState()
     _projectReferences = nullptr;
     _projectScreenshots = nullptr;
     _projectScenes = nullptr;
-    _projectSelectedSceneID = 0;
+    _selectedSceneID = 0;
     _lastMoveToSceneResult = 0;
 
 }
@@ -136,10 +137,10 @@ void AppState::setProjectScenes(QList<Scene *> *value)
     emit onProjectScenesChanged(value);
 }
 
-void AppState::setProjectSelectedSceneID(int value)
+void AppState::setSelectedSceneID(int value)
 {
-    _projectSelectedSceneID = value;
-    emit onProjectSelectedSceneIDChanged(value);
+    _selectedSceneID = value;
+    emit onSelectedSceneIDChanged(value);
 }
 
 Tile * AppState::getProjectTileById(int id)
@@ -352,14 +353,14 @@ void AppState::moveReferenceOffset(int rx, int ry)
 {
     _referenceOffset.setX(_referenceOffset.x() + rx);
     _referenceOffset.setY(_referenceOffset.y() + ry);
-    emit onReferenceOffsetChanged(_editorRoot);
+    emit onReferenceOffsetChanged(_referenceOffset);
 }
 
 void AppState::moveReferenceOffsetHome()
 {
     _referenceOffset.setX(0);
     _referenceOffset.setY(0);
-    emit onReferenceOffsetChanged(_editorRoot);
+    emit onReferenceOffsetChanged(_referenceOffset);
 }
 
 void AppState::drawNearestReferenceTile()
@@ -432,9 +433,9 @@ QList<Scene *> *AppState::projectScenes() const
     return _projectScenes;
 }
 
-int AppState::projectSelectedSceneID() const
+int AppState::selectedSceneID() const
 {
-    return _projectSelectedSceneID;
+    return _selectedSceneID;
 }
 
 QList<Tileset *> * AppState::projectTilesets() const
@@ -531,6 +532,24 @@ void AppState::setReferenceHighlightPosition(bool value)
     }
 }
 
+void AppState::zoomInReference()
+{
+    if (_referenceZoom > 6)
+    {
+        --_referenceZoom;
+        emit onReferenceZoomChanged(_referenceZoom);
+    }
+}
+
+void AppState::zoomOutReference()
+{
+    if (_referenceZoom < 10)
+    {
+        ++_referenceZoom;
+        emit onReferenceZoomChanged(_referenceZoom);
+    }
+}
+
 // Preview
 
 //void AppState::setPreviewMode(QString value)
@@ -558,13 +577,13 @@ void AppState::setTilesFilter(TilesFilter * value)
     emit onTilesFilterChanged(value);
 }
 
-void AppState::setTilesSelectedItems(QList<Tile*> * value)
+void AppState::setSelectedTiles(QList<Tile*> * value)
 {
     if (value == nullptr)
-        _tilesSelectedItems.clear();
+        _selectedTiles.clear();
     else
-        _tilesSelectedItems = std::move(*value);
-    emit onTilesSelectedItemsChanged(&_tilesSelectedItems);
+        _selectedTiles = std::move(*value);
+    emit onSelectedTilesChanged(&_selectedTiles);
 }
 
 TilesFilter * AppState::tilesFilter() const
@@ -572,24 +591,24 @@ TilesFilter * AppState::tilesFilter() const
     return _tilesFilter;
 }
 
-QList<Tile *> const * AppState::tilesElectedItems() const
+QList<Tile *> const * AppState::selectedTiles() const
 {
-    return &_tilesSelectedItems;
+    return &_selectedTiles;
 }
 
-void AppState::tilesMoveSelectedItemsToScene(int sceneID)
+void AppState::tilesMoveSelectedTilesToScene(int sceneID)
 {
-    if (_tilesSelectedItems.isEmpty())
+    if (_selectedTiles.isEmpty())
         return;
 
     if (sceneID == -1)
     {
-        for (auto tile : _tilesSelectedItems)
+        for (auto tile : _selectedTiles)
             tile->sceneId = 0;
     }
     else
     {
-        for (auto tile : _tilesSelectedItems)
+        for (auto tile : _selectedTiles)
             tile->sceneId = sceneID;
     }
 
@@ -600,12 +619,12 @@ void AppState::tilesMoveSelectedItemsToScene(int sceneID)
 
 // Palettes
 
-void AppState::setPalettesMode(QString const & value)
+void AppState::setPalettesMode(PaletteMode value)
 {
     if (value != _palettesMode)
     {
         _palettesMode = value;
-        emit onPalettesShowChanged(value);
+        emit onPalettesModeChanged(value);
     }
 }
 
@@ -620,7 +639,7 @@ TileMode & AppState::tileMode()
     return _tileMode;
 }
 
-const QString &AppState::palettesMode() const
+PaletteMode AppState::palettesMode() const
 {
     return _palettesMode;
 }

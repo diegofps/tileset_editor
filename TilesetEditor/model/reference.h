@@ -17,6 +17,8 @@ public:
     int startLine;      // The StartLine received by the Draw function
     int lineCount;      // The LineCount received by the Draw function
     int colorPaletteID; // Number of the color palette used to paint the tile
+    bool hFlip;         // Indicates this tile was flipped horizontally
+    bool vFlip;         // Indicates this tile was flipped vertically
     QString MATH;       // Name of the MATH type used
     QString PIXEL;      // Name of the PIEL type used
     QString OP;         // Name of the OP type used

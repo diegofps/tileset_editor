@@ -6,9 +6,10 @@
 class ContextError : public std::exception
 {
 private:
-    QString const msg;
+    QString const _msg;
 public:
-    ContextError(QString msg) : msg(msg) { }
+    ContextError(QString msg) : _msg(msg) { }
+    QString const & msg() const { return _msg; }
 };
 
 #endif // ERRORS_H
