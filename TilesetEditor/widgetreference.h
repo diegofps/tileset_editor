@@ -12,7 +12,9 @@ class WidgetReference : public QWidget
 public:
     explicit WidgetReference(QWidget *parent = nullptr);
 
-    void setPixmap(QPixmap * img);
+    QImage * offsetImage();
+
+    void setImage(QImage * img);
     void setRoot(int x, int y);
     void setOffset(int rx, int ry);
     void setZoom(int value);
@@ -22,11 +24,15 @@ public:
 
 private:
 
+    void updateOffsetImage();
     void updateViewport();
 
 private:
 
-    QPixmap * _img;
+    QPixmap * _pixmap;
+    QImage * _img;
+    QImage _offsetImageBuffer;
+    QImage * _offsetImage;
     QRect _root;
     QRect _offset;
     QRect _viewport;

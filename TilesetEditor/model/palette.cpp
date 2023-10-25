@@ -19,9 +19,9 @@ QJsonObject Palette::exportAsJson()
     {
         auto & color = colors[i];
         QJsonArray jColor;
-        jColor.append(color.red());
-        jColor.append(color.green());
         jColor.append(color.blue());
+        jColor.append(color.green());
+        jColor.append(color.red());
         jColors.append(jColor);
     }
 

@@ -132,9 +132,9 @@ inline void getQColorArrayOrFail(QColor * const out, QJsonObject & data, char co
                                .arg(objName, key).arg(i));
 
         out[i] = QColor(
-                    jColor.at(0).toInt(),
+                    jColor.at(2).toInt(),
                     jColor.at(1).toInt(),
-                    jColor.at(2).toInt());
+                    jColor.at(0).toInt());
     }
 }
 

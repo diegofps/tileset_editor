@@ -16,6 +16,7 @@ AppState::AppState()
     _referenceMode = REF_1;
     _referenceHighlightPosition = true;
     _referenceZoom = 8;
+    _referenceOffsetImage = nullptr;
 
     _editorTool = PENCIL;
     _editorShowLinkedTiles = true;
@@ -514,6 +515,11 @@ bool AppState::referenceHighlightPosition() const
     return _referenceHighlightPosition;
 }
 
+QImage * AppState::referenceOffsetImage()
+{
+    return _referenceOffsetImage;
+}
+
 void AppState::setReferenceMode(ReferenceMode value)
 {
     if (value != _referenceMode)
@@ -530,6 +536,12 @@ void AppState::setReferenceHighlightPosition(bool value)
         _referenceHighlightPosition = value;
         emit onReferenceHighlightPositionChanged(value);
     }
+}
+
+void AppState::setReferenceOffsetImage(QImage * value)
+{
+    _referenceOffsetImage = value;
+    emit onReferenceOffsetImageChanged(value);
 }
 
 void AppState::zoomInReference()

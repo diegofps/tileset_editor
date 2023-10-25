@@ -117,6 +117,7 @@ private:
     ReferenceMode _referenceMode;
     bool _referenceHighlightPosition;
     int _referenceZoom;
+    QImage * _referenceOffsetImage;
 
     // Preview
 //    QString _previewMode;
@@ -217,8 +218,11 @@ public:
     // References Toolbox
     ReferenceMode referenceMode() const;
     bool referenceHighlightPosition() const;
+    QImage * referenceOffsetImage();
+
     void setReferenceMode(ReferenceMode value);
     void setReferenceHighlightPosition(bool value);
+    void setReferenceOffsetImage(QImage * offsetImage);
 
     void zoomInReference();
     void zoomOutReference();
@@ -274,6 +278,7 @@ signals:
     void onEditorRootChanged(QPoint const value);
     void onReferenceOffsetChanged(QPoint const value);
     void onReferenceZoomChanged(int value);
+    void onReferenceOffsetImageChanged(QImage * value);
 
     // Editor Toolbox
     void onEditorToolChanged(EditorTool const value);

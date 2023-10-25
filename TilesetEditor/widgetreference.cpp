@@ -4,36 +4,53 @@
 WidgetReference::WidgetReference(QWidget *parent)
     : QWidget{parent},
 
+    _pixmap(nullptr),
     _img(nullptr),
-    _root(128,113,8,8),
+    _offsetImageBuffer(8,8, QImage::Format_ARGB32),
+    _offsetImage(nullptr),
+    _root(0,0,8,8),
     _offset(0,0,8,8),
     _viewport(0,0,0,0),
     _viewportPower(7)
 {
-    _brushRoot.setColor(QColor::fromString("#6600ff00"));
+    _brushRoot.setColor(QColor::fromString("#66ffffff"));
     _brushRoot.setStyle(Qt::SolidPattern);
 
-    _brushOffset.setColor(QColor::fromString("#66ff0000"));
+    _brushOffset.setColor(QColor::fromString("#660000ff"));
     _brushOffset.setStyle(Qt::SolidPattern);
 
     updateViewport();
     update();
 }
 
-void WidgetReference::setPixmap(QPixmap *img)
+QImage *WidgetReference::offsetImage()
 {
-//    qDebug() << "setPixmap|Rect:" << _root;
+    return _offsetImage;
+}
+
+void WidgetReference::setImage(QImage *img)
+{
     if (_img != nullptr)
         delete _img;
+
+    if (_pixmap != nullptr)
+        delete _pixmap;
+
     _img = img;
+    _pixmap = img == nullptr?nullptr:new QPixmap(QPixmap::fromImage(*_img));
+
     update();
 }
 
 void WidgetReference::setRoot(int x, int y)
 {
-//    qDebug() << "setRoot|Rect:" << _root;
-    _root.setRect(x, y, 8, 8);
+    int const offX = _offset.x() - _root.x();
+    int const offY = _offset.y() - _root.y();
 
+    _root.setRect(x, y, 8, 8);
+    _offset.setRect(x+offX, y+offY, 8, 8);
+
+    updateOffsetImage();
     updateViewport();
     update();
 }
@@ -42,12 +59,12 @@ void WidgetReference::setOffset(int rx, int ry)
 {
     qDebug() << "setOffset|Offset:" << _offset;
     _offset.setRect(_root.x()+rx, _root.y()+ry, 8, 8);
+    updateOffsetImage();
     update();
 }
 
 void WidgetReference::setZoom(int value)
 {
-//    qDebug() << "setZoom|Rect:" << _root;
     _viewportPower = value;
     updateViewport();
     update();
@@ -67,8 +84,6 @@ drawRectangleInViewport(QRect const & rect,
                 REPROJECT(rect.width(), painterSize.width(), viewport.width()),
                 REPROJECT(rect.height(), painterSize.height(), viewport.height()));
 
-//    qDebug() << "Rect: " << rect2.x() << "," << rect2.y() <<  " [" << rect2.width() << "" << rect2.height() << "]";
-//    qDebug() << "Rect:" << rect << ", Rect2:" << rect2;
     painter.setBrush(brush);
     painter.setPen(Qt::NoPen);
     painter.drawRect(rect2);
@@ -79,20 +94,44 @@ void WidgetReference::paintEvent(QPaintEvent *event)
     (void) event;
     QPainter painter(this);
 
-    if (_img == nullptr)
+    if (_pixmap == nullptr)
         return;
 
-    painter.drawPixmap(QRect(0,0,width(),height()), *_img, _viewport);
+    painter.drawPixmap(QRect(0,0,width(),height()), *_pixmap, _viewport);
     drawRectangleInViewport(_root, size(), _viewport, _brushRoot, painter);
     drawRectangleInViewport(_offset, size(), _viewport, _brushOffset, painter);
 }
 
 void WidgetReference::resizeEvent(QResizeEvent *event)
 {
-//    qDebug() << "resizeEvent|Rect:" << _root;
     (void) event;
     updateViewport();
     update();
+}
+
+void WidgetReference::updateOffsetImage()
+{
+    _offsetImage = nullptr;
+
+    if (_img == nullptr)
+        return;
+
+    if (_offset.x() < 0 || _offset.x()+_offset.width() > _img->width())
+        return;
+
+    if (_offset.y() < 0 || _offset.y()+_offset.height() > _img->height())
+        return;
+
+    _offsetImage = &_offsetImageBuffer;
+
+    for (int i=0;i!=_offsetImageBuffer.height();++i)
+    {
+        QRgb * srcLine = reinterpret_cast<QRgb*>(_img->scanLine(i));
+        QRgb * dstLine = reinterpret_cast<QRgb*>(_offsetImageBuffer.scanLine(i));
+
+        for (int j=0;j!=_offsetImageBuffer.width();++j)
+            dstLine[i] = srcLine[i];
+    }
 }
 
 void WidgetReference::updateViewport()

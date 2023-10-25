@@ -76,6 +76,8 @@ FragmentReferences::FragmentReferences(QWidget *parent) :
     connect(App::getState(), &AppState::onReferenceOffsetChanged, this, [&](QPoint const value)
     {
         ui->widgetReference->setOffset(value.x()*8, value.y()*8);
+        QImage * img = ui->widgetReference->offsetImage();
+        App::getState()->setReferenceOffsetImage(img);
     });
 
     connect(App::getState(), &AppState::onReferenceZoomChanged, this, [&](int value)
@@ -96,7 +98,7 @@ FragmentReferences::~FragmentReferences()
     delete ui;
 }
 
-inline QPixmap * loadScreenshot(Reference const * const reference)
+inline QImage * loadScreenshot(Reference const * const reference)
 {
     if (reference == nullptr)
         return nullptr;
@@ -108,30 +110,35 @@ inline QPixmap * loadScreenshot(Reference const * const reference)
 
     QDir dir(project->path);
 
-    if (!dir.cd("screenshots"))
+    if (dir.cd("screenshots"))
+    {
+        QString basename = QString::number(reference->screenshotId).rightJustified(6, '0');
+        QString filename = QString("%1.png").arg(basename);
+        QFile file = dir.filePath(filename);
+
+        file.open(QFile::ReadOnly);
+
+        if (file.isOpen())
+            return new QImage(QImage::fromData(file.readAll()));
+    }
+    else
     {
         qWarning() << "Missing screenshots directory in project path";
         return nullptr;
     }
 
-    QString basename = QString::number(reference->screenshotId).rightJustified(6, '0');
-    QString filename = QString("%1.png").arg(basename);
-    QFile file = dir.filePath(filename);
+    for (auto s : *App::getState()->projectScreenshots())
+        if (s->id == reference->screenshotId)
+            return new QImage(QImage::fromData(s->data));
 
-    file.open(QFile::ReadOnly);
+    qWarning() << "Could not load screenshot from neither filepath nor unsaved memory";
 
-    if (!file.isOpen())
-    {
-        qWarning() << "Could not load screenshot file: " << QFileInfo(file).absoluteFilePath();
-        return nullptr;
-    }
-
-    return new QPixmap(QPixmap::fromImage(QImage::fromData(file.readAll())));
+    return nullptr;
 }
 
 void FragmentReferences::updateReferenceWidget(QList<Tile *> const * tiles, ReferenceMode const value)
 {
-    ui->widgetReference->setPixmap(nullptr);
+    ui->widgetReference->setImage(nullptr);
     ui->lbExtraInfo->setText("");
 
     if (tiles == nullptr || tiles->isEmpty() || tiles->at(0) == nullptr)
@@ -162,7 +169,7 @@ void FragmentReferences::updateReferenceWidget(QList<Tile *> const * tiles, Refe
     }
 
     ui->widgetReference->setRoot(reference->x, reference->y);
-    ui->widgetReference->setPixmap(loadScreenshot(reference));
+    ui->widgetReference->setImage(loadScreenshot(reference));
 
     ui->lbExtraInfo->setText(QString("TileID:%1, PaletteID:%2, HFlip:%3, VFlip:%4, LineCout:%5, MATH:%6, PIXEL:%7, OP:%8, BPSTART:%9, TILE:%10")
                              .arg(tile->id)

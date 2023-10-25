@@ -107,8 +107,22 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->action_View_Reference_FN, &QAction::triggered, this, [&](){ App::getState()->setReferenceMode(REF_FN); });
     connect(ui->action_View_Reference_FF, &QAction::triggered, this, [&](){ App::getState()->setReferenceMode(REF_FF); });
 
-    connect(ui->action_View_ZoomIn, &QAction::triggered, this, [&](){ App::getState()->zoomInReference(); });
-    connect(ui->action_View_ZoomOut, &QAction::triggered, this, [&](){ App::getState()->zoomOutReference(); });
+    connect(ui->action_View_Reference_ZoomIn, &QAction::triggered, this, [&](){ App::getState()->zoomInReference(); });
+    connect(ui->action_View_Reference_ZoomOut, &QAction::triggered, this, [&](){ App::getState()->zoomOutReference(); });
+
+    connect(ui->action_View_FlipTileHorizontally, &QAction::triggered, this, [&]()
+    {
+        TileMode mode = App::getState()->tileMode();
+        mode.hFlip = !mode.hFlip;
+        App::getState()->setTileMode(mode);
+    });
+
+    connect(ui->action_View_FlipTileVertically, &QAction::triggered, this, [&]()
+    {
+        TileMode mode = App::getState()->tileMode();
+        mode.vFlip = !mode.vFlip;
+        App::getState()->setTileMode(mode);
+    });
 
     //Navigate menu
     connect(ui->action_Navigate_Editor_Down, &QAction::triggered, this, [&](){ App::getState()->moveEditorRoot( 0,+1); });

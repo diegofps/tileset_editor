@@ -360,6 +360,7 @@ void ServiceContext::importDump(QString const & folderpath, ContextReport * repo
 
         dReference->id = referencesStateId[dReference->id];
         dReference->screenshotId = screenshotsStateId[dReference->screenshotId];
+        dReference->colorPaletteID = paletteStateId[dReference->colorPaletteID];
 
         App::getState()->appendProjectReference(dReference);
         ++referencesImported;

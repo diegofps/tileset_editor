@@ -200,8 +200,10 @@ QMenu::item:selected {
     <addaction name="action_View_Reference_NF"/>
     <addaction name="action_View_Reference_FN"/>
     <addaction name="action_View_Reference_FF"/>
-    <addaction name="action_View_ZoomIn"/>
-    <addaction name="action_View_ZoomOut"/>
+    <addaction name="action_View_Reference_ZoomIn"/>
+    <addaction name="action_View_Reference_ZoomOut"/>
+    <addaction name="action_View_FlipTileHorizontally"/>
+    <addaction name="action_View_FlipTileVertically"/>
    </widget>
    <widget class="QMenu" name="menuNavigate">
     <property name="title">
@@ -543,20 +545,36 @@ QMenu::item:selected {
     <string>Ctrl+Shift+Z</string>
    </property>
   </action>
-  <action name="action_View_ZoomIn">
+  <action name="action_View_Reference_ZoomIn">
    <property name="text">
-    <string>Zoom in</string>
+    <string>Reference Zoom in</string>
    </property>
    <property name="shortcut">
     <string>=</string>
    </property>
   </action>
-  <action name="action_View_ZoomOut">
+  <action name="action_View_Reference_ZoomOut">
    <property name="text">
-    <string>Zoom out</string>
+    <string>Reference Zoom out</string>
    </property>
    <property name="shortcut">
     <string>-</string>
+   </property>
+  </action>
+  <action name="action_View_FlipTileHorizontally">
+   <property name="text">
+    <string>Flip Tile Horizontally</string>
+   </property>
+   <property name="shortcut">
+    <string>H</string>
+   </property>
+  </action>
+  <action name="action_View_FlipTileVertically">
+   <property name="text">
+    <string>Flip Tile Vertically</string>
+   </property>
+   <property name="shortcut">
+    <string>V</string>
    </property>
   </action>
  </widget>
