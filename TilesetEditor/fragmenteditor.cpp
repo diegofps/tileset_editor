@@ -47,12 +47,7 @@ FragmentEditor::FragmentEditor(QWidget *parent) :
 {
     ui->setupUi(this);
 
-//    ui->btPencil->setToolTip("Draws the selected Tile to the Tileset");
-//    ui->btEraser->setToolTip("Erase Tiles from the Tileset");
-//    ui->btLinker->setToolTip("Mark Tiles that link their original image to its HD version");
-
     styleToolButtons(App::getState()->editorTool());
-//    ui->btShowNext->setStyleSheet(App::getStyles()->get("button_click"));
     styleButton(App::getState()->editorShowLinkedTiles(), ui->btShowLinkedTiles);
     styleButton(App::getState()->editorShowUnlinkedTiles(), ui->btShowUnlinkedTiles);
     styleButton(App::getState()->editorShowGrid(), ui->btShowGrid);
@@ -61,19 +56,18 @@ FragmentEditor::FragmentEditor(QWidget *parent) :
     connect(ui->btEraser, &QPushButton::clicked, this, [&]() { App::getState()->setEditorTool(ERASER); });
     connect(ui->btLinker, &QPushButton::clicked, this, [&]() { App::getState()->setEditorTool(LINKER); });
 
-//    connect(ui->btShowNext, &QPushButton::clicked, this, [&]() {
-//        // TODO: Show next tile appearance
-//    });
-
-    connect(ui->btShowLinkedTiles, &QPushButton::clicked, this, [&]() {
+    connect(ui->btShowLinkedTiles, &QPushButton::clicked, this, [&]()
+    {
         App::getState()->setEditorShowLinkedTiles(!App::getState()->editorShowLinkedTiles());
     });
 
-    connect(ui->btShowUnlinkedTiles, &QPushButton::clicked, this, [&]() {
+    connect(ui->btShowUnlinkedTiles, &QPushButton::clicked, this, [&]()
+    {
         App::getState()->setEditorShowUnlinkedTiles(!App::getState()->editorShowUnlinkedTiles());
     });
 
-    connect(ui->btShowGrid, &QPushButton::clicked, this, [&]() {
+    connect(ui->btShowGrid, &QPushButton::clicked, this, [&]()
+    {
         App::getState()->setEditorShowGrid(!App::getState()->editorShowGrid());
     });
 
@@ -83,9 +77,30 @@ FragmentEditor::FragmentEditor(QWidget *parent) :
     connect(App::getState(), &AppState::onEditorShowLinkedTilesChanged, this, [&](bool value) { styleButton(value, ui->btShowLinkedTiles); });
     connect(App::getState(), &AppState::onEditorShowUnlinkedTilesChanged, this, [&](bool value) { styleButton(value, ui->btShowUnlinkedTiles); });
     connect(App::getState(), &AppState::onEditorShowGridChanged, this, [&](bool value) { styleButton(value, ui->btShowGrid); });
+
+    connect(App::getState(), &AppState::onSelectedTilesetChanged, this, [&](Tileset * value) { updateTilesetWidget(value); });
+
+    updateTilesetWidget(App::getState()->selectedTileset());
 }
 
 FragmentEditor::~FragmentEditor()
 {
     delete ui;
+}
+
+void FragmentEditor::updateTilesetWidget(Tileset * value)
+{
+    if (value == nullptr)
+    {
+        ui->widgetTileset->setCells(nullptr);
+        return;
+    }
+
+    auto root = App::getState()->editorRoot();
+    auto offset = App::getState()->referenceOffset();
+
+    ui->widgetTileset->setGridSize(value->gridW, value->gridH);
+    ui->widgetTileset->setRoot(root.x(), root.y());
+    ui->widgetTileset->setOffset(offset.x(), offset.y());
+    ui->widgetTileset->setCells(&value->cells);
 }

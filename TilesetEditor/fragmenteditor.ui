@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>761</width>
-    <height>558</height>
+    <width>430</width>
+    <height>230</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -453,7 +453,7 @@ QPushButton#evilButton:checked {
        </layout>
       </item>
       <item>
-       <widget class="QWidget" name="widget_2" native="true">
+       <widget class="WidgetTileset" name="widgetTileset" native="true">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
           <horstretch>0</horstretch>
@@ -534,6 +534,14 @@ QPushButton#evilButton:checked {
    </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>WidgetTileset</class>
+   <extends>QWidget</extends>
+   <header>widgettileset.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>

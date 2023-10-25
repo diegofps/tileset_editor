@@ -17,11 +17,13 @@ AppState::AppState()
     _referenceHighlightPosition = true;
     _referenceZoom = 15;
     _referenceOffsetImage = nullptr;
+    _referenceOffset = QPoint(0,0);
 
     _editorTool = PENCIL;
     _editorShowLinkedTiles = true;
     _editorShowUnlinkedTiles = true;
     _editorShowGrid = true;
+    _editorRoot = QPoint(0,0);
 
     _project = nullptr;
     _projectHasChanges = false;
@@ -336,34 +338,6 @@ int AppState::lastMoveToSceneResult()
     return _lastMoveToSceneResult;
 }
 
-void AppState::moveEditorRoot(int rx, int ry)
-{
-    _editorRoot.setX(_editorRoot.x() + rx);
-    _editorRoot.setY(_editorRoot.y() + ry);
-    emit onEditorRootChanged(_editorRoot);
-}
-
-void AppState::moveEditorRootHome()
-{
-    _editorRoot.setX(0);
-    _editorRoot.setY(0);
-    emit onEditorRootChanged(_editorRoot);
-}
-
-void AppState::moveReferenceOffset(int rx, int ry)
-{
-    _referenceOffset.setX(_referenceOffset.x() + rx);
-    _referenceOffset.setY(_referenceOffset.y() + ry);
-    emit onReferenceOffsetChanged(_referenceOffset);
-}
-
-void AppState::moveReferenceOffsetHome()
-{
-    _referenceOffset.setX(0);
-    _referenceOffset.setY(0);
-    emit onReferenceOffsetChanged(_referenceOffset);
-}
-
 void AppState::drawNearestReferenceTile()
 {
     // TODO
@@ -447,6 +421,26 @@ QList<Tileset *> * AppState::projectTilesets() const
 
 // Editor Toolbox
 
+EditorTool AppState::editorTool() const
+{
+    return _editorTool;
+}
+
+bool AppState::editorShowLinkedTiles() const
+{
+    return _editorShowLinkedTiles;
+}
+
+bool AppState::editorShowUnlinkedTiles() const
+{
+    return _editorShowUnlinkedTiles;
+}
+
+bool AppState::editorShowGrid() const
+{
+    return _editorShowGrid;
+}
+
 void AppState::setEditorTool(EditorTool const value)
 {
     if (value != _editorTool)
@@ -483,24 +477,23 @@ void AppState::setEditorShowGrid(bool value)
     }
 }
 
-EditorTool AppState::editorTool() const
+QPoint AppState::editorRoot()
 {
-    return _editorTool;
+    return _editorRoot;
 }
 
-bool AppState::editorShowLinkedTiles() const
+void AppState::moveEditorRoot(int rx, int ry)
 {
-    return _editorShowLinkedTiles;
+    _editorRoot.setX(_editorRoot.x() + rx);
+    _editorRoot.setY(_editorRoot.y() + ry);
+    emit onEditorRootChanged(_editorRoot);
 }
 
-bool AppState::editorShowUnlinkedTiles() const
+void AppState::moveEditorRootHome()
 {
-    return _editorShowUnlinkedTiles;
-}
-
-bool AppState::editorShowGrid() const
-{
-    return _editorShowGrid;
+    _editorRoot.setX(0);
+    _editorRoot.setY(0);
+    emit onEditorRootChanged(_editorRoot);
 }
 
 // References Toolbox
@@ -565,6 +558,25 @@ void AppState::zoomOutReference()
         ++_referenceZoom;
         emit onReferenceZoomChanged(_referenceZoom);
     }
+}
+
+QPoint AppState::referenceOffset()
+{
+    return _referenceOffset;
+}
+
+void AppState::moveReferenceOffset(int rx, int ry)
+{
+    _referenceOffset.setX(_referenceOffset.x() + rx);
+    _referenceOffset.setY(_referenceOffset.y() + ry);
+    emit onReferenceOffsetChanged(_referenceOffset);
+}
+
+void AppState::moveReferenceOffsetHome()
+{
+    _referenceOffset.setX(0);
+    _referenceOffset.setY(0);
+    emit onReferenceOffsetChanged(_referenceOffset);
 }
 
 // Preview

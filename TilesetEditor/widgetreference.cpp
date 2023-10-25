@@ -57,7 +57,7 @@ void WidgetReference::setRoot(int x, int y)
 
 void WidgetReference::setOffset(int rx, int ry)
 {
-    qDebug() << "setOffset|Offset:" << _offset;
+//    qDebug() << "setOffset|Offset:" << _offset;
     _offset.setRect(_root.x()+rx, _root.y()+ry, 8, 8);
     updateOffsetImage();
     update();
@@ -79,14 +79,14 @@ drawRectangleInViewport(QRect const & rect,
 {
 #define REPROJECT(x,w,vw) (x)*(w)/(vw)
 
-    QRect rect2(REPROJECT(rect.x()-viewport.x(), painterSize.width(), viewport.width()),
-                REPROJECT(rect.y()-viewport.y(), painterSize.height(), viewport.height()),
-                REPROJECT(rect.width(), painterSize.width(), viewport.width()),
-                REPROJECT(rect.height(), painterSize.height(), viewport.height()));
+    int const x1 = REPROJECT(rect.x()-viewport.x(), painterSize.width(), viewport.width());
+    int const y1 = REPROJECT(rect.y()-viewport.y(), painterSize.height(), viewport.height());
+    int const x2 = REPROJECT(rect.x()+rect.width()-viewport.x(), painterSize.width(), viewport.width());
+    int const y2 = REPROJECT(rect.y()+rect.height()-viewport.y(), painterSize.height(), viewport.height());
 
     painter.setBrush(brush);
     painter.setPen(Qt::NoPen);
-    painter.drawRect(rect2);
+    painter.drawRect(QRect(x1,y1,x2-x1,y2-y1));
 }
 
 void WidgetReference::paintEvent(QPaintEvent *event)

@@ -104,23 +104,20 @@ private:
     QHash<int, Reference*>  _index_Reference_ID;
     QHash<int, Scene*>      _index_Scene_ID;
 
-    QPoint _editorRoot;
-    QPoint _referenceOffset;
 
     // Editor Toolbox
     EditorTool _editorTool;
     bool       _editorShowLinkedTiles;
     bool       _editorShowUnlinkedTiles;
     bool       _editorShowGrid;
+    QPoint     _editorRoot;
 
     // References Toolbox
-    ReferenceMode _referenceMode;
-    bool _referenceHighlightPosition;
-    int _referenceZoom;
-    QImage * _referenceOffsetImage;
-
-    // Preview
-//    QString _previewMode;
+    ReferenceMode   _referenceMode;
+    bool            _referenceHighlightPosition;
+    int             _referenceZoom;
+    QImage        * _referenceOffsetImage;
+    QPoint          _referenceOffset;
 
     // Tiles
     TilesFilter * _tilesFilter;
@@ -128,7 +125,7 @@ private:
 
     // Palettes
     PaletteMode   _palettesMode;
-    Palette * _selectedPalette;
+    Palette     * _selectedPalette;
 
     // Tile Preview
 //    QString _tilePreviewMode;
@@ -191,12 +188,6 @@ public:
     void setLastMoveToSceneResult(int value);
     int lastMoveToSceneResult();
 
-    void moveEditorRoot(int rx, int ry);
-    void moveEditorRootHome();
-
-    void moveReferenceOffset(int rx, int ry);
-    void moveReferenceOffsetHome();
-
     void drawNearestReferenceTile();
     void drawTile();
     void eraseTile();
@@ -215,6 +206,10 @@ public:
     void setEditorShowUnlinkedTiles(bool value);
     void setEditorShowGrid(bool value);
 
+    QPoint editorRoot();
+    void moveEditorRoot(int rx, int ry);
+    void moveEditorRootHome();
+
     // References Toolbox
     ReferenceMode referenceMode() const;
     bool referenceHighlightPosition() const;
@@ -228,9 +223,9 @@ public:
     void zoomInReference();
     void zoomOutReference();
 
-    // Preview
-//    const QString & previewMode() const;
-//    void setPreviewMode(QString value);
+    QPoint referenceOffset();
+    void moveReferenceOffset(int rx, int ry);
+    void moveReferenceOffsetHome();
 
     // Tiles
     TilesFilter * tilesFilter() const;
@@ -290,9 +285,6 @@ signals:
     // References Toolbox
     void onReferenceModeChanged(ReferenceMode const value);
     void onReferenceHighlightPositionChanged(bool const value);
-
-    // Preview
-//    void onPreviewModeChanged(QString const & value);
 
     // Tiles
     void onTilesFilterChanged(TilesFilter * value);

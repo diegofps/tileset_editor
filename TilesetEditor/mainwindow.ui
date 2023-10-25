@@ -211,7 +211,7 @@ QMenu::item:selected {
     </property>
     <widget class="QMenu" name="menuNavigateReferences">
      <property name="title">
-      <string>References</string>
+      <string>Offset</string>
      </property>
      <addaction name="action_Navigate_References_Left"/>
      <addaction name="action_Navigate_References_Up"/>
@@ -221,7 +221,7 @@ QMenu::item:selected {
     </widget>
     <widget class="QMenu" name="menuNavigateEditor">
      <property name="title">
-      <string>Editor</string>
+      <string>Root</string>
      </property>
      <addaction name="action_Navigate_Editor_Left"/>
      <addaction name="action_Navigate_Editor_Up"/>
@@ -526,7 +526,7 @@ QMenu::item:selected {
     <string>Insert Nearest Reference Tile</string>
    </property>
    <property name="shortcut">
-    <string>Shift+Return</string>
+    <string>Shift+Space</string>
    </property>
   </action>
   <action name="action_Edit_Undo">
@@ -550,7 +550,7 @@ QMenu::item:selected {
     <string>Reference Zoom in</string>
    </property>
    <property name="shortcut">
-    <string>=</string>
+    <string>+</string>
    </property>
   </action>
   <action name="action_View_Reference_ZoomOut">
@@ -558,7 +558,7 @@ QMenu::item:selected {
     <string>Reference Zoom out</string>
    </property>
    <property name="shortcut">
-    <string>-</string>
+    <string>_</string>
    </property>
   </action>
   <action name="action_View_FlipTileHorizontally">

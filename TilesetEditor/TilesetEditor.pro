@@ -27,6 +27,7 @@ SOURCES += \
     layoutabsolute.cpp \
     main.cpp \
     mainwindow.cpp \
+    model/cell.cpp \
     model/palette.cpp \
     model/project.cpp \
     model/reference.cpp \
@@ -43,6 +44,7 @@ SOURCES += \
     widgetpalette.cpp \
     widgetpicture.cpp \
     widgetreference.cpp \
+    widgettileset.cpp \
     widgetvscrollarea.cpp
 
 HEADERS += \
@@ -64,6 +66,7 @@ HEADERS += \
     fragmenttilesets.h \
     layoutabsolute.h \
     mainwindow.h \
+    model/cell.h \
     model/jsonhelpers.h \
     model/palette.h \
     model/project.h \
@@ -81,6 +84,7 @@ HEADERS += \
     widgetpalette.h \
     widgetpicture.h \
     widgetreference.h \
+    widgettileset.h \
     widgetvscrollarea.h
 
 FORMS += \

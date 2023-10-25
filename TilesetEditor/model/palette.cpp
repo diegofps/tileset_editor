@@ -44,9 +44,9 @@ QByteArray & Palette::uniqueKey()
         for (int i=0;i!=size;++i,dst+=3)
         {
             QColor & color = colors[i];
-            dst[0] = color.red();
+            dst[0] = color.blue();
             dst[1] = color.green();
-            dst[2] = color.blue();
+            dst[2] = color.red();
         }
     }
 

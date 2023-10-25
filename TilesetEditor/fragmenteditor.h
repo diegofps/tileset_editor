@@ -20,6 +20,7 @@ public:
 private:
     void styleToolButtons(const EditorTool value);
     void styleButton(bool const value, QPushButton * const button);
+    void updateTilesetWidget(Tileset *value);
 
 private:
     Ui::FragmentEditor *ui;
