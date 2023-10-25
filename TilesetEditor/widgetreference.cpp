@@ -136,7 +136,7 @@ void WidgetReference::updateOffsetImage()
 
 void WidgetReference::updateViewport()
 {
-    int const w = std::pow(2, _viewportPower);
+    int const w = std::pow(1.4, _viewportPower);
     int const h = w * height() / width();
     int x = _root.x() - w / 2;
     int y = _root.y() - h / 2;

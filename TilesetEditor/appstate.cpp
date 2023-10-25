@@ -15,7 +15,7 @@ AppState::AppState()
 
     _referenceMode = REF_1;
     _referenceHighlightPosition = true;
-    _referenceZoom = 8;
+    _referenceZoom = 15;
     _referenceOffsetImage = nullptr;
 
     _editorTool = PENCIL;
@@ -520,6 +520,11 @@ QImage * AppState::referenceOffsetImage()
     return _referenceOffsetImage;
 }
 
+int AppState::referenceZoom()
+{
+    return _referenceZoom;
+}
+
 void AppState::setReferenceMode(ReferenceMode value)
 {
     if (value != _referenceMode)
@@ -546,7 +551,7 @@ void AppState::setReferenceOffsetImage(QImage * value)
 
 void AppState::zoomInReference()
 {
-    if (_referenceZoom > 6)
+    if (_referenceZoom > 13)
     {
         --_referenceZoom;
         emit onReferenceZoomChanged(_referenceZoom);
@@ -555,7 +560,7 @@ void AppState::zoomInReference()
 
 void AppState::zoomOutReference()
 {
-    if (_referenceZoom < 10)
+    if (_referenceZoom < 20)
     {
         ++_referenceZoom;
         emit onReferenceZoomChanged(_referenceZoom);

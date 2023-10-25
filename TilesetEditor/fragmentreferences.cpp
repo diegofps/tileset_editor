@@ -90,6 +90,7 @@ FragmentReferences::FragmentReferences(QWidget *parent) :
         styleHighlightPositionButton(value);
     });
 
+    ui->widgetReference->setZoom(App::getState()->referenceZoom());
     updateReferenceWidget(App::getState()->selectedTiles(), App::getState()->referenceMode());
 }
 

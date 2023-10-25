@@ -219,6 +219,7 @@ public:
     ReferenceMode referenceMode() const;
     bool referenceHighlightPosition() const;
     QImage * referenceOffsetImage();
+    int referenceZoom();
 
     void setReferenceMode(ReferenceMode value);
     void setReferenceHighlightPosition(bool value);
