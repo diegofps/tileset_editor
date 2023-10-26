@@ -38,7 +38,6 @@ FragmentContextOpen::FragmentContextOpen(QWidget *parent) :
 
     QWidget * fgTiles = new FragmentTiles(splitterVL);
     QWidget * fgPalettes = new FragmentPalettes(splitterVL);
-//    QWidget * fgPreview = new FragmentPreview(splitterH);
     QWidget * fgReferences = new FragmentReferences(splitterVC);
     QWidget * fgEditor = new FragmentEditor(splitterVC);
     QWidget * fgTilePreview = new FragmentTilePreview(splitterVR);
@@ -63,10 +62,16 @@ FragmentContextOpen::FragmentContextOpen(QWidget *parent) :
     layout->addWidget(splitterH);
     setLayout(layout);
 
+
+    QList<int> sizesVC;
+    sizesVC << 0.4 * sizeHint().height()
+           << 0.6 * sizeHint().height();
+    splitterVC->setSizes(sizesVC);
+
     QList<int> sizesH;
-    sizesH << 0.1 * sizeHint().height()
-           << 0.8 * sizeHint().height()
-           << 0.1 * sizeHint().height();
+    sizesH << 0.1 * sizeHint().width()
+           << 0.8 * sizeHint().width()
+           << 0.1 * sizeHint().width();
     splitterH->setSizes(sizesH);
 }
 

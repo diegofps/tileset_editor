@@ -20,9 +20,10 @@ public:
     bool usedInSprite;
     bool usedInBackground;
     int  ref1ID;
-    int  ref10ID;
+    int  ref25ID;
+    int  ref50ID;
+    int  ref75ID;
     int  ref100ID;
-    int  ref1000ID;
     int  refNNID;
     int  refFNID;
     int  refNFID;

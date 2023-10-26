@@ -12,9 +12,10 @@ void FragmentReferences::styleScreenshotButtons(ReferenceMode const value)
     auto unchecked = App::getStyles()->get("button_unchecked");
 
     ui->btRef1->setStyleSheet(value==REF_1?checked:unchecked);
-    ui->btRef10->setStyleSheet(value==REF_10?checked:unchecked);
+    ui->btRef25->setStyleSheet(value==REF_25?checked:unchecked);
+    ui->btRef50->setStyleSheet(value==REF_50?checked:unchecked);
+    ui->btRef75->setStyleSheet(value==REF_75?checked:unchecked);
     ui->btRef100->setStyleSheet(value==REF_100?checked:unchecked);
-    ui->btRef1000->setStyleSheet(value==REF_1000?checked:unchecked);
 
     ui->btRefNN->setStyleSheet(value==REF_NN?checked:unchecked);
     ui->btRefNF->setStyleSheet(value==REF_NF?checked:unchecked);
@@ -22,20 +23,15 @@ void FragmentReferences::styleScreenshotButtons(ReferenceMode const value)
     ui->btRefFF->setStyleSheet(value==REF_FF?checked:unchecked);
 
     ui->btRef1->update();
-    ui->btRef10->update();
+    ui->btRef25->update();
+    ui->btRef50->update();
+    ui->btRef75->update();
     ui->btRef100->update();
-    ui->btRef1000->update();
 
     ui->btRefNN->update();
     ui->btRefNF->update();
     ui->btRefFN->update();
     ui->btRefFF->update();
-}
-
-void FragmentReferences::styleHighlightPositionButton(bool const value)
-{
-    ui->btShowGrid->setStyleSheet(App::getStyles()->get(value ? "button_checked" : "button_unchecked"));
-    ui->btShowGrid->update();
 }
 
 FragmentReferences::FragmentReferences(QWidget *parent) :
@@ -45,22 +41,17 @@ FragmentReferences::FragmentReferences(QWidget *parent) :
     ui->setupUi(this);
 
     styleScreenshotButtons(App::getState()->referenceMode());
-    styleHighlightPositionButton(App::getState()->referenceHighlightPosition());
 
     connect(ui->btRef1, &QPushButton::clicked, this, [&](){ App::getState()->setReferenceMode(REF_1); });
-    connect(ui->btRef10, &QPushButton::clicked, this, [&](){ App::getState()->setReferenceMode(REF_10); });
+    connect(ui->btRef25, &QPushButton::clicked, this, [&](){ App::getState()->setReferenceMode(REF_25); });
+    connect(ui->btRef50, &QPushButton::clicked, this, [&](){ App::getState()->setReferenceMode(REF_50); });
+    connect(ui->btRef75, &QPushButton::clicked, this, [&](){ App::getState()->setReferenceMode(REF_75); });
     connect(ui->btRef100, &QPushButton::clicked, this, [&](){ App::getState()->setReferenceMode(REF_100); });
-    connect(ui->btRef1000, &QPushButton::clicked, this, [&](){ App::getState()->setReferenceMode(REF_1000); });
 
     connect(ui->btRefNN, &QPushButton::clicked, this, [&](){ App::getState()->setReferenceMode(REF_NN); });
     connect(ui->btRefNF, &QPushButton::clicked, this, [&](){ App::getState()->setReferenceMode(REF_NF); });
     connect(ui->btRefFN, &QPushButton::clicked, this, [&](){ App::getState()->setReferenceMode(REF_FN); });
     connect(ui->btRefFF, &QPushButton::clicked, this, [&](){ App::getState()->setReferenceMode(REF_FF); });
-
-    connect(ui->btShowGrid, &QPushButton::clicked, this, [&]()
-    {
-        App::getState()->setReferenceHighlightPosition(!App::getState()->referenceHighlightPosition());
-    });
 
     connect(App::getState(), &AppState::onReferenceModeChanged, this, [&](ReferenceMode const value)
     {
@@ -83,11 +74,6 @@ FragmentReferences::FragmentReferences(QWidget *parent) :
     connect(App::getState(), &AppState::onReferenceZoomChanged, this, [&](int value)
     {
         ui->widgetReference->setZoom(value);
-    });
-
-    connect(App::getState(), &AppState::onReferenceHighlightPositionChanged, this, [&](bool const value)
-    {
-        styleHighlightPositionButton(value);
     });
 
     ui->widgetReference->setZoom(App::getState()->referenceZoom());
@@ -151,9 +137,10 @@ void FragmentReferences::updateReferenceWidget(QList<Tile *> const * tiles, Refe
     switch (value)
     {
     case REF_1: referenceID = tile->ref1ID; break;
-    case REF_10: referenceID = tile->ref10ID; break;
+    case REF_25: referenceID = tile->ref25ID; break;
+    case REF_50: referenceID = tile->ref50ID; break;
+    case REF_75: referenceID = tile->ref75ID; break;
     case REF_100: referenceID = tile->ref100ID; break;
-    case REF_1000: referenceID = tile->ref1000ID; break;
     case REF_NN: referenceID = tile->refNNID; break;
     case REF_NF: referenceID = tile->refNFID; break;
     case REF_FN: referenceID = tile->refFNID; break;

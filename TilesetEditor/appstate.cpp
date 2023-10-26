@@ -4,17 +4,12 @@ AppState::AppState()
 {
     _selectedTileset = nullptr;
 
-//    _tilePreviewMode = "original";
-
     _palettesMode = USED_BY_TILE;
     _selectedPalette = nullptr;
 
     _tilesFilter = new TilesFilter();
 
-//    _previewMode = "editor";
-
     _referenceMode = REF_1;
-    _referenceHighlightPosition = true;
     _referenceZoom = 15;
     _referenceOffsetImage = nullptr;
     _referenceOffset = QPoint(0,0);
@@ -182,16 +177,6 @@ Scene *AppState::getProjectSceneById(int id)
     auto it = _index_Scene_ID.find(id);
     return it == _index_Scene_ID.end() ? nullptr : it.value();
 }
-
-//QList<Reference *> AppState::getProjectReferencesByTileId(int tileId)
-//{
-//    QList<Reference*> result;
-//    if (_projectReferences != nullptr)
-//        for (auto r : *_projectReferences)
-//            if (r->tileId == tileId)
-//                result.append(r);
-//    return result;
-//}
 
 void AppState::appendProjectTile(Tile *value)
 {
@@ -537,11 +522,6 @@ ReferenceMode AppState::referenceMode() const
     return _referenceMode;
 }
 
-bool AppState::referenceHighlightPosition() const
-{
-    return _referenceHighlightPosition;
-}
-
 QImage * AppState::referenceOffsetImage()
 {
     return _referenceOffsetImage;
@@ -558,15 +538,6 @@ void AppState::setReferenceMode(ReferenceMode value)
     {
         _referenceMode = value;
         emit onReferenceModeChanged(value);
-    }
-}
-
-void AppState::setReferenceHighlightPosition(bool value)
-{
-    if (value != _referenceHighlightPosition)
-    {
-        _referenceHighlightPosition = value;
-        emit onReferenceHighlightPositionChanged(value);
     }
 }
 
@@ -612,22 +583,6 @@ void AppState::moveReferenceOffsetHome()
     _referenceOffset.setY(0);
     emit onReferenceOffsetChanged(_referenceOffset);
 }
-
-// Preview
-
-//void AppState::setPreviewMode(QString value)
-//{
-//    if (value != _previewMode)
-//    {
-//        _previewMode = value;
-//        emit onPreviewModeChanged(value);
-//    }
-//}
-
-//const QString & AppState::previewMode() const
-//{
-//    return _previewMode;
-//}
 
 // Tiles
 

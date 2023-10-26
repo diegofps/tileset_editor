@@ -86,6 +86,7 @@ FragmentEditor::FragmentEditor(QWidget *parent) :
 
     updateTilesetWidget(App::getState()->selectedTileset());
     ui->widgetTileset->setZoom(App::getState()->editorZoom());
+//    ui->widgetTileset->moveViewportHome();
 }
 
 FragmentEditor::~FragmentEditor()

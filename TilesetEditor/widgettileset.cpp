@@ -36,7 +36,7 @@ drawRectangleInViewport(QRect const & rect,
                         QPen const & pen,
                         QPainter & painter)
 {
-#define REPROJECT(x,w,vw) (x)*(w)/(vw)
+#define REPROJECT(x,w,vw) (vw==0?0:(x)*(w)/(vw))
 
     int const x1 = REPROJECT(rect.x()-viewport.x(), painterSize.width(), viewport.width());
     int const y1 = REPROJECT(rect.y()-viewport.y(), painterSize.height(), viewport.height());

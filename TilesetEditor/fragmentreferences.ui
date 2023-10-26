@@ -137,7 +137,7 @@ font: 9pt;</string>
          </widget>
         </item>
         <item>
-         <widget class="QPushButton" name="btRef10">
+         <widget class="QPushButton" name="btRef25">
           <property name="minimumSize">
            <size>
             <width>0</width>
@@ -151,7 +151,7 @@ font: 9pt;</string>
            </size>
           </property>
           <property name="text">
-           <string>Ref10</string>
+           <string>Ref25</string>
           </property>
           <property name="checkable">
            <bool>true</bool>
@@ -159,7 +159,7 @@ font: 9pt;</string>
          </widget>
         </item>
         <item>
-         <widget class="QPushButton" name="btRef100">
+         <widget class="QPushButton" name="btRef50">
           <property name="minimumSize">
            <size>
             <width>0</width>
@@ -176,14 +176,21 @@ font: 9pt;</string>
            <string notr="true"/>
           </property>
           <property name="text">
-           <string>Ref100</string>
+           <string>Ref50</string>
           </property>
          </widget>
         </item>
         <item>
-         <widget class="QPushButton" name="btRef1000">
+         <widget class="QPushButton" name="btRef75">
           <property name="text">
-           <string>Ref1000</string>
+           <string>Ref75</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="btRef100">
+          <property name="text">
+           <string>Ref100</string>
           </property>
          </widget>
         </item>
@@ -212,58 +219,6 @@ font: 9pt;</string>
          <widget class="QPushButton" name="btRefFF">
           <property name="text">
            <string>RefFF</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QWidget" name="widget_3" native="true">
-          <property name="minimumSize">
-           <size>
-            <width>2</width>
-            <height>0</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>3</width>
-            <height>16777215</height>
-           </size>
-          </property>
-          <property name="styleSheet">
-           <string notr="true">background-color: rgb(21, 21, 21);</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QPushButton" name="btShowGrid">
-          <property name="minimumSize">
-           <size>
-            <width>25</width>
-            <height>25</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>25</width>
-            <height>25</height>
-           </size>
-          </property>
-          <property name="text">
-           <string/>
-          </property>
-          <property name="icon">
-           <iconset>
-            <normalon>:/icons/highlight-position-solid.svg</normalon>
-           </iconset>
-          </property>
-          <property name="iconSize">
-           <size>
-            <width>11</width>
-            <height>11</height>
-           </size>
-          </property>
-          <property name="checkable">
-           <bool>true</bool>
           </property>
          </widget>
         </item>

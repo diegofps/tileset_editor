@@ -311,9 +311,10 @@ void ServiceContext::importDump(QString const & folderpath, ContextReport * repo
 //                tile->palettesUsed[pair.first] += pair.second;
 
             IMPORT_REFERENCE_1(ref1ID);
-            IMPORT_REFERENCE_1(ref10ID);
+            IMPORT_REFERENCE_1(ref25ID);
+            IMPORT_REFERENCE_1(ref50ID);
+            IMPORT_REFERENCE_1(ref75ID);
             IMPORT_REFERENCE_1(ref100ID);
-            IMPORT_REFERENCE_1(ref1000ID);
             IMPORT_REFERENCE_1(refNNID);
             IMPORT_REFERENCE_1(refNFID);
             IMPORT_REFERENCE_1(refFNID);
@@ -329,9 +330,10 @@ void ServiceContext::importDump(QString const & folderpath, ContextReport * repo
             dTile->id = newID;
 
             IMPORT_REFERENCE_2(ref1ID);
-            IMPORT_REFERENCE_2(ref10ID);
+            IMPORT_REFERENCE_2(ref25ID);
+            IMPORT_REFERENCE_2(ref50ID);
+            IMPORT_REFERENCE_2(ref75ID);
             IMPORT_REFERENCE_2(ref100ID);
-            IMPORT_REFERENCE_2(ref1000ID);
             IMPORT_REFERENCE_2(refNNID);
             IMPORT_REFERENCE_2(refNFID);
             IMPORT_REFERENCE_2(refFNID);

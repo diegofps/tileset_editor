@@ -98,9 +98,10 @@ MainWindow::MainWindow(QWidget *parent)
 
     // View menu
     connect(ui->action_View_Reference_1, &QAction::triggered, this, [&](){ App::getState()->setReferenceMode(REF_1); });
-    connect(ui->action_View_Reference_10, &QAction::triggered, this, [&](){ App::getState()->setReferenceMode(REF_10); });
+    connect(ui->action_View_Reference_25, &QAction::triggered, this, [&](){ App::getState()->setReferenceMode(REF_25); });
+    connect(ui->action_View_Reference_50, &QAction::triggered, this, [&](){ App::getState()->setReferenceMode(REF_50); });
+    connect(ui->action_View_Reference_75, &QAction::triggered, this, [&](){ App::getState()->setReferenceMode(REF_75); });
     connect(ui->action_View_Reference_100, &QAction::triggered, this, [&](){ App::getState()->setReferenceMode(REF_100); });
-    connect(ui->action_View_Reference_1000, &QAction::triggered, this, [&](){ App::getState()->setReferenceMode(REF_1000); });
 
     connect(ui->action_View_Reference_NN, &QAction::triggered, this, [&](){ App::getState()->setReferenceMode(REF_NN); });
     connect(ui->action_View_Reference_NF, &QAction::triggered, this, [&](){ App::getState()->setReferenceMode(REF_NF); });
@@ -126,6 +127,8 @@ MainWindow::MainWindow(QWidget *parent)
         mode.vFlip = !mode.vFlip;
         App::getState()->setTileMode(mode);
     });
+
+    connect(ui->action_View_FocusEditor, &QAction::triggered, this, [&]() { ui->contentFrame->setFocus(); });
 
     //Navigate menu
     connect(ui->action_Navigate_Editor_Down, &QAction::triggered, this, [&](){ App::getState()->moveEditorRoot( 0,+1); });
@@ -386,9 +389,10 @@ void MainWindow::prepareUIForProject(Project * value)
 
     ui->action_View_NextTileUsage->setEnabled(hasProject);
     ui->action_View_Reference_1->setEnabled(hasProject);
-    ui->action_View_Reference_10->setEnabled(hasProject);
+    ui->action_View_Reference_25->setEnabled(hasProject);
+    ui->action_View_Reference_50->setEnabled(hasProject);
+    ui->action_View_Reference_75->setEnabled(hasProject);
     ui->action_View_Reference_100->setEnabled(hasProject);
-    ui->action_View_Reference_1000->setEnabled(hasProject);
     ui->action_View_Reference_NN->setEnabled(hasProject);
     ui->action_View_Reference_NF->setEnabled(hasProject);
     ui->action_View_Reference_FN->setEnabled(hasProject);

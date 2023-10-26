@@ -13,9 +13,10 @@ Tile::Tile(QJsonObject & data)
     getIntOrDefault(seenOnFrames, data, "Tile", "SeenOnFrames", -1);
 
     getIntOrFail(ref1ID, data, "Tile", "Ref1ID");
-    getIntOrFail(ref10ID, data, "Tile", "Ref10ID");
+    getIntOrFail(ref25ID, data, "Tile", "Ref25ID");
+    getIntOrFail(ref50ID, data, "Tile", "Ref50ID");
+    getIntOrFail(ref75ID, data, "Tile", "Ref75ID");
     getIntOrFail(ref100ID, data, "Tile", "Ref100ID");
-    getIntOrFail(ref1000ID, data, "Tile", "Ref1000ID");
 
     getIntOrFail(refNNID, data, "Tile", "RefNNID");
     getIntOrFail(refNFID, data, "Tile", "RefNFID");
@@ -75,9 +76,10 @@ QJsonObject Tile::exportAsJson()
     jTile["UsedInBackground"] = usedInBackground;
     jTile["UsedInSprite"] = usedInSprite;
     jTile["Ref1ID"] = ref1ID;
-    jTile["Ref10ID"] = ref10ID;
+    jTile["Ref25ID"] = ref25ID;
+    jTile["Ref50ID"] = ref50ID;
+    jTile["Ref75ID"] = ref75ID;
     jTile["Ref100ID"] = ref100ID;
-    jTile["Ref1000ID"] = ref1000ID;
     jTile["RefNNID"] = refNNID;
     jTile["RefNFID"] = refNFID;
     jTile["RefFNID"] = refFNID;

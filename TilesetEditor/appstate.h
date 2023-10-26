@@ -23,9 +23,10 @@ enum EditorTool
 enum ReferenceMode
 {
     REF_1,
-    REF_10,
+    REF_25,
+    REF_50,
+    REF_75,
     REF_100,
-    REF_1000,
     REF_NN,
     REF_NF,
     REF_FN,
@@ -115,7 +116,6 @@ private:
 
     // References Toolbox
     ReferenceMode   _referenceMode;
-    bool            _referenceHighlightPosition;
     int             _referenceZoom;
     QImage        * _referenceOffsetImage;
     QPoint          _referenceOffset;
@@ -129,7 +129,6 @@ private:
     Palette     * _selectedPalette;
 
     // Tile Preview
-//    QString _tilePreviewMode;
     TileMode _tileMode;
 
     // Tilesets
@@ -220,7 +219,6 @@ public:
 
     // References Toolbox
     ReferenceMode referenceMode() const;
-    bool referenceHighlightPosition() const;
     QImage * referenceOffsetImage();
     int referenceZoom();
 
@@ -296,7 +294,6 @@ signals:
 
     // References Toolbox
     void onReferenceModeChanged(ReferenceMode const value);
-    void onReferenceHighlightPositionChanged(bool const value);
 
     // Tiles
     void onTilesFilterChanged(TilesFilter * value);
