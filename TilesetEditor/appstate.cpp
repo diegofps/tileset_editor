@@ -24,7 +24,7 @@ AppState::AppState()
     _editorShowUnlinkedTiles = true;
     _editorShowGrid = true;
     _editorRoot = QPoint(0,0);
-    _editorZoom = 13;
+    _editorZoom = 15;
 
     _project = nullptr;
     _projectHasChanges = false;
@@ -520,6 +520,16 @@ int AppState::editorZoom()
     return _editorZoom;
 }
 
+void AppState::moveViewport(int rx, int ry)
+{
+    emit onMoveViewport(rx, ry);
+}
+
+void AppState::moveViewportHome()
+{
+    emit onMoveViewportHome();
+}
+
 // References Toolbox
 
 ReferenceMode AppState::referenceMode() const
@@ -668,6 +678,11 @@ void AppState::tilesMoveSelectedTilesToScene(int sceneID)
     _projectHasChanges = true;
 
     emit onProjectTilesChanged(_projectTiles);
+}
+
+void AppState::moveToTile(int rx, int ry)
+{
+    emit onMoveToTile(rx, ry);
 }
 
 // Palettes

@@ -215,6 +215,9 @@ public:
     void zoomOutEditor();
     int editorZoom();
 
+    void moveViewport(int rx, int ry);
+    void moveViewportHome();
+
     // References Toolbox
     ReferenceMode referenceMode() const;
     bool referenceHighlightPosition() const;
@@ -238,6 +241,7 @@ public:
     void setTilesFilter(TilesFilter * value);
     void setSelectedTiles(QList<Tile*> * value);
     void tilesMoveSelectedTilesToScene(int sceneID);
+    void moveToTile(int rx, int ry);
 
     // Palettes
     PaletteMode palettesMode() const;
@@ -287,6 +291,8 @@ signals:
     void onEditorShowUnlinkedTilesChanged(bool const value);
     void onEditorShowGridChanged(bool const value);
     void onEditorZoomChanged(int value);
+    void onMoveViewport(int rx, int ry);
+    void onMoveViewportHome();
 
     // References Toolbox
     void onReferenceModeChanged(ReferenceMode const value);
@@ -295,6 +301,7 @@ signals:
     // Tiles
     void onTilesFilterChanged(TilesFilter * value);
     void onSelectedTilesChanged(QList<Tile*> * value);
+    void onMoveToTile(int rx, int ry);
 
     // Palettes
     void onPalettesModeChanged(PaletteMode value);

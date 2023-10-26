@@ -204,8 +204,8 @@ QMenu::item:selected {
     <addaction name="action_View_Reference_ZoomOut"/>
     <addaction name="action_View_FlipTileHorizontally"/>
     <addaction name="action_View_FlipTileVertically"/>
-    <addaction name="action_View_EditorZoomIn"/>
-    <addaction name="action_View_EditorZoomOut"/>
+    <addaction name="action_View_Editor_ZoomIn"/>
+    <addaction name="action_View_Editor_ZoomOut"/>
    </widget>
    <widget class="QMenu" name="menuNavigate">
     <property name="title">
@@ -231,8 +231,29 @@ QMenu::item:selected {
      <addaction name="action_Navigate_Editor_Down"/>
      <addaction name="action_Navigate_Editor_Home"/>
     </widget>
+    <widget class="QMenu" name="menuViewport">
+     <property name="title">
+      <string>Viewport</string>
+     </property>
+     <addaction name="action_Navigate_Viewport_Left"/>
+     <addaction name="action_Navigate_Viewport_Up"/>
+     <addaction name="action_Navigate_Viewport_Right"/>
+     <addaction name="action_Navigate_Viewport_Down"/>
+     <addaction name="action_Navigate_Viewport_Home"/>
+    </widget>
+    <widget class="QMenu" name="menuTile">
+     <property name="title">
+      <string>Tile</string>
+     </property>
+     <addaction name="action_Navigate_Tile_Left"/>
+     <addaction name="action_Navigate_Tile_Up"/>
+     <addaction name="action_Navigate_Tile_Right"/>
+     <addaction name="action_Navigate_Tile_Down"/>
+    </widget>
     <addaction name="menuNavigateReferences"/>
     <addaction name="menuNavigateEditor"/>
+    <addaction name="menuViewport"/>
+    <addaction name="menuTile"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
@@ -579,20 +600,92 @@ QMenu::item:selected {
     <string>V</string>
    </property>
   </action>
-  <action name="action_View_EditorZoomIn">
+  <action name="action_View_Editor_ZoomIn">
    <property name="text">
     <string>Editor Zoom In</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl+=</string>
+    <string>Ctrl+Shift+=</string>
    </property>
   </action>
-  <action name="action_View_EditorZoomOut">
+  <action name="action_View_Editor_ZoomOut">
    <property name="text">
     <string>Editor Zoom Out</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl+-</string>
+    <string>Ctrl+Shift+-</string>
+   </property>
+  </action>
+  <action name="action_Navigate_Viewport_Left">
+   <property name="text">
+    <string>Left</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+Left</string>
+   </property>
+  </action>
+  <action name="action_Navigate_Viewport_Up">
+   <property name="text">
+    <string>Up</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+Up</string>
+   </property>
+  </action>
+  <action name="action_Navigate_Viewport_Right">
+   <property name="text">
+    <string>Right</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+Right</string>
+   </property>
+  </action>
+  <action name="action_Navigate_Viewport_Down">
+   <property name="text">
+    <string>Down</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+Down</string>
+   </property>
+  </action>
+  <action name="action_Navigate_Viewport_Home">
+   <property name="text">
+    <string>Home</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+Home</string>
+   </property>
+  </action>
+  <action name="action_Navigate_Tile_Left">
+   <property name="text">
+    <string>Left</string>
+   </property>
+   <property name="shortcut">
+    <string>Left</string>
+   </property>
+  </action>
+  <action name="action_Navigate_Tile_Up">
+   <property name="text">
+    <string>Up</string>
+   </property>
+   <property name="shortcut">
+    <string>Up</string>
+   </property>
+  </action>
+  <action name="action_Navigate_Tile_Right">
+   <property name="text">
+    <string>Right</string>
+   </property>
+   <property name="shortcut">
+    <string>Right</string>
+   </property>
+  </action>
+  <action name="action_Navigate_Tile_Down">
+   <property name="text">
+    <string>Down</string>
+   </property>
+   <property name="shortcut">
+    <string>Down</string>
    </property>
   </action>
  </widget>

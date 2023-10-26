@@ -77,10 +77,13 @@ FragmentEditor::FragmentEditor(QWidget *parent) :
     connect(App::getState(), &AppState::onEditorShowLinkedTilesChanged, this, [&](bool value) { styleButton(value, ui->btShowLinkedTiles); });
     connect(App::getState(), &AppState::onEditorShowUnlinkedTilesChanged, this, [&](bool value) { styleButton(value, ui->btShowUnlinkedTiles); });
     connect(App::getState(), &AppState::onEditorShowGridChanged, this, [&](bool value) { styleButton(value, ui->btShowGrid); });
-
     connect(App::getState(), &AppState::onSelectedTilesetChanged, this, [&](Tileset * value) { updateTilesetWidget(value); });
+    connect(App::getState(), &AppState::onEditorZoomChanged, this, [&](int value) { ui->widgetTileset->setZoom(value); });
+    connect(App::getState(), &AppState::onMoveViewport, this, [&](int rx, int ry) { ui->widgetTileset->moveViewport(rx, ry); });
+    connect(App::getState(), &AppState::onMoveViewportHome, this, [&]() { ui->widgetTileset->moveViewportHome(); });
 
     updateTilesetWidget(App::getState()->selectedTileset());
+    ui->widgetTileset->setZoom(App::getState()->editorZoom());
 }
 
 FragmentEditor::~FragmentEditor()

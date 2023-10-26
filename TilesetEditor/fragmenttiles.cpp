@@ -133,6 +133,11 @@ FragmentTiles::FragmentTiles(QWidget *parent) :
         App::getState()->setSelectedTiles(&selectedTiles);
     });
 
+    connect(App::getState(), &AppState::onMoveToTile, this, [&](int rx, int ry)
+    {
+        _gridTiles->moveToTile(rx, ry);
+    });
+
     _gridTiles->setSelection(0,0);
 
 }

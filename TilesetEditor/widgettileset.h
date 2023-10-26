@@ -3,6 +3,7 @@
 
 #include "model/cell.h"
 #include <QWidget>
+#include <QPen>
 
 class WidgetTileset : public QWidget
 {
@@ -24,7 +25,10 @@ public:
     void setRoot(int x, int y); // Position of root cell
     void setOffset(int rx, int ry); // Position of offset cell, relative to root
     void setCells(QHash<QPair<int,int>, Cell*> const * cells);
+    void setBackgroundColor(QColor value);
     void moveViewport(int rx, int ry);
+    void moveViewportHome();
+    void setZoom(int value);
 
 signals:
 
@@ -40,6 +44,8 @@ private:
     int _viewportPower;
     QBrush _brushRoot;
     QBrush _brushOffset;
+    QPen _penGrid;
+    QBrush _brushBackground;
     int _gridWidth;
     int _gridHeight;
     QHash<QPair<int, int>, Cell *> const * _cells;

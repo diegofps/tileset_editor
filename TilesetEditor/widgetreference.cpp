@@ -143,23 +143,18 @@ void WidgetReference::updateViewport()
         return;
     }
 
-    int const fw = width();
-    int const fh = height();
-
     int const w = std::pow(1.4, _viewportPower);
-    int const h = w * fh / fw;
+    int const h = w * height() / width();
 
-    int x = 0;
-    int y = 0;
+    int x;
+    int y;
 
     if (w >= _img->width())
     {
-        qDebug() << 1.0 << QRect(x,y,w,h) << QPoint(_img->width(),_img->height());
         x = -(w-_img->width())/2;
     }
     else
     {
-        qDebug() << 2.0 << QRect(x,y,w,h) << QPoint(_img->width(),_img->height());
         x = _root.x() - w / 2;
 
         if (x < 0 && x + w < _img->width())
@@ -171,12 +166,10 @@ void WidgetReference::updateViewport()
 
     if (h >= _img->height())
     {
-        qDebug() << 3.0 << QRect(x,y,w,h) << QPoint(_img->width(),_img->height());
         y = -(h-_img->height())/2;
     }
     else
     {
-        qDebug() << 4.0 << QRect(x,y,w,h) << QPoint(_img->width(),_img->height());
         y = _root.y() - h / 2;
 
         if (y < 0 && y + h < _img->height())
@@ -186,7 +179,6 @@ void WidgetReference::updateViewport()
             y = _img->height() - h;
     }
 
-    qDebug() << 5.0 << QRect(x,y,w,h) << QPoint(_img->width(),_img->height()) << "\n";
     _viewport.setRect(x, y, w, h);
 }
 

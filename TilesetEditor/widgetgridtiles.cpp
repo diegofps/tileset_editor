@@ -75,6 +75,20 @@ void WidgetGridTiles::repack()
     }
 }
 
+void WidgetGridTiles::moveToTile(int rx, int ry)
+{
+    int const newStart = _selectionStart + _cols * ry + rx;
+    int const newEnd = _selectionEnd + _cols * ry + rx;
+
+    if (newStart >= 0 && newStart < _tiles.size() && newEnd >= 0 && newEnd < _tiles.size())
+    {
+        _selectionStart = newStart;
+        _selectionEnd = newEnd;
+        emit onSelectedTileChanged(_selectionStart, _selectionEnd);
+    }
+    update();
+}
+
 void WidgetGridTiles::setSelection(int start, int end)
 {
     start = std::max(-1, start);

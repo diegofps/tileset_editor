@@ -110,8 +110,8 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->action_View_Reference_ZoomIn, &QAction::triggered, this, [&](){ App::getState()->zoomInReference(); });
     connect(ui->action_View_Reference_ZoomOut, &QAction::triggered, this, [&](){ App::getState()->zoomOutReference(); });
 
-    connect(ui->action_View_EditorZoomIn, &QAction::triggered, this, [&](){ App::getState()->zoomInEditor(); });
-    connect(ui->action_View_EditorZoomOut, &QAction::triggered, this, [&](){ App::getState()->zoomOutEditor(); });
+    connect(ui->action_View_Editor_ZoomIn, &QAction::triggered, this, [&](){ App::getState()->zoomInEditor(); });
+    connect(ui->action_View_Editor_ZoomOut, &QAction::triggered, this, [&](){ App::getState()->zoomOutEditor(); });
 
     connect(ui->action_View_FlipTileHorizontally, &QAction::triggered, this, [&]()
     {
@@ -138,8 +138,19 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->action_Navigate_References_Left, &QAction::triggered, this, [&](){ App::getState()->moveReferenceOffset(-1, 0); });
     connect(ui->action_Navigate_References_Right, &QAction::triggered, this, [&](){ App::getState()->moveReferenceOffset(+1, 0); });
 
+    connect(ui->action_Navigate_Viewport_Down, &QAction::triggered, this, [&](){ App::getState()->moveViewport( 0,+1); });
+    connect(ui->action_Navigate_Viewport_Up, &QAction::triggered, this, [&](){ App::getState()->moveViewport( 0,-1); });
+    connect(ui->action_Navigate_Viewport_Left, &QAction::triggered, this, [&](){ App::getState()->moveViewport(-1, 0); });
+    connect(ui->action_Navigate_Viewport_Right, &QAction::triggered, this, [&](){ App::getState()->moveViewport(+1, 0); });
+
+    connect(ui->action_Navigate_Tile_Down, &QAction::triggered, this, [&](){ App::getState()->moveToTile( 0,+1); });
+    connect(ui->action_Navigate_Tile_Up, &QAction::triggered, this, [&](){ App::getState()->moveToTile( 0,-1); });
+    connect(ui->action_Navigate_Tile_Left, &QAction::triggered, this, [&](){ App::getState()->moveToTile(-1, 0); });
+    connect(ui->action_Navigate_Tile_Right, &QAction::triggered, this, [&](){ App::getState()->moveToTile(+1, 0); });
+
     connect(ui->action_Navigate_Editor_Home, &QAction::triggered, this, [&](){ App::getState()->moveEditorRootHome(); });
     connect(ui->action_Navigate_References_Home, &QAction::triggered, this, [&](){ App::getState()->moveReferenceOffsetHome(); });
+    connect(ui->action_Navigate_Viewport_Home, &QAction::triggered, this, [&](){ App::getState()->moveViewportHome(); });
 
     // Execute menu
 
