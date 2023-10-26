@@ -3,7 +3,7 @@
 
 #include "model/tile.h"
 #include "appstate.h"
-#include "widgetgridtiles.h"
+#include "widgettiles.h"
 #include <QPushButton>
 #include <QWidget>
 
@@ -29,7 +29,7 @@ private:
 private:
     Ui::FragmentTiles *ui;
     QList<Tile*> _tiles;
-    WidgetGridTiles * _gridTiles;
+    WidgetTiles * _widgetTiles;
     int _lastSelectedItemID;
 };
 

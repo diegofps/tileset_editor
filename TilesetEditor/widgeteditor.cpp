@@ -1,11 +1,12 @@
-#include "widgettileset.h"
+#include "widgeteditor.h"
 #include <QPainter>
+#include <QMouseEvent>
 
-WidgetTileset::WidgetTileset(QWidget *parent)
+WidgetEditor::WidgetEditor(QWidget *parent)
     : QWidget{parent},
 
-    _root(0,0,8,8),
-    _offset(0,0,8,8),
+    _root(0,0,1,1),
+    _offset(0,0,1,1),
     _viewport(0,0,0,0),
     _viewportPower(15),
     _gridWidth(0),
@@ -24,6 +25,7 @@ WidgetTileset::WidgetTileset(QWidget *parent)
     _brushBackground.setColor(QColor::fromString("#ff000000"));
     _brushBackground.setStyle(Qt::SolidPattern);
 
+    setMouseTracking(true);
     updateViewport();
     update();
 }
@@ -48,55 +50,53 @@ drawRectangleInViewport(QRect const & rect,
     painter.drawRect(QRect(x1,y1,x2-x1,y2-y1));
 }
 
-void WidgetTileset::paintEvent(QPaintEvent * event)
+void WidgetEditor::paintEvent(QPaintEvent * event)
 {
     (void)event;
     QPainter painter(this);
-
     painter.fillRect(rect(), _brushBackground);
-
     drawRectangleInViewport(QRect(0,0,_gridWidth*8, _gridHeight*8), size(), _viewport, Qt::NoBrush, _penGrid, painter);
-    drawRectangleInViewport(_root, size(), _viewport, _brushRoot, Qt::NoPen, painter);
-    drawRectangleInViewport(_offset, size(), _viewport, _brushOffset, Qt::NoPen, painter);
+    drawRectangleInViewport(QRect(_root.x()*8, _root.y()*8, 8, 8), size(), _viewport, _brushRoot, Qt::NoPen, painter);
+    drawRectangleInViewport(QRect(_offset.x()*8, _offset.y()*8, 8, 8), size(), _viewport, _brushOffset, Qt::NoPen, painter);
 }
 
-void WidgetTileset::resizeEvent(QResizeEvent * event)
+void WidgetEditor::resizeEvent(QResizeEvent * event)
 {
     (void)event;
     updateViewport();
 }
 
-void WidgetTileset::setGridSize(int w, int h)
+void WidgetEditor::setGridSize(int w, int h)
 {
     _gridWidth = w;
     _gridHeight = h;
     update();
 }
 
-void WidgetTileset::setRoot(int x, int y)
+void WidgetEditor::setRoot(int x, int y)
 {
     int const offX = _offset.x() - _root.x();
     int const offY = _offset.y() - _root.y();
 
-    _root.setRect(x*8, y*8, 8, 8);
-    _offset.setRect(_root.x()+offX, _root.y()+offY, 8, 8);
+    _root.setRect(x, y, 1, 1);
+    _offset.setRect(_root.x()+offX, _root.y()+offY, 1, 1);
 
     update();
 }
 
-void WidgetTileset::setOffset(int rx, int ry)
+void WidgetEditor::setOffset(int rx, int ry)
 {
-    _offset.setRect(_root.x()+rx*8, _root.y()+ry*8, 8, 8);
+    _offset.setRect(_root.x()+rx, _root.y()+ry, 1, 1);
     update();
 }
 
-void WidgetTileset::setCells(QHash<QPair<int, int>, Cell *> const * cells)
+void WidgetEditor::setCells(QHash<QPair<int, int>, Cell *> const * cells)
 {
     _cells = cells;
     update();
 }
 
-void WidgetTileset::setBackgroundColor(QColor value)
+void WidgetEditor::setBackgroundColor(QColor value)
 {
     int r = (value.red() + 128) % 256;
     int g = (value.green() + 128) % 256;
@@ -108,7 +108,7 @@ void WidgetTileset::setBackgroundColor(QColor value)
     update();
 }
 
-void WidgetTileset::moveViewport(int rx, int ry)
+void WidgetEditor::moveViewport(int rx, int ry)
 {
     int const step = std::max(1.0, std::min(_viewport.width(), _viewport.height()) * 0.1);
 
@@ -121,7 +121,7 @@ void WidgetTileset::moveViewport(int rx, int ry)
     update();
 }
 
-void WidgetTileset::moveViewportHome()
+void WidgetEditor::moveViewportHome()
 {
     int const x = 0;
     int const y = 0;
@@ -132,14 +132,14 @@ void WidgetTileset::moveViewportHome()
     update();
 }
 
-void WidgetTileset::setZoom(int value)
+void WidgetEditor::setZoom(int value)
 {
     _viewportPower = value;
     updateViewport();
     update();
 }
 
-void WidgetTileset::updateViewport()
+void WidgetEditor::updateViewport()
 {
     int const centerX = _viewport.x() + _viewport.width() / 2;
     int const centerY = _viewport.y() + _viewport.height() / 2;
@@ -151,5 +151,51 @@ void WidgetTileset::updateViewport()
     int const y = centerY - h / 2;
 
     _viewport.setRect(x, y, w, h);
+}
+
+void WidgetEditor::mousePressEvent(QMouseEvent * event)
+{
+    int const btns = event->buttons();
+
+    if (!(btns & Qt::LeftButton))
+        return;
+
+    auto pos = event->pos();
+
+    int const x = (_viewport.x() + pos.x() * _viewport.width() / width()) / 8;
+    int const y = (_viewport.y() + pos.y() * _viewport.height() / height()) / 8;
+
+    qDebug() << x << " " << y;
+
+    if (event->modifiers().testFlag(Qt::ShiftModifier))
+        emit onLinkCell(x,y);
+
+    else if (event->modifiers().testFlag(Qt::ControlModifier))
+        emit onEraseCell(x,y);
+
+    else if (event->modifiers().testFlag(Qt::AltModifier))
+        emit onColorPickCell(x,y);
+
+    else
+        emit onPaintCell(x,y);
+}
+
+void WidgetEditor::mouseMoveEvent(QMouseEvent * event)
+{
+    if (_cells == nullptr)
+    {
+        emit onHoverCell(nullptr);
+        return;
+    }
+
+    auto pos = event->pos();
+
+    int const x = (_viewport.x() + pos.x() * _viewport.width() / width()) / 8;
+    int const y = (_viewport.y() + pos.y() * _viewport.height() / height()) / 8;
+
+    QPair<int,int> key(x,y);
+
+    auto it = _cells->find(key);
+    emit onHoverCell(it==_cells->end() ? nullptr : it.value());
 }
 

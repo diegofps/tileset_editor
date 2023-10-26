@@ -1,5 +1,5 @@
 #include "app.h"
-#include "widgetgridtiles.h"
+#include "widgettiles.h"
 
 #include <QResizeEvent>
 #include <QPainter>
@@ -8,7 +8,7 @@
 #define SCROLL_SPACE 0
 #define SEPARATOR_SPACE 2
 
-WidgetGridTiles::WidgetGridTiles(QWidget *parent)
+WidgetTiles::WidgetTiles(QWidget *parent)
     : QWidget{parent},
 
       _cols(0),
@@ -27,7 +27,7 @@ WidgetGridTiles::WidgetGridTiles(QWidget *parent)
     _brush.setStyle(Qt::SolidPattern);
 }
 
-void WidgetGridTiles::setTiles(QList<Tile*> const * value)
+void WidgetTiles::setTiles(QList<Tile*> const * value)
 {
     _tiles.clear();
     for (auto t : *value)
@@ -51,7 +51,7 @@ void WidgetGridTiles::setTiles(QList<Tile*> const * value)
     _selectionEnd = -1;
 }
 
-void WidgetGridTiles::repack()
+void WidgetTiles::repack()
 {
     _cols = width() <= SCROLL_SPACE + TILE_SIZE ? 1 : (width() - SCROLL_SPACE - TILE_SIZE) / (TILE_SIZE + SEPARATOR_SPACE) + 1;
     _rows = _tiles.empty() ? 1 : ceil(_tiles.size() / float(_cols));
@@ -75,7 +75,7 @@ void WidgetGridTiles::repack()
     }
 }
 
-void WidgetGridTiles::moveToTile(int rx, int ry)
+void WidgetTiles::moveToTile(int rx, int ry)
 {
     int const newStart = _selectionStart + _cols * ry + rx;
     int const newEnd = _selectionEnd + _cols * ry + rx;
@@ -89,7 +89,7 @@ void WidgetGridTiles::moveToTile(int rx, int ry)
     update();
 }
 
-void WidgetGridTiles::setSelection(int start, int end)
+void WidgetTiles::setSelection(int start, int end)
 {
     start = std::max(-1, start);
     end = std::min((int)_tiles.size()-1, end);
@@ -99,7 +99,7 @@ void WidgetGridTiles::setSelection(int start, int end)
     emit onSelectedTileChanged(_selectionStart, _selectionEnd);
 }
 
-void WidgetGridTiles::paintEvent(QPaintEvent * event)
+void WidgetTiles::paintEvent(QPaintEvent * event)
 {
     (void) event;
     QPainter painter(this);
@@ -122,15 +122,16 @@ void WidgetGridTiles::paintEvent(QPaintEvent * event)
     }
 }
 
-void WidgetGridTiles::resizeEvent(QResizeEvent *event)
+void WidgetTiles::resizeEvent(QResizeEvent *event)
 {
     (void) event;
     repack();
 }
 
-void WidgetGridTiles::mousePressEvent(QMouseEvent *event)
+void WidgetTiles::mousePressEvent(QMouseEvent *event)
 {
     int btns = event->buttons();
+
     if (!(btns & Qt::LeftButton))
         return;
 

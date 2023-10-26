@@ -191,7 +191,11 @@ QMenu::item:selected {
     <property name="title">
      <string>&amp;View</string>
     </property>
+    <addaction name="action_View_FlipTileHorizontally"/>
+    <addaction name="action_View_FlipTileVertically"/>
+    <addaction name="action_View_FocusEditor"/>
     <addaction name="action_View_NextTileUsage"/>
+    <addaction name="separator"/>
     <addaction name="action_View_Reference_1"/>
     <addaction name="action_View_Reference_25"/>
     <addaction name="action_View_Reference_50"/>
@@ -201,13 +205,11 @@ QMenu::item:selected {
     <addaction name="action_View_Reference_NF"/>
     <addaction name="action_View_Reference_FN"/>
     <addaction name="action_View_Reference_FF"/>
+    <addaction name="separator"/>
     <addaction name="action_View_Reference_ZoomIn"/>
     <addaction name="action_View_Reference_ZoomOut"/>
-    <addaction name="action_View_FlipTileHorizontally"/>
-    <addaction name="action_View_FlipTileVertically"/>
     <addaction name="action_View_Editor_ZoomIn"/>
     <addaction name="action_View_Editor_ZoomOut"/>
-    <addaction name="action_View_FocusEditor"/>
    </widget>
    <widget class="QMenu" name="menuNavigate">
     <property name="title">
@@ -413,7 +415,7 @@ QMenu::item:selected {
     <string>Re&amp;ference 100</string>
    </property>
    <property name="shortcut">
-    <string>3</string>
+    <string>5</string>
    </property>
   </action>
   <action name="action_Help_VerifyInconsistencies">
@@ -431,7 +433,7 @@ QMenu::item:selected {
     <string>Refe&amp;rence 50</string>
    </property>
    <property name="shortcut">
-    <string>4</string>
+    <string>3</string>
    </property>
   </action>
   <action name="action_View_Reference_NN">
@@ -439,7 +441,7 @@ QMenu::item:selected {
     <string>Reference NN</string>
    </property>
    <property name="shortcut">
-    <string>5</string>
+    <string>6</string>
    </property>
   </action>
   <action name="action_View_Reference_NF">
@@ -447,7 +449,7 @@ QMenu::item:selected {
     <string>Reference NF</string>
    </property>
    <property name="shortcut">
-    <string>6</string>
+    <string>7</string>
    </property>
   </action>
   <action name="action_View_Reference_FN">
@@ -455,7 +457,7 @@ QMenu::item:selected {
     <string>Reference FN</string>
    </property>
    <property name="shortcut">
-    <string>7</string>
+    <string>8</string>
    </property>
   </action>
   <action name="action_View_Reference_FF">
@@ -463,7 +465,7 @@ QMenu::item:selected {
     <string>Reference FF</string>
    </property>
    <property name="shortcut">
-    <string>8</string>
+    <string>9</string>
    </property>
   </action>
   <action name="action_Navigate_References_Left">
@@ -701,6 +703,9 @@ QMenu::item:selected {
   <action name="action_View_Reference_75">
    <property name="text">
     <string>Reference 75</string>
+   </property>
+   <property name="shortcut">
+    <string>4</string>
    </property>
   </action>
  </widget>

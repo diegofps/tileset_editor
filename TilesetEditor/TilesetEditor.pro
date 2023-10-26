@@ -10,6 +10,7 @@ CONFIG += c++17
 
 SOURCES += \
     app.cpp \
+    appcommands.cpp \
     appstate.cpp \
     appstyles.cpp \
     dialogeditscenes.cpp \
@@ -39,18 +40,20 @@ SOURCES += \
     tilecache.cpp \
     tilecachehd.cpp \
     tilesgridlist.cpp \
-    widgetgridtiles.cpp \
+    widgeteditor.cpp \
     widgetitempalette.cpp \
     widgetpalette.cpp \
     widgetpicture.cpp \
     widgetreference.cpp \
-    widgettileset.cpp \
+    widgettiles.cpp \
     widgetvscrollarea.cpp
 
 HEADERS += \
     app.h \
+    appcommands.h \
     appstate.h \
     appstyles.h \
+    commands/command.h \
     dialogeditscenes.h \
     dialogoptions.h \
     errors.h \
@@ -79,12 +82,12 @@ HEADERS += \
     tilecache.h \
     tilecachehd.h \
     tilesgridlist.h \
-    widgetgridtiles.h \
+    widgeteditor.h \
     widgetitempalette.h \
     widgetpalette.h \
     widgetpicture.h \
     widgetreference.h \
-    widgettileset.h \
+    widgettiles.h \
     widgetvscrollarea.h
 
 FORMS += \

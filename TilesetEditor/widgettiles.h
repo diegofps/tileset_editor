@@ -1,5 +1,5 @@
-#ifndef WIDGETGRIDTILES_H
-#define WIDGETGRIDTILES_H
+#ifndef WIDGETTILES_H
+#define WIDGETTILES_H
 
 #include "model/tile.h"
 #include <QWidget>
@@ -13,15 +13,14 @@ public:
     int j;
     QPixmap * pixmap;
     QRect rect;
-//    bool selected;
 };
 
-class WidgetGridTiles : public QWidget
+class WidgetTiles : public QWidget
 {
     Q_OBJECT
 
 public:
-    explicit WidgetGridTiles(QWidget *parent = nullptr);
+    explicit WidgetTiles(QWidget *parent = nullptr);
     void setTiles(QList<Tile*> const * value);
     void setSelection(int start, int end);
     void repack();
@@ -46,4 +45,4 @@ private:
     int _selectionEnd;
 };
 
-#endif // WIDGETGRIDTILES_H
+#endif // WIDGETTILES_H

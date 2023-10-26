@@ -2,7 +2,7 @@
 #include "qstyle.h"
 #include "ui_fragmenttiles.h"
 #include "app.h"
-#include "widgetgridtiles.h"
+#include "widgettiles.h"
 #include "widgetvscrollarea.h"
 
 void FragmentTiles::styleButton(QPushButton * btn, int const value)
@@ -82,7 +82,7 @@ FragmentTiles::FragmentTiles(QWidget *parent) :
 
         filterTiles(value, tiles, filter);
         updateTilesWidget();
-        _gridTiles->setSelection(0,0);
+        _widgetTiles->setSelection(0,0);
     });
 
     connect(App::getState(), &AppState::onTilesFilterChanged, this, [&](TilesFilter * filter)
@@ -107,9 +107,9 @@ FragmentTiles::FragmentTiles(QWidget *parent) :
         restoreSelectedTile();
     });
 
-    _gridTiles = new WidgetGridTiles(this);
+    _widgetTiles = new WidgetTiles();
 
-    auto vScrollArea = new WidgetVScrollArea(_gridTiles, this);
+    auto vScrollArea = new WidgetVScrollArea(_widgetTiles, this);
     vScrollArea->setContentsMargins(0,0,0,0);
 
     auto layout2 = new QVBoxLayout();
@@ -121,7 +121,7 @@ FragmentTiles::FragmentTiles(QWidget *parent) :
     filterTiles(App::getState()->selectedSceneID(), App::getState()->projectTiles(), App::getState()->tilesFilter());
     updateTilesWidget();
 
-    connect(_gridTiles, &WidgetGridTiles::onSelectedTileChanged, this, [&](int start, int end) {
+    connect(_widgetTiles, &WidgetTiles::onSelectedTileChanged, this, [&](int start, int end) {
         if (start<0 || end <0)
             return;
 
@@ -135,10 +135,10 @@ FragmentTiles::FragmentTiles(QWidget *parent) :
 
     connect(App::getState(), &AppState::onMoveToTile, this, [&](int rx, int ry)
     {
-        _gridTiles->moveToTile(rx, ry);
+        _widgetTiles->moveToTile(rx, ry);
     });
 
-    _gridTiles->setSelection(0,0);
+    _widgetTiles->setSelection(0,0);
 
 }
 
@@ -211,9 +211,9 @@ void FragmentTiles::filterTiles(int sceneID, QList<Tile*> const * tiles, TilesFi
 
 void FragmentTiles::updateTilesWidget()
 {
-    _gridTiles->setTiles(&_tiles);
-    _gridTiles->repack();
-    _gridTiles->update();
+    _widgetTiles->setTiles(&_tiles);
+    _widgetTiles->repack();
+    _widgetTiles->update();
 }
 
 void FragmentTiles::saveSelectedTile()
@@ -238,8 +238,8 @@ void FragmentTiles::restoreSelectedTile()
         for (qsizetype i=0;i!=_tiles.size();++i)
             if (_tiles[i]->id == _lastSelectedItemID)
             {
-                _gridTiles->setSelection(i,i);
+                _widgetTiles->setSelection(i,i);
                 return;
             }
-    _gridTiles->setSelection(0,0);
+    _widgetTiles->setSelection(0,0);
 };

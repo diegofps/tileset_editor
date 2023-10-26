@@ -324,35 +324,35 @@ int AppState::lastMoveToSceneResult()
     return _lastMoveToSceneResult;
 }
 
-void AppState::drawNearestReferenceTile()
-{
-    // TODO
-}
+//void AppState::drawNearestReferenceTile()
+//{
+//    // TODO
+//}
 
-void AppState::drawTile()
-{
-    // TODO
-}
+//void AppState::drawTile()
+//{
+//    // TODO
+//}
 
-void AppState::eraseTile()
-{
-    // TODO
-}
+//void AppState::eraseTile()
+//{
+//    // TODO
+//}
 
-void AppState::linkTile()
-{
-    // TODO
-}
+//void AppState::linkTile()
+//{
+//    // TODO
+//}
 
-void AppState::undo()
-{
-    // TODO
-}
+//void AppState::undo()
+//{
+//    // TODO
+//}
 
-void AppState::redo()
-{
-    // TODO
-}
+//void AppState::redo()
+//{
+//    // TODO
+//}
 
 Project * AppState::project() const
 {
@@ -513,6 +513,41 @@ void AppState::moveViewport(int rx, int ry)
 void AppState::moveViewportHome()
 {
     emit onMoveViewportHome();
+}
+
+void AppState::editorPaintCellUsingSibling(int x, int y)
+{
+
+}
+
+void AppState::editorPaintCellUsingSelection(int x, int y)
+{
+
+}
+
+void AppState::editorEraseCell(int x, int y)
+{
+
+}
+
+void AppState::editorColorPickCell(int x, int y)
+{
+
+}
+
+void AppState::editorLinkCell(int x, int y)
+{
+
+}
+
+void AppState::editorUndo()
+{
+
+}
+
+void AppState::editorRedo()
+{
+
 }
 
 // References Toolbox

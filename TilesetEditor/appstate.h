@@ -188,12 +188,12 @@ public:
     void setLastMoveToSceneResult(int value);
     int lastMoveToSceneResult();
 
-    void drawNearestReferenceTile();
-    void drawTile();
-    void eraseTile();
-    void linkTile();
-    void undo();
-    void redo();
+//    void drawNearestReferenceTile();
+//    void drawTile();
+//    void eraseTile();
+//    void linkTile();
+//    void undo();
+//    void redo();
 
     // Editor Toolbox
     EditorTool editorTool() const;
@@ -216,6 +216,14 @@ public:
 
     void moveViewport(int rx, int ry);
     void moveViewportHome();
+
+    void editorPaintCellUsingSibling();
+    void editorPaintCellUsingSelection(int x, int y);
+    void editorEraseCell(int x, int y);
+    void editorColorPickCell(int x, int y);
+    void editorLinkCell(int x, int y);
+    void editorUndo();
+    void editorRedo();
 
     // References Toolbox
     ReferenceMode referenceMode() const;

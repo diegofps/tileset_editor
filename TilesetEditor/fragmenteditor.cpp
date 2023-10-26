@@ -2,6 +2,7 @@
 #include "appstate.h"
 #include "fragmenteditor.h"
 #include "ui_fragmenteditor.h"
+#include "widgeteditor.h"
 
 void FragmentEditor::styleToolButtons(EditorTool const value)
 {
@@ -78,15 +79,33 @@ FragmentEditor::FragmentEditor(QWidget *parent) :
     connect(App::getState(), &AppState::onEditorShowUnlinkedTilesChanged, this, [&](bool value) { styleButton(value, ui->btShowUnlinkedTiles); });
     connect(App::getState(), &AppState::onEditorShowGridChanged, this, [&](bool value) { styleButton(value, ui->btShowGrid); });
     connect(App::getState(), &AppState::onSelectedTilesetChanged, this, [&](Tileset * value) { updateTilesetWidget(value); });
-    connect(App::getState(), &AppState::onEditorZoomChanged, this, [&](int value) { ui->widgetTileset->setZoom(value); });
-    connect(App::getState(), &AppState::onMoveViewport, this, [&](int rx, int ry) { ui->widgetTileset->moveViewport(rx, ry); });
-    connect(App::getState(), &AppState::onMoveViewportHome, this, [&]() { ui->widgetTileset->moveViewportHome(); });
-    connect(App::getState(), &AppState::onReferenceOffsetChanged, this, [&](QPoint value) { ui->widgetTileset->setOffset(value.x(), value.y()); });
-    connect(App::getState(), &AppState::onEditorRootChanged, this, [&](QPoint const value) { ui->widgetTileset->setRoot(value.x(), value.y()); });
+    connect(App::getState(), &AppState::onEditorZoomChanged, this, [&](int value) { ui->widgetEditor->setZoom(value); });
+    connect(App::getState(), &AppState::onMoveViewport, this, [&](int rx, int ry) { ui->widgetEditor->moveViewport(rx, ry); });
+    connect(App::getState(), &AppState::onMoveViewportHome, this, [&]() { ui->widgetEditor->moveViewportHome(); });
+    connect(App::getState(), &AppState::onReferenceOffsetChanged, this, [&](QPoint value) { ui->widgetEditor->setOffset(value.x(), value.y()); });
+    connect(App::getState(), &AppState::onEditorRootChanged, this, [&](QPoint const value) { ui->widgetEditor->setRoot(value.x(), value.y()); });
+
+    connect(ui->widgetEditor, &WidgetEditor::onPaintCell, this, [&](int x, int y) { App::getState()->editorPaintCellUsingSelection(x, y); });
+    connect(ui->widgetEditor, &WidgetEditor::onEraseCell, this, [&](int x, int y) { App::getState()->editorEraseCell(x, y); });
+    connect(ui->widgetEditor, &WidgetEditor::onColorPickCell, this, [&](int x, int y) { App::getState()->editorColorPickCell(x, y); });
+    connect(ui->widgetEditor, &WidgetEditor::onLinkCell, this, [&](int x, int y) { App::getState()->editorLinkCell(x, y); });
+
+    connect(ui->widgetEditor, &WidgetEditor::onHoverCell, this, [&](Cell * cell)
+    {
+        if (cell == nullptr)
+            ui->lbExtraInfo->setText("");
+        else
+            ui->lbExtraInfo->setText(QString("X:%1, Y:%2, TileID:%3, PaletteID:%4, HFlip:%5, VFlip:%6")
+                                 .arg(cell->x)
+                                 .arg(cell->y)
+                                 .arg(cell->tileID)
+                                 .arg(cell->paletteID)
+                                 .arg(cell->hFlip)
+                                 .arg(cell->vFlip));
+    });
 
     updateTilesetWidget(App::getState()->selectedTileset());
-    ui->widgetTileset->setZoom(App::getState()->editorZoom());
-//    ui->widgetTileset->moveViewportHome();
+    ui->widgetEditor->setZoom(App::getState()->editorZoom());
 }
 
 FragmentEditor::~FragmentEditor()
@@ -98,15 +117,15 @@ void FragmentEditor::updateTilesetWidget(Tileset * value)
 {
     if (value == nullptr)
     {
-        ui->widgetTileset->setCells(nullptr);
+        ui->widgetEditor->setCells(nullptr);
         return;
     }
 
     auto root = App::getState()->editorRoot();
     auto offset = App::getState()->referenceOffset();
 
-    ui->widgetTileset->setGridSize(value->gridW, value->gridH);
-    ui->widgetTileset->setRoot(root.x(), root.y());
-    ui->widgetTileset->setOffset(offset.x(), offset.y());
-    ui->widgetTileset->setCells(&value->cells);
+    ui->widgetEditor->setGridSize(value->gridW, value->gridH);
+    ui->widgetEditor->setRoot(root.x(), root.y());
+    ui->widgetEditor->setOffset(offset.x(), offset.y());
+    ui->widgetEditor->setCells(&value->cells);
 }
