@@ -55,8 +55,9 @@ void WidgetTileset::paintEvent(QPaintEvent * event)
 
     painter.fillRect(rect(), _brushBackground);
 
-    QRect grid(0,0,_gridWidth*8, _gridHeight*8);
-    drawRectangleInViewport(grid, size(), _viewport, Qt::NoBrush, _penGrid, painter);
+    drawRectangleInViewport(QRect(0,0,_gridWidth*8, _gridHeight*8), size(), _viewport, Qt::NoBrush, _penGrid, painter);
+    drawRectangleInViewport(_root, size(), _viewport, _brushRoot, Qt::NoPen, painter);
+    drawRectangleInViewport(_offset, size(), _viewport, _brushOffset, Qt::NoPen, painter);
 }
 
 void WidgetTileset::resizeEvent(QResizeEvent * event)
@@ -77,15 +78,15 @@ void WidgetTileset::setRoot(int x, int y)
     int const offX = _offset.x() - _root.x();
     int const offY = _offset.y() - _root.y();
 
-    _root.setRect(x, y, 8, 8);
-    _offset.setRect(x+offX, y+offY, 8, 8);
+    _root.setRect(x*8, y*8, 8, 8);
+    _offset.setRect(_root.x()+offX, _root.y()+offY, 8, 8);
 
     update();
 }
 
 void WidgetTileset::setOffset(int rx, int ry)
 {
-    _offset.setRect(_root.x()+rx, _root.y()+ry, 8, 8);
+    _offset.setRect(_root.x()+rx*8, _root.y()+ry*8, 8, 8);
     update();
 }
 

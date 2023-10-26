@@ -469,7 +469,7 @@ QMenu::item:selected {
     <string>Left</string>
    </property>
    <property name="shortcut">
-    <string>Shift+Left</string>
+    <string>Left</string>
    </property>
   </action>
   <action name="action_Navigate_References_Up">
@@ -477,7 +477,7 @@ QMenu::item:selected {
     <string>Up</string>
    </property>
    <property name="shortcut">
-    <string>Shift+Up</string>
+    <string>Up</string>
    </property>
   </action>
   <action name="action_Navigate_References_Right">
@@ -485,7 +485,7 @@ QMenu::item:selected {
     <string>Right</string>
    </property>
    <property name="shortcut">
-    <string>Shift+Right</string>
+    <string>Right</string>
    </property>
   </action>
   <action name="action_Navigate_References_Down">
@@ -493,7 +493,7 @@ QMenu::item:selected {
     <string>Down</string>
    </property>
    <property name="shortcut">
-    <string>Shift+Down</string>
+    <string>Down</string>
    </property>
   </action>
   <action name="action_Navigate_References_Home">
@@ -501,7 +501,7 @@ QMenu::item:selected {
     <string>Home</string>
    </property>
    <property name="shortcut">
-    <string>Shift+Home</string>
+    <string>Home</string>
    </property>
   </action>
   <action name="action_Navigate_Editor_Left">
@@ -661,7 +661,7 @@ QMenu::item:selected {
     <string>Left</string>
    </property>
    <property name="shortcut">
-    <string>Left</string>
+    <string>Shift+Left</string>
    </property>
   </action>
   <action name="action_Navigate_Tile_Up">
@@ -669,7 +669,7 @@ QMenu::item:selected {
     <string>Up</string>
    </property>
    <property name="shortcut">
-    <string>Up</string>
+    <string>Shift+Up</string>
    </property>
   </action>
   <action name="action_Navigate_Tile_Right">
@@ -677,7 +677,7 @@ QMenu::item:selected {
     <string>Right</string>
    </property>
    <property name="shortcut">
-    <string>Right</string>
+    <string>Shift+Right</string>
    </property>
   </action>
   <action name="action_Navigate_Tile_Down">
@@ -685,7 +685,7 @@ QMenu::item:selected {
     <string>Down</string>
    </property>
    <property name="shortcut">
-    <string>Down</string>
+    <string>Shift+Down</string>
    </property>
   </action>
  </widget>

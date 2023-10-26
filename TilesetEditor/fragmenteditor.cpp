@@ -81,6 +81,8 @@ FragmentEditor::FragmentEditor(QWidget *parent) :
     connect(App::getState(), &AppState::onEditorZoomChanged, this, [&](int value) { ui->widgetTileset->setZoom(value); });
     connect(App::getState(), &AppState::onMoveViewport, this, [&](int rx, int ry) { ui->widgetTileset->moveViewport(rx, ry); });
     connect(App::getState(), &AppState::onMoveViewportHome, this, [&]() { ui->widgetTileset->moveViewportHome(); });
+    connect(App::getState(), &AppState::onReferenceOffsetChanged, this, [&](QPoint value) { ui->widgetTileset->setOffset(value.x(), value.y()); });
+    connect(App::getState(), &AppState::onEditorRootChanged, this, [&](QPoint const value) { ui->widgetTileset->setRoot(value.x(), value.y()); });
 
     updateTilesetWidget(App::getState()->selectedTileset());
     ui->widgetTileset->setZoom(App::getState()->editorZoom());
