@@ -24,6 +24,7 @@ AppState::AppState()
     _editorShowUnlinkedTiles = true;
     _editorShowGrid = true;
     _editorRoot = QPoint(0,0);
+    _editorZoom = 13;
 
     _project = nullptr;
     _projectHasChanges = false;
@@ -494,6 +495,29 @@ void AppState::moveEditorRootHome()
     _editorRoot.setX(0);
     _editorRoot.setY(0);
     emit onEditorRootChanged(_editorRoot);
+}
+
+void AppState::zoomInEditor()
+{
+    if (_editorZoom > 13)
+    {
+        --_editorZoom;
+        emit onEditorZoomChanged(_editorZoom);
+    }
+}
+
+void AppState::zoomOutEditor()
+{
+    if (_editorZoom < 20)
+    {
+        ++_editorZoom;
+        emit onEditorZoomChanged(_editorZoom);
+    }
+}
+
+int AppState::editorZoom()
+{
+    return _editorZoom;
 }
 
 // References Toolbox

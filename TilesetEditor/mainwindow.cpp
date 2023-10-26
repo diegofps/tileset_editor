@@ -110,6 +110,9 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->action_View_Reference_ZoomIn, &QAction::triggered, this, [&](){ App::getState()->zoomInReference(); });
     connect(ui->action_View_Reference_ZoomOut, &QAction::triggered, this, [&](){ App::getState()->zoomOutReference(); });
 
+    connect(ui->action_View_EditorZoomIn, &QAction::triggered, this, [&](){ App::getState()->zoomInEditor(); });
+    connect(ui->action_View_EditorZoomOut, &QAction::triggered, this, [&](){ App::getState()->zoomOutEditor(); });
+
     connect(ui->action_View_FlipTileHorizontally, &QAction::triggered, this, [&]()
     {
         TileMode mode = App::getState()->tileMode();

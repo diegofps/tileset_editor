@@ -204,6 +204,8 @@ QMenu::item:selected {
     <addaction name="action_View_Reference_ZoomOut"/>
     <addaction name="action_View_FlipTileHorizontally"/>
     <addaction name="action_View_FlipTileVertically"/>
+    <addaction name="action_View_EditorZoomIn"/>
+    <addaction name="action_View_EditorZoomOut"/>
    </widget>
    <widget class="QMenu" name="menuNavigate">
     <property name="title">
@@ -547,7 +549,7 @@ QMenu::item:selected {
   </action>
   <action name="action_View_Reference_ZoomIn">
    <property name="text">
-    <string>Reference Zoom in</string>
+    <string>Reference Zoom In</string>
    </property>
    <property name="shortcut">
     <string>+</string>
@@ -555,7 +557,7 @@ QMenu::item:selected {
   </action>
   <action name="action_View_Reference_ZoomOut">
    <property name="text">
-    <string>Reference Zoom out</string>
+    <string>Reference Zoom Out</string>
    </property>
    <property name="shortcut">
     <string>_</string>
@@ -575,6 +577,22 @@ QMenu::item:selected {
    </property>
    <property name="shortcut">
     <string>V</string>
+   </property>
+  </action>
+  <action name="action_View_EditorZoomIn">
+   <property name="text">
+    <string>Editor Zoom In</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+=</string>
+   </property>
+  </action>
+  <action name="action_View_EditorZoomOut">
+   <property name="text">
+    <string>Editor Zoom Out</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+-</string>
    </property>
   </action>
  </widget>

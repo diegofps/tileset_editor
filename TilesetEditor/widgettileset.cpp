@@ -23,7 +23,7 @@ WidgetTileset::WidgetTileset(QWidget *parent)
 
 void WidgetTileset::paintEvent(QPaintEvent *event)
 {
-
+    // TODO
 }
 
 void WidgetTileset::resizeEvent(QResizeEvent *event)
@@ -59,6 +59,11 @@ void WidgetTileset::setCells(QHash<QPair<int, int>, Cell *> const * cells)
 {
     _cells = cells;
     update();
+}
+
+void WidgetTileset::moveViewport(int rx, int ry)
+{
+    // TODO
 }
 
 void WidgetTileset::updateViewport()

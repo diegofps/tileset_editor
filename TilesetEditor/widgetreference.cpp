@@ -39,6 +39,7 @@ void WidgetReference::setImage(QImage *img)
     _img = img;
     _pixmap = img == nullptr?nullptr:new QPixmap(QPixmap::fromImage(*_img));
 
+    updateViewport();
     update();
 }
 
@@ -94,7 +95,7 @@ void WidgetReference::paintEvent(QPaintEvent *event)
     (void) event;
     QPainter painter(this);
 
-    if (_pixmap == nullptr)
+    if (_pixmap == nullptr || _viewport.width() == 0 || _viewport.height() == 0)
         return;
 
     painter.drawPixmap(QRect(0,0,width(),height()), *_pixmap, _viewport);
@@ -136,10 +137,56 @@ void WidgetReference::updateOffsetImage()
 
 void WidgetReference::updateViewport()
 {
+    if (_img == nullptr)
+    {
+        _viewport = QRect(0,0,0,0);
+        return;
+    }
+
+    int const fw = width();
+    int const fh = height();
+
     int const w = std::pow(1.4, _viewportPower);
-    int const h = w * height() / width();
-    int x = _root.x() - w / 2;
-    int y = _root.y() - h / 2;
+    int const h = w * fh / fw;
+
+    int x = 0;
+    int y = 0;
+
+    if (w >= _img->width())
+    {
+        qDebug() << 1.0 << QRect(x,y,w,h) << QPoint(_img->width(),_img->height());
+        x = -(w-_img->width())/2;
+    }
+    else
+    {
+        qDebug() << 2.0 << QRect(x,y,w,h) << QPoint(_img->width(),_img->height());
+        x = _root.x() - w / 2;
+
+        if (x < 0 && x + w < _img->width())
+            x = 0;
+
+        if (x > 0 && x + w > _img->width())
+            x = _img->width() - w;
+    }
+
+    if (h >= _img->height())
+    {
+        qDebug() << 3.0 << QRect(x,y,w,h) << QPoint(_img->width(),_img->height());
+        y = -(h-_img->height())/2;
+    }
+    else
+    {
+        qDebug() << 4.0 << QRect(x,y,w,h) << QPoint(_img->width(),_img->height());
+        y = _root.y() - h / 2;
+
+        if (y < 0 && y + h < _img->height())
+            y = 0;
+
+        if (y > 0 && y + h > _img->height())
+            y = _img->height() - h;
+    }
+
+    qDebug() << 5.0 << QRect(x,y,w,h) << QPoint(_img->width(),_img->height()) << "\n";
     _viewport.setRect(x, y, w, h);
 }
 

@@ -111,6 +111,7 @@ private:
     bool       _editorShowUnlinkedTiles;
     bool       _editorShowGrid;
     QPoint     _editorRoot;
+    int        _editorZoom;
 
     // References Toolbox
     ReferenceMode   _referenceMode;
@@ -210,6 +211,10 @@ public:
     void moveEditorRoot(int rx, int ry);
     void moveEditorRootHome();
 
+    void zoomInEditor();
+    void zoomOutEditor();
+    int editorZoom();
+
     // References Toolbox
     ReferenceMode referenceMode() const;
     bool referenceHighlightPosition() const;
@@ -281,6 +286,7 @@ signals:
     void onEditorShowLinkedTilesChanged(bool const value);
     void onEditorShowUnlinkedTilesChanged(bool const value);
     void onEditorShowGridChanged(bool const value);
+    void onEditorZoomChanged(int value);
 
     // References Toolbox
     void onReferenceModeChanged(ReferenceMode const value);

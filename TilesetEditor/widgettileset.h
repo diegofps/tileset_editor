@@ -24,6 +24,7 @@ public:
     void setRoot(int x, int y); // Position of root cell
     void setOffset(int rx, int ry); // Position of offset cell, relative to root
     void setCells(QHash<QPair<int,int>, Cell*> const * cells);
+    void moveViewport(int rx, int ry);
 
 signals:
 
@@ -39,6 +40,8 @@ private:
     int _viewportPower;
     QBrush _brushRoot;
     QBrush _brushOffset;
+    int _gridWidth;
+    int _gridHeight;
     QHash<QPair<int, int>, Cell *> const * _cells;
 
 };
