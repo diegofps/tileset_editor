@@ -38,7 +38,7 @@ signals:
     void onEraseCell(int x, int y); // Ctrl + Left CLick
     void onColorPickCell(int x, int y); // Alt + Left click
     void onLinkCell(int x, int y); // Shift + Left click
-    void onHoverCell(Cell const * cell);
+    void onHoverCell(int x, int y, Cell const * cell);
 
 private:
 
@@ -53,6 +53,7 @@ private:
     int _gridWidth;
     int _gridHeight;
     QHash<QPair<int, int>, Cell *> const * _cells;
+    QPair<int,int> _lastHoverKey;
 
 };
 

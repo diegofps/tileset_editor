@@ -515,7 +515,7 @@ void AppState::moveViewportHome()
     emit onMoveViewportHome();
 }
 
-void AppState::editorPaintCellUsingSibling(int x, int y)
+void AppState::editorPaintCellUsingSibling()
 {
 
 }

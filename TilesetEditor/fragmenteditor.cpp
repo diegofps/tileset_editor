@@ -90,18 +90,19 @@ FragmentEditor::FragmentEditor(QWidget *parent) :
     connect(ui->widgetEditor, &WidgetEditor::onColorPickCell, this, [&](int x, int y) { App::getState()->editorColorPickCell(x, y); });
     connect(ui->widgetEditor, &WidgetEditor::onLinkCell, this, [&](int x, int y) { App::getState()->editorLinkCell(x, y); });
 
-    connect(ui->widgetEditor, &WidgetEditor::onHoverCell, this, [&](Cell * cell)
+    connect(ui->widgetEditor, &WidgetEditor::onHoverCell, this, [&](int x, int y, Cell const * cell)
     {
         if (cell == nullptr)
-            ui->lbExtraInfo->setText("");
+            ui->lbExtraInfo->setText(QString("X:%1, Y:%2").arg(x).arg(y));
         else
-            ui->lbExtraInfo->setText(QString("X:%1, Y:%2, TileID:%3, PaletteID:%4, HFlip:%5, VFlip:%6")
-                                 .arg(cell->x)
-                                 .arg(cell->y)
+            ui->lbExtraInfo->setText(QString("X:%1, Y:%2, TileID:%3, PaletteID:%4, HFlip:%5, VFlip:%6, Link:%7")
+                                 .arg(x)
+                                 .arg(y)
                                  .arg(cell->tileID)
                                  .arg(cell->paletteID)
                                  .arg(cell->hFlip)
-                                 .arg(cell->vFlip));
+                                 .arg(cell->vFlip)
+                                 .arg(cell->isLink));
     });
 
     updateTilesetWidget(App::getState()->selectedTileset());

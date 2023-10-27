@@ -188,13 +188,6 @@ public:
     void setLastMoveToSceneResult(int value);
     int lastMoveToSceneResult();
 
-//    void drawNearestReferenceTile();
-//    void drawTile();
-//    void eraseTile();
-//    void linkTile();
-//    void undo();
-//    void redo();
-
     // Editor Toolbox
     EditorTool editorTool() const;
     bool editorShowLinkedTiles() const;

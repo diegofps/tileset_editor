@@ -11,7 +11,8 @@ WidgetEditor::WidgetEditor(QWidget *parent)
     _viewportPower(15),
     _gridWidth(0),
     _gridHeight(0),
-    _cells(nullptr)
+    _cells(nullptr),
+    _lastHoverKey(-1,-1)
 {
     _brushRoot.setColor(QColor::fromString("#66ffffff"));
     _brushRoot.setStyle(Qt::SolidPattern);
@@ -182,12 +183,6 @@ void WidgetEditor::mousePressEvent(QMouseEvent * event)
 
 void WidgetEditor::mouseMoveEvent(QMouseEvent * event)
 {
-    if (_cells == nullptr)
-    {
-        emit onHoverCell(nullptr);
-        return;
-    }
-
     auto pos = event->pos();
 
     int const x = (_viewport.x() + pos.x() * _viewport.width() / width()) / 8;
@@ -195,7 +190,20 @@ void WidgetEditor::mouseMoveEvent(QMouseEvent * event)
 
     QPair<int,int> key(x,y);
 
-    auto it = _cells->find(key);
-    emit onHoverCell(it==_cells->end() ? nullptr : it.value());
+    if (key == _lastHoverKey)
+        return;
+
+    _lastHoverKey = key;
+
+    if (_cells == nullptr)
+    {
+        emit onHoverCell(x, y, nullptr);
+    }
+    else
+    {
+        auto it = _cells->find(key);
+        emit onHoverCell(x, y, it==_cells->end() ? nullptr : it.value());
+    }
+
 }
 

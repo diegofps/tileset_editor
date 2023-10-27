@@ -88,12 +88,12 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->action_File_Quit, &QAction::triggered, this, &MainWindow::onAction_File_QuitProject);
 
     // Edit menu
-    connect(ui->action_Edit_Undo, &QAction::triggered, this, [](){ App::getState()->undo(); });
-    connect(ui->action_Edit_Redo, &QAction::triggered, this, [](){ App::getState()->redo(); });
+    connect(ui->action_Edit_Undo, &QAction::triggered, this, [](){ App::getState()->editorUndo(); });
+    connect(ui->action_Edit_Redo, &QAction::triggered, this, [](){ App::getState()->editorRedo(); });
     connect(ui->action_Edit_Scenes, &QAction::triggered, this, &MainWindow::onAction_Edit_Scenes);
     connect(ui->action_Edit_MoveTileToScene, &QAction::triggered, this, &MainWindow::onAction_Edit_MoveTileToScene);
     connect(ui->action_Edit_MoveTilesetToScene, &QAction::triggered, this, &MainWindow::onAction_Edit_MoveTilesetToScene);
-    connect(ui->action_Edit_InsertNearestReferenceTile, &QAction::triggered, this, [](){ App::getState()->drawNearestReferenceTile(); });
+    connect(ui->action_Edit_InsertNearestReferenceTile, &QAction::triggered, this, [](){ App::getState()->editorPaintCellUsingSibling(); });
 
 
     // View menu
