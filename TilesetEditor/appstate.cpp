@@ -7,8 +7,6 @@ AppState::AppState()
     _palettesMode = USED_BY_TILE;
     _selectedPalette = nullptr;
 
-    _tilesFilter = new TilesFilter();
-
     _referenceMode = REF_1;
     _referenceZoom = 15;
     _referenceOffsetImage = nullptr;
@@ -29,7 +27,7 @@ AppState::AppState()
     _projectReferences = nullptr;
     _projectScreenshots = nullptr;
     _projectScenes = nullptr;
-    _selectedSceneID = 0;
+    _selectedScenePos = 0;
     _lastMoveToSceneResult = 0;
 
 }
@@ -136,10 +134,10 @@ void AppState::setProjectScenes(QList<Scene *> *value)
     emit onProjectScenesChanged(value);
 }
 
-void AppState::setSelectedSceneID(int value)
+void AppState::setSelectedScenePos(int scenePos)
 {
-    _selectedSceneID = value;
-    emit onSelectedSceneIDChanged(value);
+    _selectedScenePos = scenePos;
+    emit onSelectedScenePosChanged(scenePos);
 }
 
 Tile * AppState::getProjectTileById(int id)
@@ -314,7 +312,7 @@ void AppState::moveDownProjectTileset(int const position)
     emit onProjectTilesetsMoved(_projectTilesets, position, position-1);
 }
 
-void AppState::setLastMoveToSceneResult(int value)
+void AppState::setLastMoveToSceneResult(int const value)
 {
     _lastMoveToSceneResult = value;
 }
@@ -322,6 +320,11 @@ void AppState::setLastMoveToSceneResult(int value)
 int AppState::lastMoveToSceneResult()
 {
     return _lastMoveToSceneResult;
+}
+
+int AppState::selectedScenePos()
+{
+    return _selectedScenePos;
 }
 
 //void AppState::drawNearestReferenceTile()
@@ -394,9 +397,18 @@ QList<Scene *> *AppState::projectScenes() const
     return _projectScenes;
 }
 
-int AppState::selectedSceneID() const
+int AppState::scenePos2ID(int scenePos)
 {
-    return _selectedSceneID;
+    if (scenePos < 2)
+        return scenePos - 1;
+
+    scenePos -= 2;
+
+    if (scenePos >= _projectScenes->size())
+        return 0;
+
+    else
+        return _projectScenes->at(scenePos)->id;
 }
 
 QList<Tileset *> * AppState::projectTilesets() const
@@ -621,48 +633,74 @@ void AppState::moveReferenceOffsetHome()
 
 // Tiles
 
-void AppState::setTilesFilter(TilesFilter * value)
+void AppState::setTilesFilter(TilesFilter const & value)
 {
-    if (_tilesFilter != nullptr && value != _tilesFilter)
-        delete _tilesFilter;
-
     _tilesFilter = value;
     emit onTilesFilterChanged(value);
 }
 
-void AppState::setSelectedTiles(QList<Tile*> * value)
+void AppState::setSelectedTilesPos(Range value)
 {
-    if (value == nullptr)
-        _selectedTiles.clear();
-    else
-        _selectedTiles = std::move(*value);
-    emit onSelectedTilesChanged(&_selectedTiles);
+    _selectedTilesPos = value;
+    emit onSelectedTilesPosChanged(_selectedTilesPos);
 }
 
-TilesFilter * AppState::tilesFilter() const
+TilesFilter const & AppState::tilesFilter() const
 {
     return _tilesFilter;
 }
 
-QList<Tile *> const * AppState::selectedTiles() const
+Range const * AppState::selectedTilesPos() const
 {
-    return &_selectedTiles;
+    return & _selectedTilesPos;
 }
 
-void AppState::tilesMoveSelectedTilesToScene(int sceneID)
+int AppState::selectedTilePos() const
 {
-    if (_selectedTiles.isEmpty())
+    return _selectedTilesPos.isEmpty() ? 0 : _selectedTilesPos.start;
+}
+
+QList<Tile *> AppState::selectedTiles() const
+{
+    QList<Tile*> tiles;
+    Range tmp = _selectedTilesPos;
+    tmp.limit(0, _projectTiles->size());
+
+    if (!tmp.isEmpty())
+        for (qsizetype tilePos=tmp.start;tilePos<=tmp.end;++tilePos)
+            tiles.append(_projectTiles->at(tilePos));
+
+    return tiles;
+}
+
+Tile * AppState::selectedTile() const
+{
+    Range range = _selectedTilesPos;
+    range.limit(0, _projectTiles->size());
+
+    if (range.isEmpty())
+        return nullptr;
+
+    return _projectTiles->at(range.start);
+}
+
+void AppState::moveSelectedTilesToScene(int sceneID)
+{
+    Range range = _selectedTilesPos;
+    range.limit(0, _projectTiles->size());
+
+    if (range.isEmpty())
         return;
 
     if (sceneID == -1)
     {
-        for (auto tile : _selectedTiles)
-            tile->sceneId = 0;
+        for (qsizetype pos=range.start;pos!=range.end;++pos)
+            _projectTiles->at(pos)->sceneId = 0;
     }
     else
     {
-        for (auto tile : _selectedTiles)
-            tile->sceneId = sceneID;
+        for (qsizetype pos=range.start;pos!=range.end;++pos)
+            _projectTiles->at(pos)->sceneId = sceneID;
     }
 
     _projectHasChanges = true;
@@ -670,9 +708,9 @@ void AppState::tilesMoveSelectedTilesToScene(int sceneID)
     emit onProjectTilesChanged(_projectTiles);
 }
 
-void AppState::moveToTile(int rx, int ry)
+void AppState::selectTileAtEditorPosition(int rx, int ry)
 {
-    emit onMoveToTile(rx, ry);
+    emit onSelectTileAtEditorPosition(rx, ry);
 }
 
 // Palettes

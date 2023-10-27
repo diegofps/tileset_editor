@@ -18,7 +18,7 @@ public:
     ~WidgetItemPalette();
 
 public slots:
-    void setPalette(Palette * palette, QList<Tile*> const * selectedTiles);
+    void setPalette(Palette * palette, Tile const * selectedTile);
 
 private:
     Ui::WidgetItemPalette *ui;

@@ -13,7 +13,7 @@ WidgetItemPalette::~WidgetItemPalette()
     delete ui;
 }
 
-void WidgetItemPalette::setPalette(Palette * palette, QList<Tile*> const * selectedTiles)
+void WidgetItemPalette::setPalette(Palette * palette, Tile const * selectedTile)
 {
     if (palette == nullptr)
     {
@@ -26,9 +26,9 @@ void WidgetItemPalette::setPalette(Palette * palette, QList<Tile*> const * selec
         ui->lbID->setText(QString("ID: %1").arg(palette->id));
         ui->palette->setPalette(palette->colors, palette->size);
 
-        if (selectedTiles == nullptr || selectedTiles->isEmpty() || !selectedTiles->at(0)->palettesUsed.contains(palette->id))
+        if (selectedTile == nullptr)
             ui->lbFreq->setText("Freq: 0");
         else
-            ui->lbFreq->setText(QString("Freq: %1").arg(selectedTiles->at(0)->palettesUsed.value(palette->id)));
+            ui->lbFreq->setText(QString("Freq: %1").arg(selectedTile->palettesUsed.value(palette->id)));
     }
 }

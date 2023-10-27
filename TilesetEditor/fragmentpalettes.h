@@ -19,11 +19,12 @@ public:
     ~FragmentPalettes();
 
 private:
-    void filterPalettes(QList<Tile*> const * selectedTiles, QList<Palette*> const * value, PaletteMode paletteMode);
+
+    void filterPalettes(QList<Tile*> const & selectedTiles, QList<Palette*> const * value, PaletteMode paletteMode);
     void styleButtons(PaletteMode value);
-    void updatePalettesWidget(QList<Tile*> const * tiles);
+    void updatePalettesWidget(Tile * selectedTile);
     void saveSelectedPalette();
-    void restoreSelectedPalette(QList<Tile*> const * selectedTiles);
+    void restoreSelectedPalette(Tile * selectedTile);
 
 private:
     Ui::FragmentPalettes *ui;

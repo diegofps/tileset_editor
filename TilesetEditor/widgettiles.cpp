@@ -13,8 +13,7 @@ WidgetTiles::WidgetTiles(QWidget *parent)
 
       _cols(0),
       _rows(0),
-      _selectionStart(-1),
-      _selectionEnd(-1)
+      _selection(-1,-1)
 {
     setMinimumHeight(100);
 //    setMouseTracking(true);
@@ -47,8 +46,9 @@ void WidgetTiles::setTiles(QList<Tile*> const * value)
         view.rect = QRect();
     }
 
-    _selectionStart = -1;
-    _selectionEnd = -1;
+    _selection.set(-1,-1);
+
+    update();
 }
 
 void WidgetTiles::repack()
@@ -73,30 +73,31 @@ void WidgetTiles::repack()
 
         view->rect = QRect(x,y,TILE_SIZE,TILE_SIZE);
     }
+
+    update();
 }
 
 void WidgetTiles::moveToTile(int rx, int ry)
 {
-    int const newStart = _selectionStart + _cols * ry + rx;
-    int const newEnd = _selectionEnd + _cols * ry + rx;
+    int const newStart = _selection.start + _cols * ry + rx;
+    int const newEnd = _selection.end + _cols * ry + rx;
 
     if (newStart >= 0 && newStart < _tiles.size() && newEnd >= 0 && newEnd < _tiles.size())
     {
-        _selectionStart = newStart;
-        _selectionEnd = newEnd;
-        emit onSelectedTileChanged(_selectionStart, _selectionEnd);
+        _selection.set(newStart, newEnd);
+        emit onSelectedTileChanged(_selection);
     }
+
     update();
 }
 
-void WidgetTiles::setSelection(int start, int end)
+void WidgetTiles::setSelection(Range range)
 {
-    start = std::max(-1, start);
-    end = std::min((int)_tiles.size()-1, end);
+    range.limit(-1, _tiles.size()-1);
+    _selection = range;
+    update();
 
-    _selectionStart = start;
-    _selectionEnd = end;
-    emit onSelectedTileChanged(_selectionStart, _selectionEnd);
+    emit onSelectedTileChanged(_selection);
 }
 
 void WidgetTiles::paintEvent(QPaintEvent * event)
@@ -110,13 +111,13 @@ void WidgetTiles::paintEvent(QPaintEvent * event)
         if (view.pixmap != nullptr)
             painter.drawPixmap(view.rect, *view.pixmap);
 
-        if (i >= _selectionStart && i <= _selectionEnd)
+        if (i >= _selection.start && i <= _selection.end)
         {
             painter.setPen(Qt::NoPen);
             painter.setBrush(_brush);
             painter.drawRect(view.rect);
 
-            if (i == _selectionStart)
+            if (i == _selection.start)
                 painter.drawRect(view.rect);
         }
     }
@@ -146,7 +147,7 @@ void WidgetTiles::mousePressEvent(QMouseEvent *event)
 
             if (view.rect.contains(pos))
             {
-                _selectionEnd = i;
+                _selection.end = i;
                 mustEmit = true;
                 break;
             }
@@ -160,23 +161,23 @@ void WidgetTiles::mousePressEvent(QMouseEvent *event)
 
             if (view.rect.contains(pos))
             {
-                _selectionStart = i;
-                _selectionEnd = i;
+                _selection.start = i;
+                _selection.end = i;
                 mustEmit = true;
                 break;
             }
         }
     }
 
-    if (_selectionStart > _selectionEnd)
+    if (_selection.start > _selection.end)
     {
-        int tmp = _selectionStart;
-        _selectionStart = _selectionEnd;
-        _selectionEnd = tmp;
+        int tmp = _selection.start;
+        _selection.start = _selection.end;
+        _selection.end = tmp;
     }
 
     if (mustEmit)
-        emit onSelectedTileChanged(_selectionStart, _selectionEnd);
+        emit onSelectedTileChanged(_selection);
 
     update();
 }

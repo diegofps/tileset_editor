@@ -42,6 +42,6 @@ TileCacheHD *App::getHDTileCache()
 AppCommands *App::getCommands()
 {
     if (appCommands == nullptr)
-        appCommands = new AppCommands();
+        appCommands = new AppCommands(getState());
     return appCommands;
 }

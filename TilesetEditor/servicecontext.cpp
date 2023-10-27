@@ -80,7 +80,7 @@ void ServiceContext::close(ContextReport * report)
     App::getState()->setProjectScreenshots(nullptr);
     App::getState()->setProjectScenes(nullptr);
     App::getState()->setSelectedTileset(nullptr);
-    App::getState()->setSelectedTiles(nullptr);
+    App::getState()->setSelectedTilesPos(Range(-1,-1));
     App::getOriginalTileCache()->clear();
 
     if (report != nullptr)

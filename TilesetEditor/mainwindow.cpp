@@ -42,15 +42,22 @@ MainWindow::MainWindow(QWidget *parent)
         ui->action_File_ReloadDump->setEnabled(!value.isEmpty());
     });
 
-    connect(ui->cbScenes, &QComboBox::currentIndexChanged, this, [&](int index) {
-        int newSceneID = index < 2 ? index-1 : App::getState()->projectScenes()->at(index-2)->id;
-        if (newSceneID != App::getState()->selectedSceneID())
-            App::getState()->setSelectedSceneID(newSceneID);
+    connect(ui->cbScenes, &QComboBox::currentIndexChanged, this, [&](int scenePos)
+    {
+//        int newSceneID = index < 2 ? index-1 : App::getState()->projectScenes()->at(index-2)->id;
+        if (scenePos != -1)
+            App::getCommands()->setSelectedScenePos(scenePos);
+    });
+
+    connect(App::getState(), &AppState::onSelectedScenePosChanged, this, [&](int scenePos)
+    {
+        ui->cbScenes->setCurrentIndex(scenePos);
     });
 
     connect(App::getState(), &AppState::onProjectScenesChanged, this, [&](QList<Scene*> const * value)
     {
-        int oldSceneID = App::getState()->selectedSceneID();
+//        int oldSceneID = App::getState()->selectedSceneID();
+        auto oldSceneID = App::getState()->scenePos2ID(App::getState()->selectedScenePos());
 
         loadScenes(value);
 
@@ -88,8 +95,8 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->action_File_Quit, &QAction::triggered, this, &MainWindow::onAction_File_QuitProject);
 
     // Edit menu
-    connect(ui->action_Edit_Undo, &QAction::triggered, this, [](){ App::getState()->editorUndo(); });
-    connect(ui->action_Edit_Redo, &QAction::triggered, this, [](){ App::getState()->editorRedo(); });
+    connect(ui->action_Edit_Undo, &QAction::triggered, this, [](){ App::getCommands()->historyUndo(); });
+    connect(ui->action_Edit_Redo, &QAction::triggered, this, [](){ App::getCommands()->historyRedo(); });
     connect(ui->action_Edit_Scenes, &QAction::triggered, this, &MainWindow::onAction_Edit_Scenes);
     connect(ui->action_Edit_MoveTileToScene, &QAction::triggered, this, &MainWindow::onAction_Edit_MoveTileToScene);
     connect(ui->action_Edit_MoveTilesetToScene, &QAction::triggered, this, &MainWindow::onAction_Edit_MoveTilesetToScene);
@@ -146,10 +153,10 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->action_Navigate_Viewport_Left, &QAction::triggered, this, [&](){ App::getState()->moveViewport(-1, 0); });
     connect(ui->action_Navigate_Viewport_Right, &QAction::triggered, this, [&](){ App::getState()->moveViewport(+1, 0); });
 
-    connect(ui->action_Navigate_Tile_Down, &QAction::triggered, this, [&](){ App::getState()->moveToTile( 0,+1); });
-    connect(ui->action_Navigate_Tile_Up, &QAction::triggered, this, [&](){ App::getState()->moveToTile( 0,-1); });
-    connect(ui->action_Navigate_Tile_Left, &QAction::triggered, this, [&](){ App::getState()->moveToTile(-1, 0); });
-    connect(ui->action_Navigate_Tile_Right, &QAction::triggered, this, [&](){ App::getState()->moveToTile(+1, 0); });
+    connect(ui->action_Navigate_Tile_Down, &QAction::triggered, this, [&](){ App::getState()->selectTileAtEditorPosition( 0,+1); });
+    connect(ui->action_Navigate_Tile_Up, &QAction::triggered, this, [&](){ App::getState()->selectTileAtEditorPosition( 0,-1); });
+    connect(ui->action_Navigate_Tile_Left, &QAction::triggered, this, [&](){ App::getState()->selectTileAtEditorPosition(-1, 0); });
+    connect(ui->action_Navigate_Tile_Right, &QAction::triggered, this, [&](){ App::getState()->selectTileAtEditorPosition(+1, 0); });
 
     connect(ui->action_Navigate_Editor_Home, &QAction::triggered, this, [&](){ App::getState()->moveEditorRootHome(); });
     connect(ui->action_Navigate_References_Home, &QAction::triggered, this, [&](){ App::getState()->moveReferenceOffsetHome(); });
@@ -306,7 +313,7 @@ void MainWindow::onAction_Edit_MoveTileToScene()
 {
     auto selectedTiles = App::getState()->selectedTiles();
 
-    if (selectedTiles == nullptr || selectedTiles->isEmpty())
+    if (selectedTiles.isEmpty())
         return;
 
     auto scenes = App::getState()->projectScenes();
@@ -325,9 +332,9 @@ void MainWindow::onAction_Edit_MoveTileToScene()
         App::getState()->setLastMoveToSceneResult(dialog.selectedOption());
 
         if (dialog.selectedOption() == 0)
-            App::getState()->tilesMoveSelectedTilesToScene(0);
+            App::getState()->moveSelectedTilesToScene(0);
         else
-            App::getState()->tilesMoveSelectedTilesToScene((*scenes)[dialog.selectedOption()-1]->id);
+            App::getState()->moveSelectedTilesToScene((*scenes)[dialog.selectedOption()-1]->id);
     }
 }
 
@@ -437,6 +444,6 @@ void MainWindow::showMessage(QString msg)
 {
     ui->lbStatusBar->setText(msg);
     if (msg != "")
-        QTimer::singleShot(5000, [&](){ showMessage("") ;});
+        QTimer::singleShot(5000, this, [&](){ showMessage("") ;});
 }
 

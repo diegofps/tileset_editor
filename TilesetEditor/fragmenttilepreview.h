@@ -20,9 +20,9 @@ public:
     ~FragmentTilePreview();
 
 private:
-    void updateTileWidget(TileMode const & mode, QList<Tile*> const * tiles, Palette * palette);
     void styleButton(QPushButton *btn, bool value);
-    void updatePaletteWidget(Palette * value, QList<Tile*> const * tiles);
+    void updateTileWidget(TileMode const & mode,  Tile * selectedTile, Palette * palette);
+    void updatePaletteWidget(Palette * value, Tile * selectedTile);
 
 private:
     Ui::FragmentTilePreview *ui;

@@ -13,6 +13,9 @@ SOURCES += \
     appcommands.cpp \
     appstate.cpp \
     appstyles.cpp \
+    commands/selectsceneposcommand.cpp \
+    commands/setselectedtilesposcommand.cpp \
+    commands/tilesfiltercommand.cpp \
     dialogeditscenes.cpp \
     dialogoptions.cpp \
     fragmentcontextclosed.cpp \
@@ -36,6 +39,7 @@ SOURCES += \
     model/screenshot.cpp \
     model/tile.cpp \
     model/tileset.cpp \
+    range.cpp \
     servicecontext.cpp \
     tilecache.cpp \
     tilecachehd.cpp \
@@ -54,6 +58,9 @@ HEADERS += \
     appstate.h \
     appstyles.h \
     commands/command.h \
+    commands/selectsceneposcommand.h \
+    commands/setselectedtilesposcommand.h \
+    commands/tilesfiltercommand.h \
     dialogeditscenes.h \
     dialogoptions.h \
     errors.h \
@@ -78,6 +85,7 @@ HEADERS += \
     model/screenshot.h \
     model/tile.h \
     model/tileset.h \
+    range.h \
     servicecontext.h \
     tilecache.h \
     tilecachehd.h \

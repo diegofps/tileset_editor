@@ -49,38 +49,41 @@ FragmentPalettes::FragmentPalettes(QWidget *parent) :
         styleButtons(value);
 
         auto selectedTiles = App::getState()->selectedTiles();
+        auto selectedTile = App::getState()->selectedTile();
         auto palettes = App::getState()->projectPalettes();
         auto paletteMode = App::getState()->palettesMode();
 
         saveSelectedPalette();
         filterPalettes(selectedTiles, palettes, paletteMode);
-        updatePalettesWidget(selectedTiles);
-        restoreSelectedPalette(selectedTiles);
+        updatePalettesWidget(selectedTile);
+        restoreSelectedPalette(selectedTile);
     });
 
-    connect(App::getState(), &AppState::onSelectedTilesChanged, this, [&](QList<Tile*> const *)
+    connect(App::getState(), &AppState::onSelectedTilesPosChanged, this, [&](Range)
     {
         auto selectedTiles = App::getState()->selectedTiles();
+        auto selectedTile = App::getState()->selectedTile();
         auto palettes = App::getState()->projectPalettes();
         auto paletteMode = App::getState()->palettesMode();
 
         saveSelectedPalette();
         filterPalettes(selectedTiles, palettes, paletteMode);
-        updatePalettesWidget(selectedTiles);
-        restoreSelectedPalette(selectedTiles);
+        updatePalettesWidget(selectedTile);
+        restoreSelectedPalette(selectedTile);
 
     });
 
     connect(App::getState(), &AppState::onProjectPalettesChanged, this, [&](QList<Palette*> const *)
     {
         auto selectedTiles = App::getState()->selectedTiles();
+        auto selectedTile = App::getState()->selectedTile();
         auto palettes = App::getState()->projectPalettes();
         auto paletteMode = App::getState()->palettesMode();
 
         saveSelectedPalette();
         filterPalettes(selectedTiles, palettes, paletteMode);
-        updatePalettesWidget(selectedTiles);
-        restoreSelectedPalette(selectedTiles);
+        updatePalettesWidget(selectedTile);
+        restoreSelectedPalette(selectedTile);
     });
 
     connect(ui->listPalettes, &QListWidget::currentRowChanged, this, [&](int position)
@@ -93,34 +96,38 @@ FragmentPalettes::FragmentPalettes(QWidget *parent) :
 
 
     auto selectedTiles = App::getState()->selectedTiles();
+    auto selectedTile = App::getState()->selectedTile();
     auto palettes = App::getState()->projectPalettes();
     auto paletteMode = App::getState()->palettesMode();
 
 //    saveSelectedPalette();
     filterPalettes(selectedTiles, palettes, paletteMode);
-    updatePalettesWidget(selectedTiles);
+    updatePalettesWidget(selectedTile);
 //    restoreSelectedPalette();
 
-    if (!palettes->isEmpty())
+    if (!_palettes.isEmpty())
     {
         int bestI = 0;
         int bestF = _palettes[0]->frequency;
+
         for (qsizetype i=1;i!=_palettes.size();++i)
+        {
             if (_palettes[i]->frequency > bestF)
             {
                 bestF = _palettes[i]->frequency;
                 bestI = i;
             }
+        }
         ui->listPalettes->setCurrentRow(bestI);
     }
 //    ui->listPalettes->setCurrentRow(0);
 }
 
-void FragmentPalettes::filterPalettes(QList<Tile*> const * selectedTiles, QList<Palette*> const * value, PaletteMode paletteMode)
+void FragmentPalettes::filterPalettes(QList<Tile*> const & selectedTiles, QList<Palette*> const * value, PaletteMode paletteMode)
 {
     _palettes.clear();
 
-    if (value == nullptr || selectedTiles == nullptr)
+    if (value == nullptr)
         return;
 
     if (paletteMode == ALL)
@@ -131,16 +138,16 @@ void FragmentPalettes::filterPalettes(QList<Tile*> const * selectedTiles, QList<
         return;
     }
 
-    if (selectedTiles->isEmpty())
+    if (selectedTiles.isEmpty())
         return;
 
     for (auto palette : *value)
     {
         bool add = false;
 
-        for (auto tile : *selectedTiles)
+        for (auto tile : selectedTiles)
         {
-            if (tile->palettesUsed.contains(palette->id))
+            if (tile != nullptr && tile->palettesUsed.contains(palette->id))
             {
                 add = true;
                 break;
@@ -154,14 +161,17 @@ void FragmentPalettes::filterPalettes(QList<Tile*> const * selectedTiles, QList<
     qDebug() << "Filter found " << _palettes.size() << " palettes not using all";
 }
 
-void FragmentPalettes::updatePalettesWidget(QList<Tile*> const * tiles)
+void FragmentPalettes::updatePalettesWidget(Tile * selectedTile)
 {
     ui->listPalettes->clear();
+
+    if (selectedTile == nullptr)
+        return;
 
     for (auto p : _palettes)
     {
         auto itemWidget = new WidgetItemPalette(this);
-        itemWidget->setPalette(p, tiles);
+        itemWidget->setPalette(p, selectedTile);
 
         auto item = new QListWidgetItem();
         item->setSizeHint(itemWidget->sizeHint());
@@ -185,30 +195,37 @@ void FragmentPalettes::saveSelectedPalette()
     qDebug() << "Saving " << _lastSelectedItemID;
 }
 
-void FragmentPalettes::restoreSelectedPalette(QList<Tile*> const * selectedTiles)
+void FragmentPalettes::restoreSelectedPalette(Tile * selectedTile)
 {
     if (_palettes.isEmpty())
         return;
 
     if (_lastSelectedItemID != 0)
+    {
         for (qsizetype i=0;i!=_palettes.size();++i)
+        {
             if (_palettes[i]->id == _lastSelectedItemID)
             {
                 qDebug() << "Found id " << _lastSelectedItemID << " at position " << i;
                 ui->listPalettes->setCurrentRow(i);
                 return;
             }
+        }
+    }
 
-    if (selectedTiles != nullptr && !selectedTiles->isEmpty())
+    if (selectedTile != nullptr)
     {
-        int preferredTile = selectedTiles->at(0)->preferredPalette;
+        int const preferredTile = selectedTile->preferredPalette;
+
         for (qsizetype i=0;i!=_palettes.size();++i)
+        {
             if (_palettes[i]->id == preferredTile)
             {
                 qDebug() << "Found preferred tile id " << preferredTile << " at position " << i;
                 ui->listPalettes->setCurrentRow(i);
                 return;
             }
+        }
     }
 
     qDebug() << "Could not find last selected palette with id " << _lastSelectedItemID << " or a preferred tile, showing palette at position 0";

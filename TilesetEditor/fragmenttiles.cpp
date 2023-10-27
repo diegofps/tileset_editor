@@ -35,76 +35,90 @@ FragmentTiles::FragmentTiles(QWidget *parent) :
 
     auto filter = App::getState()->tilesFilter();
 
-    styleButton(ui->btBackground, filter->usedInBackground);
-    styleButton(ui->btUnlinked, filter->isUnlinked);
-    styleButton(ui->btSprite, filter->usedInSprite);
-    styleButton(ui->btHFlip, filter->usedWithHFlip);
-    styleButton(ui->btVFlip, filter->usedWithVFlip);
+    styleButton(ui->btBackground, filter.usedInBackground);
+    styleButton(ui->btUnlinked, filter.isUnlinked);
+    styleButton(ui->btSprite, filter.usedInSprite);
+    styleButton(ui->btHFlip, filter.usedWithHFlip);
+    styleButton(ui->btVFlip, filter.usedWithVFlip);
 
     connect(ui->btSprite, &QPushButton::clicked, this, [&]()
     {
-        auto filter = App::getState()->tilesFilter();
-        nextButtonState(filter->usedInSprite);
-        App::getState()->setTilesFilter(filter);
+        TilesFilter filter = App::getState()->tilesFilter();
+        nextButtonState(filter.usedInSprite);
+        App::getCommands()->setTilesFilter(filter);
     });
 
     connect(ui->btBackground, &QPushButton::clicked, this, [&]()
     {
-        auto filter = App::getState()->tilesFilter();
-        nextButtonState(filter->usedInBackground);
-        App::getState()->setTilesFilter(filter);
+        TilesFilter filter = App::getState()->tilesFilter();
+        nextButtonState(filter.usedInBackground);
+        App::getCommands()->setTilesFilter(filter);
     });
 
     connect(ui->btHFlip, &QPushButton::clicked, this, [&]()
     {
-        auto filter = App::getState()->tilesFilter();
-        nextButtonState(filter->usedWithHFlip);
-        App::getState()->setTilesFilter(filter);
+        TilesFilter filter = App::getState()->tilesFilter();
+        nextButtonState(filter.usedWithHFlip);
+        App::getCommands()->setTilesFilter(filter);
     });
 
     connect(ui->btVFlip, &QPushButton::clicked, this, [&]()
     {
-        auto filter = App::getState()->tilesFilter();
-        nextButtonState(filter->usedWithVFlip);
-        App::getState()->setTilesFilter(filter);
+        TilesFilter filter = App::getState()->tilesFilter();
+        nextButtonState(filter.usedWithVFlip);
+        App::getCommands()->setTilesFilter(filter);
     });
 
     connect(ui->btUnlinked, &QPushButton::clicked, this, [&]()
     {
-        auto filter = App::getState()->tilesFilter();
-        nextButtonState(filter->isUnlinked);
-        App::getState()->setTilesFilter(filter);
+        TilesFilter filter = App::getState()->tilesFilter();
+        nextButtonState(filter.isUnlinked);
+        App::getCommands()->setTilesFilter(filter);
     });
 
-    connect(App::getState(), &AppState::onSelectedSceneIDChanged, this, [&](int value) {
+    connect(App::getState(), &AppState::onSelectedScenePosChanged, this, [&](int scenePos)
+    {
         auto tiles = App::getState()->projectTiles();
         auto filter = App::getState()->tilesFilter();
+        auto sceneID = App::getState()->scenePos2ID(scenePos);
 
-        filterTiles(value, tiles, filter);
+        filterTiles(sceneID, tiles, filter);
         updateTilesWidget();
-        _widgetTiles->setSelection(0,0);
+        _widgetTiles->setSelection(Range(0,0));
     });
 
-    connect(App::getState(), &AppState::onTilesFilterChanged, this, [&](TilesFilter * filter)
+    connect(App::getState(), &AppState::onTilesFilterChanged, this, [&](TilesFilter const & filter)
     {
-        styleButton(ui->btBackground, filter->usedInBackground);
-        styleButton(ui->btSprite, filter->usedInSprite);
-        styleButton(ui->btUnlinked, filter->isUnlinked);
-        styleButton(ui->btHFlip, filter->usedWithHFlip);
-        styleButton(ui->btVFlip, filter->usedWithVFlip);
+        styleButton(ui->btBackground, filter.usedInBackground);
+        styleButton(ui->btSprite, filter.usedInSprite);
+        styleButton(ui->btUnlinked, filter.isUnlinked);
+        styleButton(ui->btHFlip, filter.usedWithHFlip);
+        styleButton(ui->btVFlip, filter.usedWithVFlip);
+
+        auto sceneID = App::getState()->scenePos2ID(App::getState()->selectedScenePos());
 
         saveSelectedTile();
-        filterTiles(App::getState()->selectedSceneID(), App::getState()->projectTiles(), filter);
+        filterTiles(sceneID, App::getState()->projectTiles(), filter);
         updateTilesWidget();
         restoreSelectedTile();
     });
 
     connect(App::getState(), &AppState::onProjectTilesChanged, this, [&](QList<Tile*> const * value)
     {
+        auto sceneID = App::getState()->scenePos2ID(App::getState()->selectedScenePos());
+
         saveSelectedTile();
-        filterTiles(App::getState()->selectedSceneID(), value, App::getState()->tilesFilter());
+        filterTiles(sceneID, value, App::getState()->tilesFilter());
         updateTilesWidget();
         restoreSelectedTile();
+    });
+
+    connect(App::getState(), &AppState::onSelectedTilesPosChanged, this, [&](Range tilesPos)
+    {
+        if (tilesPos.isEmpty())
+            _widgetTiles->setSelection(Range(0,0));
+        else
+            _widgetTiles->setSelection(tilesPos);
     });
 
     _widgetTiles = new WidgetTiles();
@@ -118,27 +132,24 @@ FragmentTiles::FragmentTiles(QWidget *parent) :
 
     ui->listFrame->setLayout(layout2);
 
-    filterTiles(App::getState()->selectedSceneID(), App::getState()->projectTiles(), App::getState()->tilesFilter());
+    auto sceneID = App::getState()->scenePos2ID(App::getState()->selectedScenePos());
+    filterTiles(sceneID, App::getState()->projectTiles(), App::getState()->tilesFilter());
     updateTilesWidget();
 
-    connect(_widgetTiles, &WidgetTiles::onSelectedTileChanged, this, [&](int start, int end) {
-        if (start<0 || end <0)
+    connect(_widgetTiles, &WidgetTiles::onSelectedTileChanged, this, [&](Range range)
+    {
+        if (range.start<0 || range.end<0)
             return;
 
-        QList<Tile*> selectedTiles;
-
-        for (int i=start;i<=end;++i)
-            selectedTiles.append(_tiles[i]);
-
-        App::getState()->setSelectedTiles(&selectedTiles);
+        App::getCommands()->setSelectedTilesPos(range);
     });
 
-    connect(App::getState(), &AppState::onMoveToTile, this, [&](int rx, int ry)
+    connect(App::getState(), &AppState::onSelectTileAtEditorPosition, this, [&](int rx, int ry)
     {
         _widgetTiles->moveToTile(rx, ry);
     });
 
-    _widgetTiles->setSelection(0,0);
+    _widgetTiles->setSelection(Range(0,0));
 
 }
 
@@ -147,65 +158,48 @@ FragmentTiles::~FragmentTiles()
     delete ui;
 }
 
-void FragmentTiles::filterTiles(int sceneID, QList<Tile*> const * tiles, TilesFilter * filter)
+void FragmentTiles::filterTiles(int sceneID, QList<Tile*> const * tiles, TilesFilter const & filter)
 {
     _tiles.clear();
 
     if (tiles == nullptr)
         return;
 
-    if (filter == nullptr)
+
+    QHash<int, int> unlinkedTiles;
+
+    if (filter.isUnlinked)
     {
-        if (sceneID==-1)
-        {
-            for (auto t : *tiles)
-                _tiles.append(t);
-        }
-        else
-        {
-            for (auto t : *tiles)
-                if (t->sceneId == sceneID)
-                    _tiles.append(t);
-        }
+        // TODO
     }
 
-    else
+    for (auto t : *tiles)
     {
-        QHash<int, int> unlinkedTiles;
+        if (sceneID!=-1)
+            if (t->sceneId!=sceneID)
+                continue;
 
-        if (filter->isUnlinked)
-        {
-            // TODO
-        }
+        if (filter.isUnlinked!=2)
+            if ((filter.isUnlinked==0 && unlinkedTiles.contains(t->id)) || (filter.isUnlinked==1 && !unlinkedTiles.contains(t->id)))
+                continue;
 
-        for (auto t : *tiles)
-        {
-            if (sceneID!=-1)
-                if (t->sceneId!=sceneID)
-                    continue;
+        if (filter.usedInSprite!=2)
+            if ((filter.usedInSprite==0 && t->usedInSprite) || (filter.usedInSprite==1 && !t->usedInSprite))
+                continue;
 
-            if (filter->isUnlinked!=2)
-                if ((filter->isUnlinked==0 && unlinkedTiles.contains(t->id)) || (filter->isUnlinked==1 && !unlinkedTiles.contains(t->id)))
-                    continue;
+        if (filter.usedInBackground!=2)
+            if ((filter.usedInBackground==0 && t->usedInBackground) || (filter.usedInBackground==1 && !t->usedInBackground))
+                continue;
 
-            if (filter->usedInSprite!=2)
-                if ((filter->usedInSprite==0 && t->usedInSprite) || (filter->usedInSprite==1 && !t->usedInSprite))
-                    continue;
+        if (filter.usedWithHFlip!=2)
+            if ((filter.usedWithHFlip==0 && t->usedWithHFlip()) || (filter.usedWithHFlip==1 && !t->usedWithHFlip()))
+                continue;
 
-            if (filter->usedInBackground!=2)
-                if ((filter->usedInBackground==0 && t->usedInBackground) || (filter->usedInBackground==1 && !t->usedInBackground))
-                    continue;
+        if (filter.usedWithVFlip!=2)
+            if ((filter.usedWithVFlip==0 && t->usedWithVFlip()) || (filter.usedWithVFlip==1 && !t->usedWithVFlip()))
+                continue;
 
-            if (filter->usedWithHFlip!=2)
-                if ((filter->usedWithHFlip==0 && t->usedWithHFlip()) || (filter->usedWithHFlip==1 && !t->usedWithHFlip()))
-                    continue;
-
-            if (filter->usedWithVFlip!=2)
-                if ((filter->usedWithVFlip==0 && t->usedWithVFlip()) || (filter->usedWithVFlip==1 && !t->usedWithVFlip()))
-                    continue;
-
-            _tiles.append(t);
-        }
+        _tiles.append(t);
     }
 }
 
@@ -218,15 +212,8 @@ void FragmentTiles::updateTilesWidget()
 
 void FragmentTiles::saveSelectedTile()
 {
-    auto selectedItems = App::getState()->selectedTiles();
-    if (selectedItems == nullptr || selectedItems->isEmpty())
-    {
-        _lastSelectedItemID = 0;
-        return;
-    }
-
-    auto item = (*selectedItems)[0];
-    _lastSelectedItemID = item->id;
+    auto tile = App::getState()->selectedTile();
+    _lastSelectedItemID = tile == nullptr ? 0 : tile->id;
 };
 
 void FragmentTiles::restoreSelectedTile()
@@ -238,8 +225,8 @@ void FragmentTiles::restoreSelectedTile()
         for (qsizetype i=0;i!=_tiles.size();++i)
             if (_tiles[i]->id == _lastSelectedItemID)
             {
-                _widgetTiles->setSelection(i,i);
+                _widgetTiles->setSelection(Range(i,i));
                 return;
             }
-    _widgetTiles->setSelection(0,0);
+    _widgetTiles->setSelection(Range(0,0));
 };
