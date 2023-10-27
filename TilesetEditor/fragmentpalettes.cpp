@@ -101,7 +101,7 @@ FragmentPalettes::FragmentPalettes(QWidget *parent) :
     updatePalettesWidget(selectedTiles);
 //    restoreSelectedPalette();
 
-    if (!palettes->isEmpty())
+    if (!_palettes.isEmpty())
     {
         int bestI = 0;
         int bestF = _palettes[0]->frequency;
