@@ -1,8 +1,8 @@
 #ifndef FRAGMENTTILES_H
 #define FRAGMENTTILES_H
 
-#include "model/tile.h"
-#include "appstate.h"
+//#include "model/tile.h"
+//#include "appstate.h"
 #include "widgettiles.h"
 #include <QPushButton>
 #include <QWidget>
@@ -22,7 +22,7 @@ public:
 
 private:
 
-    void filterTiles(int sceneID, const QList<Tile *> *tiles, TilesFilter const & filter);
+    void updateFilterWidgets();
     void updateTilesWidget();
     void styleButton(QPushButton * btn, int value);
     void restoreSelectedTile();
@@ -31,7 +31,6 @@ private:
 private:
 
     Ui::FragmentTiles *ui;
-    QList<Tile*> _tiles;
     WidgetTiles * _widgetTiles;
     int _lastSelectedItemID;
 

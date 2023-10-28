@@ -4,7 +4,6 @@ AppState * App::appState = nullptr;
 AppStyles * App::appStyles = nullptr;
 TileCache * App::originalTileCache = nullptr;
 TileCacheHD * App::hdTileCache = nullptr;
-AppCommands * App::appCommands = nullptr;
 
 App::App()
 {
@@ -37,11 +36,4 @@ TileCacheHD *App::getHDTileCache()
     if (hdTileCache == nullptr)
         hdTileCache = new TileCacheHD();
     return hdTileCache;
-}
-
-AppCommands *App::getCommands()
-{
-    if (appCommands == nullptr)
-        appCommands = new AppCommands(getState());
-    return appCommands;
 }

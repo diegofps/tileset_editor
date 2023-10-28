@@ -56,14 +56,12 @@ FragmentReferences::FragmentReferences(QWidget *parent) :
     connect(App::getState(), &AppState::onReferenceModeChanged, this, [&](ReferenceMode const value)
     {
         styleScreenshotButtons(value);
-        auto selectedTile = App::getState()->selectedTile();
-        updateReferenceWidget(selectedTile, value);
+        updateReferenceWidget();
     });
 
-    connect(App::getState(), &AppState::onSelectedTilesPosChanged, this, [&](Range)
+    connect(App::getState(), &AppState::onSelectedTilesChanged, this, [&](QList<Tile*> const *)
     {
-        auto selectedTile = App::getState()->selectedTile();
-        updateReferenceWidget(selectedTile, App::getState()->referenceMode());
+        updateReferenceWidget();
     });
 
     connect(App::getState(), &AppState::onReferenceOffsetChanged, this, [&](QPoint const value)
@@ -79,7 +77,7 @@ FragmentReferences::FragmentReferences(QWidget *parent) :
     });
 
     ui->widgetReference->setZoom(App::getState()->referenceZoom());
-    updateReferenceWidget(App::getState()->selectedTile(), App::getState()->referenceMode());
+    updateReferenceWidget();
 }
 
 FragmentReferences::~FragmentReferences()
@@ -116,7 +114,7 @@ inline QImage * loadScreenshot(Reference const * const reference)
         return nullptr;
     }
 
-    for (auto s : *App::getState()->projectScreenshots())
+    for (auto s : *App::getState()->allScreenshots())
         if (s->id == reference->screenshotId)
             return new QImage(QImage::fromData(s->data));
 
@@ -125,8 +123,11 @@ inline QImage * loadScreenshot(Reference const * const reference)
     return nullptr;
 }
 
-void FragmentReferences::updateReferenceWidget(Tile * tile, ReferenceMode const value)
+void FragmentReferences::updateReferenceWidget()
 {
+    auto tile = App::getState()->selectedTile();
+    auto value = App::getState()->referenceMode();
+
     ui->widgetReference->setImage(nullptr);
     ui->lbExtraInfo->setText("");
 
@@ -149,7 +150,7 @@ void FragmentReferences::updateReferenceWidget(Tile * tile, ReferenceMode const 
     default: referenceID = 0;
     }
 
-    Reference const * const reference = App::getState()->getProjectReferenceById(referenceID);
+    Reference const * const reference = App::getState()->getReferenceById(referenceID);
 
     if (reference == nullptr)
     {

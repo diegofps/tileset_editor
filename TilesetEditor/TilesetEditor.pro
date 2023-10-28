@@ -10,12 +10,8 @@ CONFIG += c++17
 
 SOURCES += \
     app.cpp \
-    appcommands.cpp \
     appstate.cpp \
     appstyles.cpp \
-    commands/selectsceneposcommand.cpp \
-    commands/setselectedtilesposcommand.cpp \
-    commands/tilesfiltercommand.cpp \
     dialogeditscenes.cpp \
     dialogoptions.cpp \
     fragmentcontextclosed.cpp \
@@ -54,13 +50,8 @@ SOURCES += \
 
 HEADERS += \
     app.h \
-    appcommands.h \
     appstate.h \
     appstyles.h \
-    commands/command.h \
-    commands/selectsceneposcommand.h \
-    commands/setselectedtilesposcommand.h \
-    commands/tilesfiltercommand.h \
     dialogeditscenes.h \
     dialogoptions.h \
     errors.h \

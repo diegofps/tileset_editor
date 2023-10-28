@@ -374,9 +374,6 @@ QMenu::item:selected {
    <property name="text">
     <string>&amp;Scenes</string>
    </property>
-   <property name="shortcut">
-    <string>S</string>
-   </property>
   </action>
   <action name="action_Edit_MoveTileToScene">
    <property name="text">
@@ -563,6 +560,9 @@ QMenu::item:selected {
    <property name="shortcut">
     <string>Ctrl+Z</string>
    </property>
+   <property name="visible">
+    <bool>false</bool>
+   </property>
   </action>
   <action name="action_Edit_Redo">
    <property name="text">
@@ -570,6 +570,9 @@ QMenu::item:selected {
    </property>
    <property name="shortcut">
     <string>Ctrl+Shift+Z</string>
+   </property>
+   <property name="visible">
+    <bool>false</bool>
    </property>
   </action>
   <action name="action_View_Reference_ZoomIn">
@@ -665,7 +668,7 @@ QMenu::item:selected {
     <string>Left</string>
    </property>
    <property name="shortcut">
-    <string>Shift+Left</string>
+    <string>A</string>
    </property>
   </action>
   <action name="action_Navigate_Tile_Up">
@@ -673,7 +676,7 @@ QMenu::item:selected {
     <string>Up</string>
    </property>
    <property name="shortcut">
-    <string>Shift+Up</string>
+    <string>W</string>
    </property>
   </action>
   <action name="action_Navigate_Tile_Right">
@@ -681,7 +684,7 @@ QMenu::item:selected {
     <string>Right</string>
    </property>
    <property name="shortcut">
-    <string>Shift+Right</string>
+    <string>D</string>
    </property>
   </action>
   <action name="action_Navigate_Tile_Down">
@@ -689,7 +692,7 @@ QMenu::item:selected {
     <string>Down</string>
    </property>
    <property name="shortcut">
-    <string>Shift+Down</string>
+    <string>S</string>
    </property>
   </action>
   <action name="action_View_FocusEditor">

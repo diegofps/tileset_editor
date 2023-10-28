@@ -18,7 +18,7 @@ public:
 
 private:
     void styleScreenshotButtons(ReferenceMode const value);
-    void updateReferenceWidget(Tile * selectedTile, const ReferenceMode value);
+    void updateReferenceWidget();
 
 private:
     Ui::FragmentReferences *ui;

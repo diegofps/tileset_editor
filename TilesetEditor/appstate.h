@@ -74,21 +74,23 @@ public:
     }
 };
 
-class TileMode
+class TileFilter
 {
 public:
+
     bool hFlip;
     bool vFlip;
 
 public:
-    TileMode() : hFlip(false), vFlip(false) {}
 
-    bool operator!=(TileMode const & other) const
+    TileFilter() : hFlip(false), vFlip(false) {}
+
+    bool operator!=(TileFilter const & other) const
     {
         return !(*this == other);
     }
 
-    bool operator==(TileMode const & other) const
+    bool operator==(TileFilter const & other) const
     {
         return hFlip == other.hFlip && vFlip == other.vFlip;
     }
@@ -97,12 +99,6 @@ public:
 
 class AppState : public QObject
 {
-    friend class ServiceContext;
-
-    friend class TilesFilterCommand;
-    friend class SelectScenePosCommand;
-    friend class SetSelectedTilesPosCommand;
-
 private:
 
     Q_OBJECT
@@ -110,15 +106,19 @@ private:
     // Context Folder
     Project            * _project;
     bool                 _projectHasChanges;
-    QString              _projectLastDumpFolder;
+    QString              _lastDumpFolder;
     QList<Tile*>       * _projectTiles;
     QList<Palette*>    * _projectPalettes;
     QList<Tileset*>    * _projectTilesets;
     QList<Reference*>  * _projectReferences;
     QList<Screenshot*> * _projectScreenshots;
     QList<Scene*>      * _projectScenes;
-    int                  _selectedScenePos;
+    int                  _selectedSceneID;
     int                  _lastMoveToSceneResult;
+
+    QList<Tile*>    _filteredTiles;
+    QList<Palette*> _filteredPalettes;
+    QList<Tileset*> _filteredTilesets;
 
     QHash<int, Tile*>       _index_Tile_ID;
     QHash<int, Tileset*>    _index_Tileset_ID;
@@ -143,15 +143,15 @@ private:
     QPoint          _referenceOffset;
 
     // Tiles
-    TilesFilter    _tilesFilter;
-    Range _selectedTilesPos;
+    TilesFilter  _tilesFilter;
+    QList<Tile*> _selectedTiles;
 
     // Palettes
     PaletteMode   _palettesMode;
     Palette     * _selectedPalette;
 
     // Tile Preview
-    TileMode _tileMode;
+    TileFilter _tileFilter;
 
     // Tilesets
     Tileset * _selectedTileset;
@@ -164,54 +164,62 @@ public:
     Project * project() const;
     bool projectHasChanges();
     QString const & projectLastDumpFolder() const;
-    QList<Tile *> * projectTiles() const;
-    QList<Palette *> * projectPalettes() const;
-    QList<Tileset *> * projectTilesets() const;
-    QList<Reference *> * projectReferences() const;
-    QList<Screenshot *> * projectScreenshots() const;
-    QList<Scene *> * projectScenes() const;
-//    int selectedSceneID() const;
 
     void setProject(Project * value);
     void setProjectHasChanges(bool value);
     void setProjectLastDumpFolder(QString value);
-    void setProjectTiles(QList<Tile *> * value);
-    void setProjectPalettes(QList<Palette *> * value);
-    void setProjectTilesets(QList<Tileset *> * value);
-    void setProjectReferences(QList<Reference *> * value);
-    void setProjectScreenshots(QList<Screenshot *> * value);
-    void setProjectScenes(QList<Scene*> * value);
 
-    Tile * getProjectTileById(int id);
-    Palette * getProjectPaletteById(int id);
-    Tileset * getProjectTilesetById(int id);
-    Reference* getProjectReferenceById(int id);
-    Screenshot * getProjectScreenshotById(int id);
-    Scene * getProjectSceneById(int id);
+    QList<Tile *>       * allTiles() const;
+    QList<Palette *>    * allPalettes() const;
+    QList<Tileset *>    * allTilesets() const;
+    QList<Reference *>  * allReferences() const;
+    QList<Screenshot *> * allScreenshots() const;
+    QList<Scene *>      * allScenes() const;
 
-    void appendProjectTile(Tile * value);
-    void appendProjectPalette(Palette * value);
-    void appendProjectTileset(Tileset * value);
-    void appendProjectReference(Reference * value);
-    void appendProjectScreenshot(Screenshot * value);
-    void appendProjectScene(Scene * value);
+    void setAllTiles(QList<Tile *> * value);
+    void setAllPalettes(QList<Palette *> * value);
+    void setAllTilesets(QList<Tileset *> * value);
+    void setAllReferences(QList<Reference *> * value);
+    void setAllScreenshots(QList<Screenshot *> * value);
+    void setAllScenes(QList<Scene*> * value);
 
-    void insertProjectScene(int const position, Scene * value);
-    void removeProjectScene(int const position);
-    void moveUpProjectScene(int const position);
-    void moveDownProjectScene(int const position);
+    Tile       * getTileById(int id);
+    Palette    * getPaletteById(int id);
+    Tileset    * getTilesetById(int id);
+    Reference  * getReferenceById(int id);
+    Screenshot * getScreenshotById(int id);
+    Scene      * getSceneById(int id);
 
-    void insertProjectTileset(int const position, Tileset * value);
-    void removeProjectTileset(int const position);
-    void moveUpProjectTileset(int const position);
-    void moveDownProjectTileset(int const position);
+    QList<Tile *>    const * filteredTiles() const;
+    QList<Palette *> const * filteredPalettes() const;
+    QList<Tileset *> const * filteredTilesets() const;
+
+    void updateFilteredTiles();
+    void updateFilteredTilesets();
+    void updateFilteredPalettes();
+
+    void addTile(Tile * value);
+    void addPalette(Palette * value);
+    void addTileset(Tileset * value);
+    void addReference(Reference * value);
+    void addScreenshot(Screenshot * value);
+    void addScene(Scene * value);
+
+    void insertScene(int const position, Scene * value);
+    void removeScene(int const position);
+    void moveUpScene(int const position);
+    void moveDownScene(int const position);
+
+    void insertTileset(int const position, Tileset * value);
+    void removeTileset(int const position);
+    void moveUpTileset(int const position);
+    void moveDownTileset(int const position);
 
     void setLastMoveToSceneResult(int const value);
-    int lastMoveToSceneResult();
+    int  lastMoveToSceneResult();
 
     // Scene
-    int selectedScenePos();
-    int scenePos2ID(int scenePos);
+    int selectedSceneID();
 
     // Editor Toolbox
     EditorTool editorTool() const;
@@ -230,7 +238,7 @@ public:
 
     void zoomInEditor();
     void zoomOutEditor();
-    int editorZoom();
+    int  editorZoom();
 
     void moveViewport(int rx, int ry);
     void moveViewportHome();
@@ -245,8 +253,8 @@ public:
 
     // References Toolbox
     ReferenceMode referenceMode() const;
-    QImage * referenceOffsetImage();
-    int referenceZoom();
+    QImage*       referenceOffsetImage();
+    int           referenceZoom();
 
     void setReferenceMode(ReferenceMode value);
     void setReferenceHighlightPosition(bool value);
@@ -256,70 +264,72 @@ public:
     void zoomOutReference();
 
     QPoint referenceOffset();
-    void moveReferenceOffset(int rx, int ry);
-    void moveReferenceOffsetHome();
+    void   moveReferenceOffset(int rx, int ry);
+    void   moveReferenceOffsetHome();
 
     // Tiles
-    TilesFilter const & tilesFilter() const;
-    Range const * selectedTilesPos() const;
-    int selectedTilePos() const;
-    QList<Tile*> selectedTiles() const;
-    Tile * selectedTile() const;
-    void moveSelectedTilesToScene(int sceneID);
-    void selectTileAtEditorPosition(int rx, int ry);
+    TilesFilter const&  tilesFilter() const;
+    QList<Tile*> const* selectedTiles() const;
+    Tile*               selectedTile() const;
+    void                moveSelectedTilesToScene(int sceneID);
+    void                moveTileSelection(int rx, int ry);
 
     // Palettes
     PaletteMode palettesMode() const;
-    Palette * selectedPalette();
-    void setPalettesMode(PaletteMode value);
-    void setSelectedPalette(Palette * value);
+    Palette*    selectedPalette();
+    void        setPalettesMode(PaletteMode value);
+    void        setSelectedPalette(Palette * value);
 
     // Tile Preview
-    TileMode & tileMode();
-    void setTileMode(TileMode const & value);
+    TileFilter& tileMode();
+    void      setTilePreviewFilter(TileFilter const & value);
 
     // Tilesets
-    Tileset * selectedTileset() const;
-    void setSelectedTileset(Tileset * value);
-    void moveSelectedTilesetToScene(int sceneID);
+    Tileset* selectedTileset() const;
+    void     setSelectedTileset(Tileset * value);
+    void     moveSelectedTilesetToScene(int sceneID);
 
-private:
+public:
 
     // Scenes
-    void setSelectedScenePos(int value);
+    void setSelectedSceneID(int sceneID);
 
     //Tiles
     void setTilesFilter(TilesFilter const & value);
-    void setSelectedTilesPos(Range value);
+    void setSelectedTiles(QList<Tile*> & value);
 
 signals:
 
     // Context Folder
     void onProjectChanged(Project * value);
     void onProjectHasChangesChanged(bool value);
-    void onProjectLastDumpFolderChanged(QString const & value);
-    void onProjectTilesChanged(QList<Tile *> const * value);
-    void onProjectPalettesChanged(QList<Palette *> const * value);
-    void onProjectTilesetsChanged(QList<Tileset *> const * value);
-    void onProjectReferencesChanged(QList<Reference *> const * value);
-    void onProjectScreenshotsChanged(QList<Screenshot*> const * value);
-    void onProjectScenesChanged(QList<Scene*> const * value);
+    void onLastDumpFolderChanged(QString const & value);
+    void onAllTilesChanged(QList<Tile *> const * value);
+    void onAllPalettesChanged(QList<Palette *> const * value);
+    void onAllTilesetsChanged(QList<Tileset *> const * value);
+    void onAllReferencesChanged(QList<Reference *> const * value);
+    void onAllScreenshotsChanged(QList<Screenshot*> const * value);
+    void onAllScenesChanged(QList<Scene*> const * value);
 
-    void onProjectScenesInserted(QList<Scene *> const * value, int const position);
-    void onProjectScenesRemoved(QList<Scene *> const * value, int const position);
-    void onProjectScenesMoved(QList<Scene *> const * value, int const oldPosition, int const newPosition);
+    void onSceneInserted(QList<Scene *> const * value, int const position);
+    void onSceneRemoved(QList<Scene *> const * value, int const position);
+    void onSceneMoved(QList<Scene *> const * value, int const oldPosition, int const newPosition);
 
-    void onProjectTilesetsInserted(QList<Tileset *> const * value, int const position);
-    void onProjectTilesetsRemoved(QList<Tileset *> const * value, int const position);
-    void onProjectTilesetsMoved(QList<Tileset *> const * value, int const oldPosition, int const newPosition);
+    void onTilesetInserted(QList<Tileset *> const * value, int const position);
+    void onTilesetRemoved(QList<Tileset *> const * value, int const position);
+    void onTilesetMoved(QList<Tileset *> const * value, int const oldPosition, int const newPosition);
 
     void onEditorRootChanged(QPoint const value);
     void onReferenceOffsetChanged(QPoint const value);
     void onReferenceZoomChanged(int value);
     void onReferenceOffsetImageChanged(QImage * value);
 
+    void onFilteredTilesChanged(QList<Tile *> const * value);
+    void onFilteredPalettesChanged(QList<Palette *> const * value);
+    void onFilteredTilesetsChanged(QList<Tileset *> const * value);
+
     // Scene
-    void onSelectedScenePosChanged(int value);
+    void onSelectedSceneIDChanged(int sceneID);
 
     // Editor Toolbox
     void onEditorToolChanged(EditorTool const value);
@@ -335,15 +345,15 @@ signals:
 
     // Tiles
     void onTilesFilterChanged(TilesFilter const & value);
-    void onSelectedTilesPosChanged(Range value);
-    void onSelectTileAtEditorPosition(int rx, int ry);
+    void onSelectedTilesChanged(QList<Tile*> const * tiles);
+    void onMoveTileSelection(int rx, int ry);
 
     // Palettes
     void onPalettesModeChanged(PaletteMode value);
     void onSelectedPaletteChanged(Palette * value);
 
     // Tile Preview
-    void onTileModeChanged(TileMode const & value);
+    void onTileFilterChanged(TileFilter const & value);
 
     // Tilesets
     void onSelectedTilesetChanged(Tileset * value);

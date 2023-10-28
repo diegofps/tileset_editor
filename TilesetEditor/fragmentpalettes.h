@@ -20,15 +20,15 @@ public:
 
 private:
 
-    void filterPalettes(QList<Tile*> const & selectedTiles, QList<Palette*> const * value, PaletteMode paletteMode);
-    void styleButtons(PaletteMode value);
-    void updatePalettesWidget(Tile * selectedTile);
+//    void filterPalettes(QList<Tile*> const & selectedTiles, QList<Palette*> const * value, PaletteMode paletteMode);
+    void updateFilterButtons(PaletteMode value);
+    void updatePalettesWidget();
     void saveSelectedPalette();
-    void restoreSelectedPalette(Tile * selectedTile);
+    void restoreSelectedPalette();
 
 private:
     Ui::FragmentPalettes *ui;
-    QList<Palette*> _palettes;
+//    QList<Palette*> _palettes;
     int _lastSelectedItemID;
 };
 

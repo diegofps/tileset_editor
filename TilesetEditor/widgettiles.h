@@ -25,7 +25,7 @@ public:
     void setTiles(QList<Tile*> const * value);
     void setSelection(Range range);
     void repack();
-    void moveToTile(int rx, int ry);
+    void moveTileSelection(int rx, int ry);
 
 signals:
     void onSelectedTileChanged(Range range);

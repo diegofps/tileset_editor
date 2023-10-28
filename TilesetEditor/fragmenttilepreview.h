@@ -21,8 +21,8 @@ public:
 
 private:
     void styleButton(QPushButton *btn, bool value);
-    void updateTileWidget(TileMode const & mode,  Tile * selectedTile, Palette * palette);
-    void updatePaletteWidget(Palette * value, Tile * selectedTile);
+    void updateTileWidget();
+    void updatePaletteWidget();
 
 private:
     Ui::FragmentTilePreview *ui;

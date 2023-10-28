@@ -37,7 +37,7 @@ void WidgetTiles::setTiles(QList<Tile*> const * value)
     {
         auto & view = _views[i];
         auto tile   = _tiles[i];
-        Palette * palette = App::getState()->getProjectPaletteById(tile->preferredPalette);
+        Palette * palette = App::getState()->getPaletteById(tile->preferredPalette);
 
         view.i = 0;
         view.j = 0;
@@ -77,7 +77,7 @@ void WidgetTiles::repack()
     update();
 }
 
-void WidgetTiles::moveToTile(int rx, int ry)
+void WidgetTiles::moveTileSelection(int rx, int ry)
 {
     int const newStart = _selection.start + _cols * ry + rx;
     int const newEnd = _selection.end + _cols * ry + rx;

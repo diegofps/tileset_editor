@@ -1,7 +1,6 @@
 #ifndef APP_H
 #define APP_H
 
-#include "appcommands.h"
 #include "appstate.h"
 #include "appstyles.h"
 #include "tilecache.h"
@@ -15,7 +14,6 @@ private:
     static AppStyles * appStyles;
     static TileCache * originalTileCache;
     static TileCacheHD * hdTileCache;
-    static AppCommands * appCommands;
 
 public:
 
@@ -25,7 +23,6 @@ public:
     static AppStyles * getStyles();
     static TileCache * getOriginalTileCache();
     static TileCacheHD * getHDTileCache();
-    static AppCommands * getCommands();
 
 };
 
