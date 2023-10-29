@@ -1,4 +1,5 @@
 #include "appstate.h"
+#include "editorcommand.h"
 
 AppState::AppState()
 {
@@ -7,10 +8,8 @@ AppState::AppState()
     _palettesMode = USED_BY_TILE;
     _selectedPalette = nullptr;
 
-    _tilesFilter = new TilesFilter();
-
-    _referenceMode = REF_1;
-    _referenceZoom = 15;
+    _referenceMode = REF_25;
+    _referenceZoom = 17;
     _referenceOffsetImage = nullptr;
     _referenceOffset = QPoint(0,0);
 
@@ -71,10 +70,10 @@ void AppState::setProjectHasChanges(bool value)
 
 void AppState::setProjectLastDumpFolder(QString value)
 {
-    if (value != _projectLastDumpFolder)
+    if (value != _lastDumpFolder)
     {
-        _projectLastDumpFolder = value;
-        emit onProjectLastDumpFolderChanged(value);
+        _lastDumpFolder = value;
+        emit onLastDumpFolderChanged(value);
     }
 }
 
@@ -88,133 +87,264 @@ void recreateIndex(QList<ITEM*> * value, QHash<int, ITEM*> & index, KEY_FUNC key
             index[keyFunc(t)] = t;
 }
 
-void AppState::setProjectTiles(QList<Tile *> *value)
+void AppState::setAllTiles(QList<Tile *> *value)
 {
     deleteItemsAndQListIfNotNullptr(_projectTiles, value);
     _projectTiles = value;
     recreateIndex(value, _index_Tile_ID, [](Tile* item){ return item->id; });
-    emit onProjectTilesChanged(value);
+    emit onAllTilesChanged(value);
+    updateFilteredTiles();
 }
 
-void AppState::setProjectPalettes(QList<Palette *> *value)
+void AppState::setAllPalettes(QList<Palette *> *value)
 {
     deleteItemsAndQListIfNotNullptr(_projectPalettes, value);
     _projectPalettes = value;
     recreateIndex(value, _index_Palette_ID, [](Palette* item){ return item->id; });
-    emit onProjectPalettesChanged(value);
+    emit onAllPalettesChanged(value);
+    updateFilteredPalettes();
 }
 
-void AppState::setProjectReferences(QList<Reference *> *value)
+void AppState::setAllReferences(QList<Reference *> *value)
 {
     deleteItemsAndQListIfNotNullptr(_projectReferences, value);
     _projectReferences = value;
     recreateIndex(value, _index_Reference_ID, [](Reference * item){ return item->id; });
-    emit onProjectReferencesChanged(value);
+    emit onAllReferencesChanged(value);
 }
 
-void AppState::setProjectTilesets(QList<Tileset *> *value)
+void AppState::setAllTilesets(QList<Tileset *> *value)
 {
     deleteItemsAndQListIfNotNullptr(_projectTilesets, value);
     _projectTilesets = value;
     recreateIndex(value, _index_Tileset_ID, [](Tileset* item){ return item->id; });
-    emit onProjectTilesetsChanged(value);
+    emit onAllTilesetsChanged(value);
+    updateFilteredTilesets();
 }
 
-void AppState::setProjectScreenshots(QList<Screenshot*> *value)
+void AppState::setAllScreenshots(QList<Screenshot*> *value)
 {
     deleteItemsAndQListIfNotNullptr(_projectScreenshots, value);
     _projectScreenshots = value;
     recreateIndex(value, _index_Screenshot_ID, [](Screenshot * item){ return item->id; });
-    emit onProjectScreenshotsChanged(value);
+    emit onAllScreenshotsChanged(value);
 }
 
-void AppState::setProjectScenes(QList<Scene *> *value)
+void AppState::setAllScenes(QList<Scene *> *value)
 {
     deleteItemsAndQListIfNotNullptr(_projectScenes, value);
     _projectScenes = value;
     recreateIndex(value, _index_Scene_ID, [](Scene * item){ return item->id; });
-    emit onProjectScenesChanged(value);
+    emit onAllScenesChanged(value);
 }
 
-void AppState::setSelectedSceneID(int value)
+void AppState::setSelectedSceneID(int sceneID)
 {
-    _selectedSceneID = value;
-    emit onSelectedSceneIDChanged(value);
+    if (_selectedSceneID != sceneID)
+    {
+        _selectedSceneID = sceneID;
+        emit onSelectedSceneIDChanged(sceneID);
+        updateFilteredTilesets();
+        updateFilteredTiles();
+    }
 }
 
-Tile * AppState::getProjectTileById(int id)
+Tile * AppState::getTileById(int id)
 {
     auto it = _index_Tile_ID.find(id);
     return it == _index_Tile_ID.end() ? nullptr : it.value();
 }
 
-Palette * AppState::getProjectPaletteById(int id)
+Palette * AppState::getPaletteById(int id)
 {
     auto it = _index_Palette_ID.find(id);
     return it == _index_Palette_ID.end() ? nullptr : it.value();
 }
 
-Tileset * AppState::getProjectTilesetById(int id)
+Tileset * AppState::getTilesetById(int id)
 {
     auto it = _index_Tileset_ID.find(id);
     return it == _index_Tileset_ID.end() ? nullptr : it.value();
 }
 
-Reference * AppState::getProjectReferenceById(int id)
+Reference * AppState::getReferenceById(int id)
 {
     auto it = _index_Reference_ID.find(id);
     return it == _index_Reference_ID.end() ? nullptr : it.value();
 }
 
-Screenshot *AppState::getProjectScreenshotById(int id)
+Screenshot *AppState::getScreenshotById(int id)
 {
     auto it = _index_Screenshot_ID.find(id);
     return it == _index_Screenshot_ID.end() ? nullptr : it.value();
 }
 
-Scene *AppState::getProjectSceneById(int id)
+Scene *AppState::getSceneById(int id)
 {
     auto it = _index_Scene_ID.find(id);
     return it == _index_Scene_ID.end() ? nullptr : it.value();
 }
 
-void AppState::appendProjectTile(Tile *value)
+const QList<Tile *> *AppState::filteredTiles() const
+{
+    return &_filteredTiles;
+}
+
+const QList<Palette *> *AppState::filteredPalettes() const
+{
+    return &_filteredPalettes;
+}
+
+const QList<Tileset *> *AppState::filteredTilesets() const
+{
+    return &_filteredTilesets;
+}
+
+void AppState::updateFilteredTiles()
+{
+    _filteredTiles.clear();
+
+    if (_projectTiles == nullptr)
+    {
+        emit onFilteredTilesChanged(&_filteredTiles);
+        return;
+    }
+
+    for (auto t : *_projectTiles)
+    {
+        if ( _selectedSceneID!=-1)
+            if (t->sceneId!=_selectedSceneID)
+                continue;
+
+        if (_tilesFilter.isUnlinked!=2)
+            if ((_tilesFilter.isUnlinked==0 && t->linkedCellID!=0) || (_tilesFilter.isUnlinked==1 && t->linkedCellID==0))
+                continue;
+
+        if (_tilesFilter.usedInSprite!=2)
+            if ((_tilesFilter.usedInSprite==0 && t->usedInSprite) || (_tilesFilter.usedInSprite==1 && !t->usedInSprite))
+                continue;
+
+        if (_tilesFilter.usedInBackground!=2)
+            if ((_tilesFilter.usedInBackground==0 && t->usedInBackground) || (_tilesFilter.usedInBackground==1 && !t->usedInBackground))
+                continue;
+
+        if (_tilesFilter.usedWithHFlip!=2)
+            if ((_tilesFilter.usedWithHFlip==0 && t->usedWithHFlip()) || (_tilesFilter.usedWithHFlip==1 && !t->usedWithHFlip()))
+                continue;
+
+        if (_tilesFilter.usedWithVFlip!=2)
+            if ((_tilesFilter.usedWithVFlip==0 && t->usedWithVFlip()) || (_tilesFilter.usedWithVFlip==1 && !t->usedWithVFlip()))
+                continue;
+
+        _filteredTiles.append(t);
+    }
+
+    emit onFilteredTilesChanged(&_filteredTiles);
+    updateFilteredPalettes();
+}
+
+void AppState::updateFilteredTilesets()
+{
+    _filteredTilesets.clear();
+
+    if (_projectTilesets == nullptr)
+    {
+        emit onFilteredTilesetsChanged(&_filteredTilesets);
+        return;
+    }
+
+    for (auto ts : *_projectTilesets)
+    {
+        if (_selectedSceneID != -1)
+            if (_selectedSceneID != ts->sceneId)
+                continue;
+
+        _filteredTilesets.append(ts);
+    }
+
+    emit onFilteredTilesetsChanged(&_filteredTilesets);
+}
+
+void AppState::updateFilteredPalettes()
+{
+    _filteredPalettes.clear();
+
+    if (_projectPalettes == nullptr)
+    {
+        emit onFilteredPalettesChanged(&_filteredPalettes);
+        return;
+    }
+
+    if (_palettesMode == ALL)
+    {
+        for (auto item : *_projectPalettes)
+            _filteredPalettes.append(item);
+        qDebug() << "Filter found " << _filteredPalettes.size() << " palettes using all";
+        emit onFilteredPalettesChanged(&_filteredPalettes);
+        return;
+    }
+
+    if (_selectedTiles.isEmpty())
+        return;
+
+    for (auto palette : *_projectPalettes)
+    {
+        bool add = false;
+
+        for (auto tile : _selectedTiles)
+        {
+            if (tile != nullptr && tile->palettesUsed.contains(palette->id))
+            {
+                add = true;
+                break;
+            }
+        }
+
+        if (add)
+            _filteredPalettes.append(palette);
+    }
+
+    qDebug() << "Filter found " << _filteredPalettes.size() << " palettes not using all";
+    emit onFilteredPalettesChanged(&_filteredPalettes);
+}
+
+void AppState::addTile(Tile *value)
 {
     _projectTiles->append(value);
     _index_Tile_ID[value->id] = value;
 }
 
-void AppState::appendProjectPalette(Palette *value)
+void AppState::addPalette(Palette *value)
 {
     _projectPalettes->append(value);
     _index_Palette_ID[value->id] = value;
 }
 
-void AppState::appendProjectTileset(Tileset *value)
+void AppState::addTileset(Tileset *value)
 {
     _projectTilesets->append(value);
     _index_Tileset_ID[value->id] = value;
 }
 
-void AppState::appendProjectReference(Reference *value)
+void AppState::addReference(Reference *value)
 {
     _projectReferences->append(value);
     _index_Reference_ID[value->id] = value;
 }
 
-void AppState::appendProjectScreenshot(Screenshot *value)
+void AppState::addScreenshot(Screenshot *value)
 {
     _projectScreenshots->append(value);
     _index_Screenshot_ID[value->id] = value;
 }
 
-void AppState::appendProjectScene(Scene *value)
+void AppState::addScene(Scene *value)
 {
     _projectScenes->append(value);
     _index_Scene_ID[value->id] = value;
 }
 
-void AppState::insertProjectScene(const int position, Scene *value)
+void AppState::insertScene(const int position, Scene *value)
 {
     if (value == nullptr)
         return;
@@ -222,10 +352,10 @@ void AppState::insertProjectScene(const int position, Scene *value)
     _projectScenes->insert(position, value);
     _index_Scene_ID[value->id] = value;
 
-    emit onProjectScenesInserted(_projectScenes, position);
+    emit onSceneInserted(_projectScenes, position);
 }
 
-void AppState::removeProjectScene(const int position)
+void AppState::removeScene(const int position)
 {
     if (position < 0 || position >= _projectScenes->size())
         return;
@@ -242,11 +372,11 @@ void AppState::removeProjectScene(const int position)
         if (t->sceneId == value->id)
             t->sceneId = 0;
 
-    emit onProjectScenesRemoved(_projectScenes, position);
+    emit onSceneRemoved(_projectScenes, position);
     delete value;
 }
 
-void AppState::moveUpProjectScene(const int position)
+void AppState::moveUpScene(const int position)
 {
     if (position < 0 || position >= _projectScenes->size()-1)
         return;
@@ -254,10 +384,10 @@ void AppState::moveUpProjectScene(const int position)
     auto ts = _projectScenes->takeAt(position);
     _projectScenes->insert(position+1, ts);
 
-    emit onProjectScenesMoved(_projectScenes, position, position+1);
+    emit onSceneMoved(_projectScenes, position, position+1);
 }
 
-void AppState::moveDownProjectScene(const int position)
+void AppState::moveDownScene(const int position)
 {
     if (position <= 0 || position >= _projectScenes->size())
         return;
@@ -265,21 +395,22 @@ void AppState::moveDownProjectScene(const int position)
     auto ts = _projectScenes->takeAt(position);
     _projectScenes->insert(position-1, ts);
 
-    emit onProjectScenesMoved(_projectScenes, position, position-1);
+    emit onSceneMoved(_projectScenes, position, position-1);
 }
 
-void AppState::insertProjectTileset(int const position, Tileset * value)
+void AppState::insertTileset(int const position, Tileset * value)
 {
     if (value == nullptr)
         return;
 
     _projectTilesets->insert(position, value);
     _index_Tileset_ID[value->id] = value;
+    _projectHasChanges = true;
 
-    emit onProjectTilesetsInserted(_projectTilesets, position);
+    emit onTilesetInserted(_projectTilesets, position);
 }
 
-void AppState::removeProjectTileset(int const position)
+void AppState::removeTileset(int const position)
 {
     if (position < 0 || position >= _projectTilesets->size())
         return;
@@ -287,34 +418,37 @@ void AppState::removeProjectTileset(int const position)
     auto ts = _projectTilesets->at(position);
     _projectTilesets->remove(position);
     _index_Tileset_ID.remove(ts->id);
+    _projectHasChanges = true;
 
-    emit onProjectTilesetsRemoved(_projectTilesets, position);
+    emit onTilesetRemoved(_projectTilesets, position);
     delete ts;
 }
 
-void AppState::moveUpProjectTileset(int const position)
+void AppState::moveUpTileset(int const position)
 {
     if (position < 0 || position >= _projectTilesets->size()-1)
         return;
 
     auto ts = _projectTilesets->takeAt(position);
     _projectTilesets->insert(position+1, ts);
+    _projectHasChanges = true;
 
-    emit onProjectTilesetsMoved(_projectTilesets, position, position+1);
+    emit onTilesetMoved(_projectTilesets, position, position+1);
 }
 
-void AppState::moveDownProjectTileset(int const position)
+void AppState::moveDownTileset(int const position)
 {
     if (position <= 0 || position >= _projectTilesets->size())
         return;
 
     auto ts = _projectTilesets->takeAt(position);
     _projectTilesets->insert(position-1, ts);
+    _projectHasChanges = true;
 
-    emit onProjectTilesetsMoved(_projectTilesets, position, position-1);
+    emit onTilesetMoved(_projectTilesets, position, position-1);
 }
 
-void AppState::setLastMoveToSceneResult(int value)
+void AppState::setLastMoveToSceneResult(int const value)
 {
     _lastMoveToSceneResult = value;
 }
@@ -324,34 +458,9 @@ int AppState::lastMoveToSceneResult()
     return _lastMoveToSceneResult;
 }
 
-void AppState::drawNearestReferenceTile()
+int AppState::selectedSceneID()
 {
-    // TODO
-}
-
-void AppState::drawTile()
-{
-    // TODO
-}
-
-void AppState::eraseTile()
-{
-    // TODO
-}
-
-void AppState::linkTile()
-{
-    // TODO
-}
-
-void AppState::undo()
-{
-    // TODO
-}
-
-void AppState::redo()
-{
-    // TODO
+    return _selectedSceneID;
 }
 
 Project * AppState::project() const
@@ -366,40 +475,49 @@ bool AppState::projectHasChanges()
 
 const QString &AppState::projectLastDumpFolder() const
 {
-    return _projectLastDumpFolder;
+    return _lastDumpFolder;
 }
 
-QList<Tile *> * AppState::projectTiles() const
+QList<Tile *> * AppState::allTiles() const
 {
     return _projectTiles;
 }
 
-QList<Palette *> * AppState::projectPalettes() const
+QList<Palette *> * AppState::allPalettes() const
 {
     return _projectPalettes;
 }
 
-QList<Reference *> * AppState::projectReferences() const
+QList<Reference *> * AppState::allReferences() const
 {
     return _projectReferences;
 }
 
-QList<Screenshot *> * AppState::projectScreenshots() const
+QList<Screenshot *> * AppState::allScreenshots() const
 {
     return _projectScreenshots;
 }
 
-QList<Scene *> *AppState::projectScenes() const
+QList<Scene *> *AppState::allScenes() const
 {
     return _projectScenes;
 }
 
-int AppState::selectedSceneID() const
-{
-    return _selectedSceneID;
-}
+//int AppState::scenePos2ID(int scenePos)
+//{
+//    if (scenePos < 2)
+//        return scenePos - 1;
 
-QList<Tileset *> * AppState::projectTilesets() const
+//    scenePos -= 2;
+
+//    if (scenePos >= _projectScenes->size())
+//        return 0;
+
+//    else
+//        return _projectScenes->at(scenePos)->id;
+//}
+
+QList<Tileset *> * AppState::allTilesets() const
 {
     return _projectTilesets;
 }
@@ -515,6 +633,159 @@ void AppState::moveViewportHome()
     emit onMoveViewportHome();
 }
 
+void AppState::editorPaintCellUsingSibling()
+{
+
+}
+
+void AppState::editorPaintCellUsingSelection(int x, int y)
+{
+    auto  project = _project;
+    auto  palette = _selectedPalette;
+    auto  tileset = _selectedTileset;
+    auto  tile = selectedTile();
+    auto& tilePreviewFilter = _tilePreviewFilter;
+
+    if (project == nullptr || palette == nullptr || tile == nullptr || tileset == nullptr)
+        return;
+
+    Cell cell;
+    cell.id = ++_project->lastCellID;
+    cell.hFlip = tilePreviewFilter.hFlip;
+    cell.vFlip = tilePreviewFilter.vFlip;
+    cell.paletteID = palette->id;
+    cell.tileID = tile->id;
+    cell.x = x;
+    cell.y = y;
+
+    QPair<int,int> position(x,y);
+    auto it = tileset->cells.constFind(position);
+    auto previous = it == tileset->cells.constEnd() ? nullptr : it.value();
+    bool wasLinked = false;
+
+    if (previous != nullptr)
+    {
+        auto previousTile = getTileById(previous->tileID);
+        if (previousTile != nullptr && previousTile->linkedCellID == previous->id)
+            wasLinked = true;
+    }
+
+    tileset->historyAdd(this, new PaintCommand(position, previous, &cell, wasLinked));
+    emit onSelectedTilesetChanged(tileset);
+}
+
+void AppState::editorEraseCell(int x, int y)
+{
+    auto tileset = _selectedTileset;
+
+    if (tileset == nullptr)
+        return;
+
+    QPair<int,int> position(x,y);
+    auto it = tileset->cells.constFind(position);
+
+    if (it == tileset->cells.constEnd())
+        return;
+
+    auto previous = it == tileset->cells.constEnd() ? nullptr : it.value();
+    bool wasLinked = false;
+
+    if (previous != nullptr)
+    {
+        auto previousTile = getTileById(previous->tileID);
+        if (previousTile != nullptr && previousTile->linkedCellID == previous->id)
+            wasLinked = true;
+    }
+
+    tileset->historyAdd(this, new PaintCommand(position, it.value(), nullptr, wasLinked));
+    emit onSelectedTilesetChanged(tileset);
+}
+
+void AppState::editorColorPickCell(int x, int y)
+{
+    auto tileset = _selectedTileset;
+
+    if (tileset == nullptr)
+        return;
+
+    QPair<int,int> position(x,y);
+    auto it = tileset->cells.constFind(position);
+
+    if (it == tileset->cells.constEnd())
+        return;
+
+    auto tile = getTileById(it.value()->tileID);
+    auto palette = getPaletteById(it.value()->paletteID);
+
+    QList<Tile*> selectedTiles;
+    selectedTiles.append(tile);
+    setSelectedTiles(selectedTiles);
+    setSelectedPalette(palette);
+}
+
+void AppState::editorToggleCellIsLink(int x, int y)
+{
+    auto tileset = _selectedTileset;
+
+    if (tileset == nullptr)
+        return;
+
+    QPair<int,int> position(x,y);
+    auto it = tileset->cells.constFind(position);
+
+    if (it == tileset->cells.constEnd())
+        return;
+
+    auto & cell = it.value();
+    auto tile = getTileById(cell->tileID);
+
+    if (tile == nullptr)
+        return;
+
+    int const oldCellID = tile->linkedCellID;
+    int const newCellID = tile->linkedCellID==cell->id ? 0 : cell->id;
+
+    tileset->historyAdd(this, new LinkCommand(position, oldCellID, newCellID));
+    emit onSelectedTilesetChanged(tileset);
+}
+
+void AppState::editorUndo()
+{
+    auto tileset = _selectedTileset;
+
+    if (tileset == nullptr)
+        return;
+
+    if (tileset->historyUndo(this))
+        emit onSelectedTilesetChanged(tileset);
+}
+
+void AppState::editorRedo()
+{
+    auto tileset = _selectedTileset;
+
+    if (tileset == nullptr)
+        return;
+
+    if (tileset->historyRedo(this))
+        emit onSelectedTilesetChanged(tileset);
+}
+
+void AppState::notifyCellCreated(Cell const *)
+{
+
+}
+
+void AppState::notifyCellDeleted(Cell const * cell)
+{
+    auto tile = getTileById(cell->tileID);
+
+    if (tile == nullptr || tile->linkedCellID != cell->id)
+        return;
+
+    tile->linkedCellID = 0;
+}
+
 // References Toolbox
 
 ReferenceMode AppState::referenceMode() const
@@ -586,58 +857,62 @@ void AppState::moveReferenceOffsetHome()
 
 // Tiles
 
-void AppState::setTilesFilter(TilesFilter * value)
+void AppState::setTilesFilter(TilesFilter const & value)
 {
-    if (_tilesFilter != nullptr && value != _tilesFilter)
-        delete _tilesFilter;
-
-    _tilesFilter = value;
-    emit onTilesFilterChanged(value);
+    if (_tilesFilter != value)
+    {
+        _tilesFilter = value;
+        emit onTilesFilterChanged(value);
+        updateFilteredTiles();
+    }
 }
 
-void AppState::setSelectedTiles(QList<Tile*> * value)
+void AppState::setSelectedTiles(QList<Tile*> & tiles)
 {
-    if (value == nullptr)
-        _selectedTiles.clear();
-    else
-        _selectedTiles = std::move(*value);
+    _selectedTiles = tiles;
     emit onSelectedTilesChanged(&_selectedTiles);
+    updateFilteredPalettes();
 }
 
-TilesFilter * AppState::tilesFilter() const
+TilesFilter const & AppState::tilesFilter() const
 {
     return _tilesFilter;
 }
 
-QList<Tile *> const * AppState::selectedTiles() const
+QList<Tile*> const * AppState::selectedTiles() const
 {
     return &_selectedTiles;
 }
 
-void AppState::tilesMoveSelectedTilesToScene(int sceneID)
+Tile * AppState::selectedTile() const
 {
-    if (_selectedTiles.isEmpty())
-        return;
+    return _selectedTiles.isEmpty() ? nullptr : _selectedTiles[0];
+}
+
+void AppState::moveSelectedTilesToScene(int sceneID)
+{
+    auto tiles = _selectedTiles;
 
     if (sceneID == -1)
     {
-        for (auto tile : _selectedTiles)
+        for (auto tile : tiles)
             tile->sceneId = 0;
     }
     else
     {
-        for (auto tile : _selectedTiles)
+        for (auto tile : tiles)
             tile->sceneId = sceneID;
     }
 
     _projectHasChanges = true;
 
-    emit onProjectTilesChanged(_projectTiles);
+    emit onAllTilesChanged(_projectTiles);
+    updateFilteredTiles();
 }
 
-void AppState::moveToTile(int rx, int ry)
+void AppState::moveTileSelection(int rx, int ry)
 {
-    emit onMoveToTile(rx, ry);
+    emit onMoveTileSelection(rx, ry);
 }
 
 // Palettes
@@ -648,6 +923,7 @@ void AppState::setPalettesMode(PaletteMode value)
     {
         _palettesMode = value;
         emit onPalettesModeChanged(value);
+        updateFilteredPalettes();
     }
 }
 
@@ -657,9 +933,9 @@ void AppState::setSelectedPalette(Palette * value)
     emit onSelectedPaletteChanged(value);
 }
 
-TileMode & AppState::tileMode()
+TilePreviewFilter & AppState::tilePreviewFilter()
 {
-    return _tileMode;
+    return _tilePreviewFilter;
 }
 
 PaletteMode AppState::palettesMode() const
@@ -674,12 +950,12 @@ Palette * AppState::selectedPalette()
 
 // TilePreview
 
-void AppState::setTileMode(TileMode const & value)
+void AppState::setTilePreviewFilter(TilePreviewFilter const & value)
 {
-    if (value != _tileMode)
+    if (value != _tilePreviewFilter)
     {
-        _tileMode = value;
-        emit onTileModeChanged(value);
+        _tilePreviewFilter = value;
+        emit onTileFilterChanged(value);
     }
 }
 
@@ -704,5 +980,6 @@ void AppState::moveSelectedTilesetToScene(int sceneID)
     _selectedTileset->sceneId = sceneID==-1?0:sceneID;
     _projectHasChanges = true;
 
-    emit onProjectTilesetsChanged(_projectTilesets);
+    emit onAllTilesetsChanged(_projectTilesets);
+    updateFilteredTilesets();
 }

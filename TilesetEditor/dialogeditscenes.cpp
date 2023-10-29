@@ -15,27 +15,27 @@ DialogEditScenes::DialogEditScenes(QWidget *parent) :
     ui->btMoveUp->setStyleSheet(App::getStyles()->get("button_click"));
     ui->btMoveDown->setStyleSheet(App::getStyles()->get("button_click"));
 
-    connect(App::getState(), &AppState::onProjectScenesChanged, this, [&](QList<Scene*> const * value)
+    connect(App::getState(), &AppState::onAllScenesChanged, this, [&](QList<Scene*> const * value)
     {
         loadClusters(value);
         if (value != nullptr && ui->listScenes->currentRow() < 0 && !value->isEmpty())
             ui->listScenes->setCurrentRow(0);
     });
 
-    connect(App::getState(), &AppState::onProjectScenesInserted, this, [&](QList<Scene*> const * value, int const position)
+    connect(App::getState(), &AppState::onSceneInserted, this, [&](QList<Scene*> const * value, int const position)
     {
         loadClusters(value);
         ui->listScenes->setCurrentRow(position);
     });
 
-    connect(App::getState(), &AppState::onProjectScenesRemoved, this, [&](QList<Scene*> const * value, int const position)
+    connect(App::getState(), &AppState::onSceneRemoved, this, [&](QList<Scene*> const * value, int const position)
     {
         loadClusters(value);
         if (value->size() != 0)
             ui->listScenes->setCurrentRow(position >= value->size() ? value->size()-1 : position);
     });
 
-    connect(App::getState(), &AppState::onProjectScenesMoved, this, [&](QList<Scene*> const * value, int const oldPosition, int const newPosition)
+    connect(App::getState(), &AppState::onSceneMoved, this, [&](QList<Scene*> const * value, int const oldPosition, int const newPosition)
     {
         (void) oldPosition;
         loadClusters(value);
@@ -49,7 +49,7 @@ DialogEditScenes::DialogEditScenes(QWidget *parent) :
 
     connect(ui->listScenes, &QListWidget::currentRowChanged, this, [&](int position)
     {
-        auto scenes = App::getState()->projectScenes();
+        auto scenes = App::getState()->allScenes();
 
         if (scenes != nullptr && position >= 0 && position < scenes->size())
         {
@@ -83,7 +83,7 @@ DialogEditScenes::DialogEditScenes(QWidget *parent) :
         qDebug() << "returnPressed";
     });
 
-    auto scenes = App::getState()->projectScenes();
+    auto scenes = App::getState()->allScenes();
     loadClusters(scenes);
     if (scenes->size() == 0)
     {
@@ -115,7 +115,7 @@ void DialogEditScenes::onBtNewClicked()
     scene->name = "Noname";
 
     int const position = ui->listScenes->currentRow() < 0 ? 0 : ui->listScenes->currentRow()+1;
-    App::getState()->insertProjectScene(position, scene);
+    App::getState()->insertScene(position, scene);
     App::getState()->setProjectHasChanges(true);
 }
 
@@ -123,7 +123,7 @@ void DialogEditScenes::onBtRemoveClicked()
 {
     if (ui->listScenes->currentRow() >= 0)
     {
-        App::getState()->removeProjectScene(ui->listScenes->currentRow());
+        App::getState()->removeScene(ui->listScenes->currentRow());
         App::getState()->setProjectHasChanges(true);
     }
 }
@@ -132,7 +132,7 @@ void DialogEditScenes::onBtMoveUpClicked()
 {
     if (ui->listScenes->currentRow() >= 0)
     {
-        App::getState()->moveDownProjectScene(ui->listScenes->currentRow());
+        App::getState()->moveDownScene(ui->listScenes->currentRow());
         App::getState()->setProjectHasChanges(true);
     }
 }
@@ -141,7 +141,7 @@ void DialogEditScenes::onBtMoveDownClicked()
 {
     if (ui->listScenes->currentRow() >= 0)
     {
-        App::getState()->moveUpProjectScene(ui->listScenes->currentRow());
+        App::getState()->moveUpScene(ui->listScenes->currentRow());
         App::getState()->setProjectHasChanges(true);
     }
 }

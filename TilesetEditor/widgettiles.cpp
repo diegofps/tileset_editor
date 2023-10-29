@@ -1,5 +1,5 @@
 #include "app.h"
-#include "widgetgridtiles.h"
+#include "widgettiles.h"
 
 #include <QResizeEvent>
 #include <QPainter>
@@ -8,13 +8,12 @@
 #define SCROLL_SPACE 0
 #define SEPARATOR_SPACE 2
 
-WidgetGridTiles::WidgetGridTiles(QWidget *parent)
+WidgetTiles::WidgetTiles(QWidget *parent)
     : QWidget{parent},
 
       _cols(0),
       _rows(0),
-      _selectionStart(-1),
-      _selectionEnd(-1)
+      _selection(-1,-1)
 {
     setMinimumHeight(100);
 //    setMouseTracking(true);
@@ -27,7 +26,7 @@ WidgetGridTiles::WidgetGridTiles(QWidget *parent)
     _brush.setStyle(Qt::SolidPattern);
 }
 
-void WidgetGridTiles::setTiles(QList<Tile*> const * value)
+void WidgetTiles::setTiles(QList<Tile*> const * value)
 {
     _tiles.clear();
     for (auto t : *value)
@@ -38,7 +37,7 @@ void WidgetGridTiles::setTiles(QList<Tile*> const * value)
     {
         auto & view = _views[i];
         auto tile   = _tiles[i];
-        Palette * palette = App::getState()->getProjectPaletteById(tile->preferredPalette);
+        Palette * palette = App::getState()->getPaletteById(tile->preferredPalette);
 
         view.i = 0;
         view.j = 0;
@@ -47,11 +46,12 @@ void WidgetGridTiles::setTiles(QList<Tile*> const * value)
         view.rect = QRect();
     }
 
-    _selectionStart = -1;
-    _selectionEnd = -1;
+    _selection.set(-1,-1);
+
+    update();
 }
 
-void WidgetGridTiles::repack()
+void WidgetTiles::repack()
 {
     _cols = width() <= SCROLL_SPACE + TILE_SIZE ? 1 : (width() - SCROLL_SPACE - TILE_SIZE) / (TILE_SIZE + SEPARATOR_SPACE) + 1;
     _rows = _tiles.empty() ? 1 : ceil(_tiles.size() / float(_cols));
@@ -73,33 +73,34 @@ void WidgetGridTiles::repack()
 
         view->rect = QRect(x,y,TILE_SIZE,TILE_SIZE);
     }
-}
 
-void WidgetGridTiles::moveToTile(int rx, int ry)
-{
-    int const newStart = _selectionStart + _cols * ry + rx;
-    int const newEnd = _selectionEnd + _cols * ry + rx;
-
-    if (newStart >= 0 && newStart < _tiles.size() && newEnd >= 0 && newEnd < _tiles.size())
-    {
-        _selectionStart = newStart;
-        _selectionEnd = newEnd;
-        emit onSelectedTileChanged(_selectionStart, _selectionEnd);
-    }
     update();
 }
 
-void WidgetGridTiles::setSelection(int start, int end)
+void WidgetTiles::moveTileSelection(int rx, int ry)
 {
-    start = std::max(-1, start);
-    end = std::min((int)_tiles.size()-1, end);
+    int const newStart = _selection.start + _cols * ry + rx;
+    int const newEnd = _selection.end + _cols * ry + rx;
 
-    _selectionStart = start;
-    _selectionEnd = end;
-    emit onSelectedTileChanged(_selectionStart, _selectionEnd);
+    if (newStart >= 0 && newStart < _tiles.size() && newEnd >= 0 && newEnd < _tiles.size())
+    {
+        _selection.set(newStart, newEnd);
+        emit onSelectedTileChanged(_selection);
+    }
+
+    update();
 }
 
-void WidgetGridTiles::paintEvent(QPaintEvent * event)
+void WidgetTiles::setSelection(Range range)
+{
+    range.limit(-1, _tiles.size()-1);
+    _selection = range;
+    update();
+
+    emit onSelectedTileChanged(_selection);
+}
+
+void WidgetTiles::paintEvent(QPaintEvent * event)
 {
     (void) event;
     QPainter painter(this);
@@ -110,27 +111,28 @@ void WidgetGridTiles::paintEvent(QPaintEvent * event)
         if (view.pixmap != nullptr)
             painter.drawPixmap(view.rect, *view.pixmap);
 
-        if (i >= _selectionStart && i <= _selectionEnd)
+        if (i >= _selection.start && i <= _selection.end)
         {
             painter.setPen(Qt::NoPen);
             painter.setBrush(_brush);
             painter.drawRect(view.rect);
 
-            if (i == _selectionStart)
+            if (i == _selection.start)
                 painter.drawRect(view.rect);
         }
     }
 }
 
-void WidgetGridTiles::resizeEvent(QResizeEvent *event)
+void WidgetTiles::resizeEvent(QResizeEvent *event)
 {
     (void) event;
     repack();
 }
 
-void WidgetGridTiles::mousePressEvent(QMouseEvent *event)
+void WidgetTiles::mousePressEvent(QMouseEvent *event)
 {
     int btns = event->buttons();
+
     if (!(btns & Qt::LeftButton))
         return;
 
@@ -145,7 +147,7 @@ void WidgetGridTiles::mousePressEvent(QMouseEvent *event)
 
             if (view.rect.contains(pos))
             {
-                _selectionEnd = i;
+                _selection.end = i;
                 mustEmit = true;
                 break;
             }
@@ -159,23 +161,23 @@ void WidgetGridTiles::mousePressEvent(QMouseEvent *event)
 
             if (view.rect.contains(pos))
             {
-                _selectionStart = i;
-                _selectionEnd = i;
+                _selection.start = i;
+                _selection.end = i;
                 mustEmit = true;
                 break;
             }
         }
     }
 
-    if (_selectionStart > _selectionEnd)
+    if (_selection.start > _selection.end)
     {
-        int tmp = _selectionStart;
-        _selectionStart = _selectionEnd;
-        _selectionEnd = tmp;
+        int tmp = _selection.start;
+        _selection.start = _selection.end;
+        _selection.end = tmp;
     }
 
     if (mustEmit)
-        emit onSelectedTileChanged(_selectionStart, _selectionEnd);
+        emit onSelectedTileChanged(_selection);
 
     update();
 }

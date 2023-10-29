@@ -16,6 +16,7 @@ public:
     int lastReferenceID;
     int lastScreenshotID;
     int lastSceneID;
+    int lastCellID;
 
     Project();
 

@@ -1,21 +1,24 @@
 #include "tileset.h"
 #include "errors.h"
 #include "jsonhelpers.h"
+#include "editorcommand.h"
 
 #include <QJsonArray>
 
-Tileset::Tileset()
+Tileset::Tileset() :
+    _historyPosition(0)
 {
 
 }
 
-Tileset::Tileset(QJsonObject data)
+Tileset::Tileset(QJsonObject data) :
+    _historyPosition(0)
 {
     getIntOrFail(id, data, "Tileset", "ID");
     getIntOrDefault(sceneId, data, "Tileset", "SceneID", 0);
-    getQStringOrFail(name, data, "Tileset", "Name");
     getIntOrFail(gridW, data, "Tileset", "GridW");
     getIntOrFail(gridH, data, "Tileset", "GridH");
+    getQStringOrFail(name, data, "Tileset", "Name");
     getQColorOrFail(bgColor, data, "Tileset", "Color");
 
     if (data.contains("Cells"))
@@ -57,11 +60,48 @@ QJsonObject Tileset::exportAsJson()
     QJsonObject data;
     data["ID"] = id;
     data["SceneID"] = sceneId;
-    data["Name"] = name;
     data["GridW"] = gridW;
     data["GridH"] = gridH;
+    data["Name"] = name;
     data["Color"] = jColor;
     data["Cells"] = jCells;
 
     return data;
+}
+
+void Tileset::historyClear()
+{
+    for (auto cmd : _history)
+        delete cmd;
+
+    _history.clear();
+    _historyPosition = 0;
+}
+
+void Tileset::historyAdd(AppState * state, CellCommand * cmd)
+{
+    for (qsizetype tmp=_historyPosition;tmp<_history.size();++tmp)
+        delete _history[tmp];
+
+    _history.resize(_historyPosition+1);
+    _history[_historyPosition++] = cmd;
+    cmd->execute(state);
+}
+
+bool Tileset::historyUndo(AppState * state)
+{
+    if (_historyPosition == 0)
+        return false;
+
+    _history[--_historyPosition]->unexecute(state);
+    return true;
+}
+
+bool Tileset::historyRedo(AppState * state)
+{
+    if (_historyPosition == _history.size())
+        return false;
+
+    _history[_historyPosition++]->execute(state);
+    return true;
 }

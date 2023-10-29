@@ -1,6 +1,18 @@
 #include "cell.h"
 #include "jsonhelpers.h"
 
+Cell::Cell() :
+    id(0),
+    tileID(0),
+    paletteID(0),
+    x(0),
+    y(0),
+    hFlip(false),
+    vFlip(false)
+{
+
+}
+
 Cell::Cell(QJsonObject & data)
 {
     getIntOrFail(id, data, "Cell", "ID");
@@ -10,7 +22,6 @@ Cell::Cell(QJsonObject & data)
     getIntOrFail(y, data, "Cell", "Y");
     getBoolOrFail(hFlip, data, "Cell", "HFlip");
     getBoolOrFail(vFlip, data, "Cell", "VFlip");
-    getBoolOrFail(isLink, data, "Cell", "IsLink");
 }
 
 QJsonObject Cell::exportAsJson()
@@ -23,6 +34,5 @@ QJsonObject Cell::exportAsJson()
     data["Y"] = y;
     data["HFlip"] = hFlip;
     data["VFlip"] = vFlip;
-    data["IsLink"] = isLink;
     return data;
 }

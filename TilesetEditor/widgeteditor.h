@@ -1,23 +1,25 @@
-#ifndef WIDGETTILESET_H
-#define WIDGETTILESET_H
+#ifndef WIDGETEDITOR_H
+#define WIDGETEDITOR_H
 
 #include "model/cell.h"
 #include <QWidget>
 #include <QPen>
 
-class WidgetTileset : public QWidget
+class WidgetEditor : public QWidget
 {
     Q_OBJECT
 
 public:
 
-    explicit WidgetTileset(QWidget *parent = nullptr);
+    explicit WidgetEditor(QWidget *parent = nullptr);
 
 protected:
 
     void paintEvent(QPaintEvent *event);
     void resizeEvent(QResizeEvent *event);
     void updateViewport();
+    void mousePressEvent(QMouseEvent *event);
+    void mouseMoveEvent(QMouseEvent *event);
 
 public:
 
@@ -34,7 +36,9 @@ signals:
 
     void onPaintCell(int x, int y); // Left click
     void onEraseCell(int x, int y); // Ctrl + Left CLick
-    void onColorPick(int tileID, int paletteID); // Alt + Left click
+    void onColorPickCell(int x, int y); // Alt + Left click
+    void onLinkCell(int x, int y); // Shift + Left click
+    void onHoverCell(int x, int y, Cell const * cell);
 
 private:
 
@@ -44,12 +48,14 @@ private:
     int _viewportPower;
     QBrush _brushRoot;
     QBrush _brushOffset;
+    QBrush _brushLink;
     QPen _penGrid;
     QBrush _brushBackground;
     int _gridWidth;
     int _gridHeight;
     QHash<QPair<int, int>, Cell *> const * _cells;
+    QPair<int,int> _lastHoverKey;
 
 };
 
-#endif // WIDGETTILESET_H
+#endif // WIDGETEDITOR_H

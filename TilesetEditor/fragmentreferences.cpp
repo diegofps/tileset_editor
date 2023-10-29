@@ -56,12 +56,12 @@ FragmentReferences::FragmentReferences(QWidget *parent) :
     connect(App::getState(), &AppState::onReferenceModeChanged, this, [&](ReferenceMode const value)
     {
         styleScreenshotButtons(value);
-        updateReferenceWidget(App::getState()->selectedTiles(), value);
+        updateReferenceWidget();
     });
 
-    connect(App::getState(), &AppState::onSelectedTilesChanged, this, [&](QList<Tile*> const * value)
+    connect(App::getState(), &AppState::onSelectedTilesChanged, this, [&](QList<Tile*> const *)
     {
-        updateReferenceWidget(value, App::getState()->referenceMode());
+        updateReferenceWidget();
     });
 
     connect(App::getState(), &AppState::onReferenceOffsetChanged, this, [&](QPoint const value)
@@ -77,7 +77,7 @@ FragmentReferences::FragmentReferences(QWidget *parent) :
     });
 
     ui->widgetReference->setZoom(App::getState()->referenceZoom());
-    updateReferenceWidget(App::getState()->selectedTiles(), App::getState()->referenceMode());
+    updateReferenceWidget();
 }
 
 FragmentReferences::~FragmentReferences()
@@ -114,7 +114,7 @@ inline QImage * loadScreenshot(Reference const * const reference)
         return nullptr;
     }
 
-    for (auto s : *App::getState()->projectScreenshots())
+    for (auto s : *App::getState()->allScreenshots())
         if (s->id == reference->screenshotId)
             return new QImage(QImage::fromData(s->data));
 
@@ -123,15 +123,17 @@ inline QImage * loadScreenshot(Reference const * const reference)
     return nullptr;
 }
 
-void FragmentReferences::updateReferenceWidget(QList<Tile *> const * tiles, ReferenceMode const value)
+void FragmentReferences::updateReferenceWidget()
 {
+    auto tile = App::getState()->selectedTile();
+    auto value = App::getState()->referenceMode();
+
     ui->widgetReference->setImage(nullptr);
     ui->lbExtraInfo->setText("");
 
-    if (tiles == nullptr || tiles->isEmpty() || tiles->at(0) == nullptr)
+    if (tile == nullptr)
         return;
 
-    Tile * tile = tiles->at(0);
     int referenceID;
 
     switch (value)
@@ -148,7 +150,7 @@ void FragmentReferences::updateReferenceWidget(QList<Tile *> const * tiles, Refe
     default: referenceID = 0;
     }
 
-    Reference const * const reference = App::getState()->getProjectReferenceById(referenceID);
+    Reference const * const reference = App::getState()->getReferenceById(referenceID);
 
     if (reference == nullptr)
     {
@@ -158,7 +160,6 @@ void FragmentReferences::updateReferenceWidget(QList<Tile *> const * tiles, Refe
 
     ui->widgetReference->setRoot(reference->x, reference->y);
     ui->widgetReference->setImage(loadScreenshot(reference));
-
     ui->lbExtraInfo->setText(QString("TileID:%1, PaletteID:%2, HFlip:%3, VFlip:%4, LineCout:%5, MATH:%6, PIXEL:%7, OP:%8, BPSTART:%9, TILE:%10")
                              .arg(tile->id)
                              .arg(reference->colorPaletteID)

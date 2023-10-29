@@ -42,11 +42,14 @@ private:
     QWidget * createFragmentContextClosed();
     void showMessage(QString msg);
     void loadScenes(QList<Scene*> const * value);
+    void restoreSelectedScene();
+    void saveSelectedScene();
 
 private:
     Ui::MainWindow * ui;
     FragmentContextOpen * _fragmentContextOpen;
     FragmentContextClosed * _fragmentContextClosed;
+    int _lastSceneID;
 
 };
 #endif // MAINWINDOW_H

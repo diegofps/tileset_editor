@@ -43,12 +43,12 @@ void ServiceContext::create(const QString & folderpath, ContextReport * report)
     ts->bgColor = QColor::fromRgb(0,0,0);
     tilesets->append(ts);
 
-    App::getState()->setProjectTiles(tiles);
-    App::getState()->setProjectTilesets(tilesets);
-    App::getState()->setProjectPalettes(palettes);
-    App::getState()->setProjectReferences(references);
-    App::getState()->setProjectScreenshots(screenshots);
-    App::getState()->setProjectScenes(scenes);
+    App::getState()->setAllTiles(tiles);
+    App::getState()->setAllTilesets(tilesets);
+    App::getState()->setAllPalettes(palettes);
+    App::getState()->setAllReferences(references);
+    App::getState()->setAllScreenshots(screenshots);
+    App::getState()->setAllScenes(scenes);
     App::getState()->setProjectHasChanges(false);
     App::getState()->setProject(project);
     App::getOriginalTileCache()->clear();
@@ -71,16 +71,17 @@ void ServiceContext::close(ContextReport * report)
     }
 
     QString path = project->path;
+    QList<Tile*> emptyTiles;
 
     App::getState()->setProject(nullptr);
-    App::getState()->setProjectTiles(nullptr);
-    App::getState()->setProjectTilesets(nullptr);
-    App::getState()->setProjectPalettes(nullptr);
-    App::getState()->setProjectReferences(nullptr);
-    App::getState()->setProjectScreenshots(nullptr);
-    App::getState()->setProjectScenes(nullptr);
     App::getState()->setSelectedTileset(nullptr);
-    App::getState()->setSelectedTiles(nullptr);
+    App::getState()->setSelectedTiles(emptyTiles);
+    App::getState()->setAllPalettes(nullptr);
+    App::getState()->setAllTiles(nullptr);
+    App::getState()->setAllTilesets(nullptr);
+    App::getState()->setAllReferences(nullptr);
+    App::getState()->setAllScreenshots(nullptr);
+    App::getState()->setAllScenes(nullptr);
     App::getOriginalTileCache()->clear();
 
     if (report != nullptr)
@@ -111,14 +112,18 @@ void ServiceContext::load(const QString & folderpath, ContextReport * report)
     {
         close();
 
-        App::getState()->setProjectTiles(tiles);
-        App::getState()->setProjectTilesets(tilesets);
-        App::getState()->setProjectPalettes(palettes);
-        App::getState()->setProjectReferences(references);
-        App::getState()->setProjectScreenshots(screenshots);
-        App::getState()->setProjectScenes(scenes);
+        App::getState()->setAllTiles(tiles);
+        App::getState()->setAllTilesets(tilesets);
+        App::getState()->setAllPalettes(palettes);
+        App::getState()->setAllReferences(references);
+        App::getState()->setAllScreenshots(screenshots);
+        App::getState()->setAllScenes(scenes);
         App::getState()->setProjectHasChanges(false);
         App::getState()->setProject(context);
+
+        App::getState()->updateFilteredPalettes();
+        App::getState()->updateFilteredTiles();
+        App::getState()->updateFilteredTilesets();
 
         if (report != nullptr)
             report->success(QString("Project loaded successfully: %1").arg(folderpath));
@@ -167,12 +172,12 @@ void ServiceContext::save(ContextReport * report)
         contextDir.mkpath(".");
 
     if (saveContext(contextDir, App::getState()->project()) &&
-        saveTiles(contextDir, App::getState()->projectTiles()) &&
-        savePalettes(contextDir, App::getState()->projectPalettes()) &&
-        saveReferences(contextDir, App::getState()->projectReferences()) &&
-        saveTilesets(contextDir, App::getState()->projectTilesets()) &&
-        saveScreenshots(contextDir, App::getState()->projectScreenshots()) &&
-        saveScenes(contextDir, App::getState()->projectScenes()) )
+        saveTiles(contextDir, App::getState()->allTiles()) &&
+        savePalettes(contextDir, App::getState()->allPalettes()) &&
+        saveReferences(contextDir, App::getState()->allReferences()) &&
+        saveTilesets(contextDir, App::getState()->allTilesets()) &&
+        saveScreenshots(contextDir, App::getState()->allScreenshots()) &&
+        saveScenes(contextDir, App::getState()->allScenes()) )
     {
         App::getState()->setProjectHasChanges(false);
 
@@ -253,10 +258,10 @@ void ServiceContext::importDump(QString const & folderpath, ContextReport * repo
     QHash<int,int> referencesStateId;
     QHash<int,int> screenshotsStateId;
 
-    for (auto item : *App::getState()->projectPalettes())
+    for (auto item : *App::getState()->allPalettes())
         statePaletteByKey[item->uniqueKey()] = item;
 
-    for (auto item : *App::getState()->projectTiles())
+    for (auto item : *App::getState()->allTiles())
         stateTileByKey[item->uniqueKey()] = item;
 
     for (auto dPalette : dumpedPalettes)
@@ -272,7 +277,7 @@ void ServiceContext::importDump(QString const & folderpath, ContextReport * repo
         paletteStateId[dPalette->id] = newID;
         dPalette->id = newID;
 
-        App::getState()->appendProjectPalette(dPalette);
+        App::getState()->addPalette(dPalette);
         ++palettesImported;
     }
 
@@ -344,7 +349,7 @@ void ServiceContext::importDump(QString const & folderpath, ContextReport * repo
                 newPalettesUsed[paletteStateId[pair.first]] = pair.second;
             dTile->palettesUsed = std::move(newPalettesUsed);
 
-            App::getState()->appendProjectTile(dTile);
+            App::getState()->addTile(dTile);
             ++tilesImported;
         }
     }
@@ -364,7 +369,7 @@ void ServiceContext::importDump(QString const & folderpath, ContextReport * repo
         dReference->screenshotId = screenshotsStateId[dReference->screenshotId];
         dReference->colorPaletteID = paletteStateId[dReference->colorPaletteID];
 
-        App::getState()->appendProjectReference(dReference);
+        App::getState()->addReference(dReference);
         ++referencesImported;
     }
 
@@ -385,11 +390,13 @@ void ServiceContext::importDump(QString const & folderpath, ContextReport * repo
         dScreenshot->filename = QString::number(dScreenshot->id).rightJustified(6, '0') + ".png";
         dScreenshot->data = file.readAll();
 
-        App::getState()->appendProjectScreenshot(dScreenshot);
+        App::getState()->addScreenshot(dScreenshot);
         ++screenshotsImported;
     }
 
     auto project = App::getState()->project();
+
+    App::getState()->updateFilteredTiles();
 
     App::getState()->setProject(project);
     App::getState()->setProjectHasChanges(true);
@@ -443,11 +450,17 @@ bool ServiceContext::loadContext(QDir contextDir, Project * context)
         return false;
     }
 
-    if (!context->initFromJson(doc.object()))
-    {
-        qWarning() << "Context is not valid: " << file.fileName();
+    try {
+        if (!context->initFromJson(doc.object()))
+        {
+            qWarning() << "Context is not valid: " << file.fileName();
+            return false;
+        }
+    } catch (ContextError & e) {
+        qWarning() << e.msg();
         return false;
     }
+
 
     return true;
 }

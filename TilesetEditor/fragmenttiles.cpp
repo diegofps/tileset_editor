@@ -1,8 +1,7 @@
 #include "fragmenttiles.h"
-#include "qstyle.h"
 #include "ui_fragmenttiles.h"
 #include "app.h"
-#include "widgetgridtiles.h"
+#include "widgettiles.h"
 #include "widgetvscrollarea.h"
 
 void FragmentTiles::styleButton(QPushButton * btn, int const value)
@@ -33,83 +32,9 @@ FragmentTiles::FragmentTiles(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    auto filter = App::getState()->tilesFilter();
+    _widgetTiles = new WidgetTiles();
 
-    styleButton(ui->btBackground, filter->usedInBackground);
-    styleButton(ui->btUnlinked, filter->isUnlinked);
-    styleButton(ui->btSprite, filter->usedInSprite);
-    styleButton(ui->btHFlip, filter->usedWithHFlip);
-    styleButton(ui->btVFlip, filter->usedWithVFlip);
-
-    connect(ui->btSprite, &QPushButton::clicked, this, [&]()
-    {
-        auto filter = App::getState()->tilesFilter();
-        nextButtonState(filter->usedInSprite);
-        App::getState()->setTilesFilter(filter);
-    });
-
-    connect(ui->btBackground, &QPushButton::clicked, this, [&]()
-    {
-        auto filter = App::getState()->tilesFilter();
-        nextButtonState(filter->usedInBackground);
-        App::getState()->setTilesFilter(filter);
-    });
-
-    connect(ui->btHFlip, &QPushButton::clicked, this, [&]()
-    {
-        auto filter = App::getState()->tilesFilter();
-        nextButtonState(filter->usedWithHFlip);
-        App::getState()->setTilesFilter(filter);
-    });
-
-    connect(ui->btVFlip, &QPushButton::clicked, this, [&]()
-    {
-        auto filter = App::getState()->tilesFilter();
-        nextButtonState(filter->usedWithVFlip);
-        App::getState()->setTilesFilter(filter);
-    });
-
-    connect(ui->btUnlinked, &QPushButton::clicked, this, [&]()
-    {
-        auto filter = App::getState()->tilesFilter();
-        nextButtonState(filter->isUnlinked);
-        App::getState()->setTilesFilter(filter);
-    });
-
-    connect(App::getState(), &AppState::onSelectedSceneIDChanged, this, [&](int value) {
-        auto tiles = App::getState()->projectTiles();
-        auto filter = App::getState()->tilesFilter();
-
-        filterTiles(value, tiles, filter);
-        updateTilesWidget();
-        _gridTiles->setSelection(0,0);
-    });
-
-    connect(App::getState(), &AppState::onTilesFilterChanged, this, [&](TilesFilter * filter)
-    {
-        styleButton(ui->btBackground, filter->usedInBackground);
-        styleButton(ui->btSprite, filter->usedInSprite);
-        styleButton(ui->btUnlinked, filter->isUnlinked);
-        styleButton(ui->btHFlip, filter->usedWithHFlip);
-        styleButton(ui->btVFlip, filter->usedWithVFlip);
-
-        saveSelectedTile();
-        filterTiles(App::getState()->selectedSceneID(), App::getState()->projectTiles(), filter);
-        updateTilesWidget();
-        restoreSelectedTile();
-    });
-
-    connect(App::getState(), &AppState::onProjectTilesChanged, this, [&](QList<Tile*> const * value)
-    {
-        saveSelectedTile();
-        filterTiles(App::getState()->selectedSceneID(), value, App::getState()->tilesFilter());
-        updateTilesWidget();
-        restoreSelectedTile();
-    });
-
-    _gridTiles = new WidgetGridTiles(this);
-
-    auto vScrollArea = new WidgetVScrollArea(_gridTiles, this);
+    auto vScrollArea = new WidgetVScrollArea(_widgetTiles, this);
     vScrollArea->setContentsMargins(0,0,0,0);
 
     auto layout2 = new QVBoxLayout();
@@ -118,27 +43,80 @@ FragmentTiles::FragmentTiles(QWidget *parent) :
 
     ui->listFrame->setLayout(layout2);
 
-    filterTiles(App::getState()->selectedSceneID(), App::getState()->projectTiles(), App::getState()->tilesFilter());
-    updateTilesWidget();
-
-    connect(_gridTiles, &WidgetGridTiles::onSelectedTileChanged, this, [&](int start, int end) {
-        if (start<0 || end <0)
-            return;
-
-        QList<Tile*> selectedTiles;
-
-        for (int i=start;i<=end;++i)
-            selectedTiles.append(_tiles[i]);
-
-        App::getState()->setSelectedTiles(&selectedTiles);
-    });
-
-    connect(App::getState(), &AppState::onMoveToTile, this, [&](int rx, int ry)
+    connect(ui->btSprite, &QPushButton::clicked, this, [&]()
     {
-        _gridTiles->moveToTile(rx, ry);
+        TilesFilter filter = App::getState()->tilesFilter();
+        nextButtonState(filter.usedInSprite);
+        App::getState()->setTilesFilter(filter);
     });
 
-    _gridTiles->setSelection(0,0);
+    connect(ui->btBackground, &QPushButton::clicked, this, [&]()
+    {
+        TilesFilter filter = App::getState()->tilesFilter();
+        nextButtonState(filter.usedInBackground);
+        App::getState()->setTilesFilter(filter);
+    });
+
+    connect(ui->btHFlip, &QPushButton::clicked, this, [&]()
+    {
+        TilesFilter filter = App::getState()->tilesFilter();
+        nextButtonState(filter.usedWithHFlip);
+        App::getState()->setTilesFilter(filter);
+    });
+
+    connect(ui->btVFlip, &QPushButton::clicked, this, [&]()
+    {
+        TilesFilter filter = App::getState()->tilesFilter();
+        nextButtonState(filter.usedWithVFlip);
+        App::getState()->setTilesFilter(filter);
+    });
+
+    connect(ui->btUnlinked, &QPushButton::clicked, this, [&]()
+    {
+        TilesFilter filter = App::getState()->tilesFilter();
+        nextButtonState(filter.isUnlinked);
+        App::getState()->setTilesFilter(filter);
+    });
+
+    connect(App::getState(), &AppState::onTilesFilterChanged, this, [&](TilesFilter const &)
+    {
+        updateFilterWidgets();
+    });
+
+    connect(App::getState(), &AppState::onFilteredTilesChanged, this, [&](QList<Tile*> const *)
+    {
+        saveSelectedTile();
+        updateTilesWidget();
+        restoreSelectedTile();
+    });
+
+//    connect(App::getState(), &AppState::onSelectedTilesChanged, this, [&](QList<Tile*> tiles)
+//    {
+//        _widgetTiles->setSelection(tilesPos.isEmpty()?Range(0,0):tilesPos);
+//    });
+
+    connect(_widgetTiles, &WidgetTiles::onSelectedTileChanged, this, [&](Range range)
+    {
+        if (range.start>=0 && range.end>=0)
+        {
+            QList<Tile*> selectedTiles;
+            auto tiles = App::getState()->filteredTiles();
+
+            for (int i=range.start;i<=range.end;++i)
+                selectedTiles.append(tiles->at(i));
+
+            App::getState()->setSelectedTiles(selectedTiles);
+        }
+    });
+
+    connect(App::getState(), &AppState::onMoveTileSelection, this, [&](int rx, int ry)
+    {
+        _widgetTiles->moveTileSelection(rx, ry);
+    });
+
+    updateFilterWidgets();
+    updateTilesWidget();
+    _widgetTiles->setSelection(Range(0,0));
 
 }
 
@@ -147,99 +125,47 @@ FragmentTiles::~FragmentTiles()
     delete ui;
 }
 
-void FragmentTiles::filterTiles(int sceneID, QList<Tile*> const * tiles, TilesFilter * filter)
+void FragmentTiles::updateFilterWidgets()
 {
-    _tiles.clear();
-
-    if (tiles == nullptr)
-        return;
-
-    if (filter == nullptr)
-    {
-        if (sceneID==-1)
-        {
-            for (auto t : *tiles)
-                _tiles.append(t);
-        }
-        else
-        {
-            for (auto t : *tiles)
-                if (t->sceneId == sceneID)
-                    _tiles.append(t);
-        }
-    }
-
-    else
-    {
-        QHash<int, int> unlinkedTiles;
-
-        if (filter->isUnlinked)
-        {
-            // TODO
-        }
-
-        for (auto t : *tiles)
-        {
-            if (sceneID!=-1)
-                if (t->sceneId!=sceneID)
-                    continue;
-
-            if (filter->isUnlinked!=2)
-                if ((filter->isUnlinked==0 && unlinkedTiles.contains(t->id)) || (filter->isUnlinked==1 && !unlinkedTiles.contains(t->id)))
-                    continue;
-
-            if (filter->usedInSprite!=2)
-                if ((filter->usedInSprite==0 && t->usedInSprite) || (filter->usedInSprite==1 && !t->usedInSprite))
-                    continue;
-
-            if (filter->usedInBackground!=2)
-                if ((filter->usedInBackground==0 && t->usedInBackground) || (filter->usedInBackground==1 && !t->usedInBackground))
-                    continue;
-
-            if (filter->usedWithHFlip!=2)
-                if ((filter->usedWithHFlip==0 && t->usedWithHFlip()) || (filter->usedWithHFlip==1 && !t->usedWithHFlip()))
-                    continue;
-
-            if (filter->usedWithVFlip!=2)
-                if ((filter->usedWithVFlip==0 && t->usedWithVFlip()) || (filter->usedWithVFlip==1 && !t->usedWithVFlip()))
-                    continue;
-
-            _tiles.append(t);
-        }
-    }
+    auto filter = App::getState()->tilesFilter();
+    styleButton(ui->btBackground, filter.usedInBackground);
+    styleButton(ui->btUnlinked, filter.isUnlinked);
+    styleButton(ui->btSprite, filter.usedInSprite);
+    styleButton(ui->btHFlip, filter.usedWithHFlip);
+    styleButton(ui->btVFlip, filter.usedWithVFlip);
 }
 
 void FragmentTiles::updateTilesWidget()
 {
-    _gridTiles->setTiles(&_tiles);
-    _gridTiles->repack();
-    _gridTiles->update();
+    _widgetTiles->setTiles(App::getState()->filteredTiles());
+    _widgetTiles->repack();
+    _widgetTiles->update();
 }
 
 void FragmentTiles::saveSelectedTile()
 {
-    auto selectedItems = App::getState()->selectedTiles();
-    if (selectedItems == nullptr || selectedItems->isEmpty())
-    {
-        _lastSelectedItemID = 0;
-        return;
-    }
-
-    auto item = (*selectedItems)[0];
-    _lastSelectedItemID = item->id;
+    auto tile = App::getState()->selectedTile();
+    _lastSelectedItemID = tile == nullptr ? 0 : tile->id;
 };
 
 void FragmentTiles::restoreSelectedTile()
 {
-    if (_tiles.isEmpty())
+    auto tiles = App::getState()->filteredTiles();
+
+    if (tiles->isEmpty())
         return;
 
     if (_lastSelectedItemID != 0)
-        for (qsizetype i=0;i!=_tiles.size();++i)
-            if (_tiles[i]->id == _lastSelectedItemID)
+    {
+        for (qsizetype i=0;i!=tiles->size();++i)
+        {
+            if (tiles->at(i)->id == _lastSelectedItemID)
             {
-                _gridTiles->setSelection(i,i);
+                _widgetTiles->setSelection(Range(i,i));
                 return;
             }
-    _gridTiles->setSelection(0,0);
+        }
+    }
+
+    _widgetTiles->setSelection(Range(0,0));
 };

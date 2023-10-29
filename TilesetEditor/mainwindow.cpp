@@ -38,41 +38,32 @@ MainWindow::MainWindow(QWidget *parent)
             setWindowTitle(project->path);
     });
 
-    connect(App::getState(), &AppState::onProjectLastDumpFolderChanged, this, [&](QString const & value) {
+    connect(App::getState(), &AppState::onLastDumpFolderChanged, this, [&](QString const & value) {
         ui->action_File_ReloadDump->setEnabled(!value.isEmpty());
     });
 
-    connect(ui->cbScenes, &QComboBox::currentIndexChanged, this, [&](int index) {
-        int newSceneID = index < 2 ? index-1 : App::getState()->projectScenes()->at(index-2)->id;
-        if (newSceneID != App::getState()->selectedSceneID())
-            App::getState()->setSelectedSceneID(newSceneID);
-    });
-
-    connect(App::getState(), &AppState::onProjectScenesChanged, this, [&](QList<Scene*> const * value)
+    connect(ui->cbScenes, &QComboBox::currentIndexChanged, this, [&](int index)
     {
-        int oldSceneID = App::getState()->selectedSceneID();
-
-        loadScenes(value);
-
-        if (oldSceneID < 1)
-        {
-            ui->cbScenes->setCurrentIndex(oldSceneID+1);
-            return;
-        }
-
-        for (qsizetype i=0;i!=value->size();++i)
-        {
-            if ((*value)[i]->id == oldSceneID)
-            {
-                ui->cbScenes->setCurrentIndex(i+2);
-                return;
-            }
-        }
-
-        ui->cbScenes->setCurrentIndex(0);
+        int newSceneID = index < 2 ? index-1 : App::getState()->allScenes()->at(index-2)->id;
+        App::getState()->setSelectedSceneID(newSceneID);
     });
 
-    loadScenes(App::getState()->projectScenes());
+//    connect(App::getState(), &AppState::onSelectedSceneIDChanged, this, [&](int sceneID)
+//    {
+//        auto scenes = App::getState()->allScenes();
+//        for (int i=0;i!=scenes->size();++i)
+//            if (scenes->at(i)->id == sceneID)
+//        ui->cbScenes->setCurrentIndex();
+//    });
+
+    connect(App::getState(), &AppState::onAllScenesChanged, this, [&](QList<Scene*> const * value)
+    {
+        saveSelectedScene();
+        loadScenes(value);
+        restoreSelectedScene();
+    });
+
+    loadScenes(App::getState()->allScenes());
     ui->cbScenes->setCurrentIndex(1);
 
     // File menu
@@ -88,12 +79,13 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->action_File_Quit, &QAction::triggered, this, &MainWindow::onAction_File_QuitProject);
 
     // Edit menu
-    connect(ui->action_Edit_Undo, &QAction::triggered, this, [](){ App::getState()->undo(); });
-    connect(ui->action_Edit_Redo, &QAction::triggered, this, [](){ App::getState()->redo(); });
+    connect(ui->action_Edit_Undo, &QAction::triggered, this, [&]() { App::getState()->editorUndo(); });
+    connect(ui->action_Edit_Redo, &QAction::triggered, this, [&]() { App::getState()->editorRedo(); });
+
     connect(ui->action_Edit_Scenes, &QAction::triggered, this, &MainWindow::onAction_Edit_Scenes);
     connect(ui->action_Edit_MoveTileToScene, &QAction::triggered, this, &MainWindow::onAction_Edit_MoveTileToScene);
     connect(ui->action_Edit_MoveTilesetToScene, &QAction::triggered, this, &MainWindow::onAction_Edit_MoveTilesetToScene);
-    connect(ui->action_Edit_InsertNearestReferenceTile, &QAction::triggered, this, [](){ App::getState()->drawNearestReferenceTile(); });
+    connect(ui->action_Edit_InsertNearestReferenceTile, &QAction::triggered, this, [](){ App::getState()->editorPaintCellUsingSibling(); });
 
 
     // View menu
@@ -116,16 +108,16 @@ MainWindow::MainWindow(QWidget *parent)
 
     connect(ui->action_View_FlipTileHorizontally, &QAction::triggered, this, [&]()
     {
-        TileMode mode = App::getState()->tileMode();
-        mode.hFlip = !mode.hFlip;
-        App::getState()->setTileMode(mode);
+        TilePreviewFilter filter = App::getState()->tilePreviewFilter();
+        filter.hFlip = !filter.hFlip;
+        App::getState()->setTilePreviewFilter(filter);
     });
 
     connect(ui->action_View_FlipTileVertically, &QAction::triggered, this, [&]()
     {
-        TileMode mode = App::getState()->tileMode();
-        mode.vFlip = !mode.vFlip;
-        App::getState()->setTileMode(mode);
+        TilePreviewFilter filter = App::getState()->tilePreviewFilter();
+        filter.vFlip = !filter.vFlip;
+        App::getState()->setTilePreviewFilter(filter);
     });
 
     connect(ui->action_View_FocusEditor, &QAction::triggered, this, [&]() { ui->contentFrame->setFocus(); });
@@ -146,10 +138,10 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->action_Navigate_Viewport_Left, &QAction::triggered, this, [&](){ App::getState()->moveViewport(-1, 0); });
     connect(ui->action_Navigate_Viewport_Right, &QAction::triggered, this, [&](){ App::getState()->moveViewport(+1, 0); });
 
-    connect(ui->action_Navigate_Tile_Down, &QAction::triggered, this, [&](){ App::getState()->moveToTile( 0,+1); });
-    connect(ui->action_Navigate_Tile_Up, &QAction::triggered, this, [&](){ App::getState()->moveToTile( 0,-1); });
-    connect(ui->action_Navigate_Tile_Left, &QAction::triggered, this, [&](){ App::getState()->moveToTile(-1, 0); });
-    connect(ui->action_Navigate_Tile_Right, &QAction::triggered, this, [&](){ App::getState()->moveToTile(+1, 0); });
+    connect(ui->action_Navigate_Tile_Down, &QAction::triggered, this, [&](){ App::getState()->moveTileSelection( 0,+1); });
+    connect(ui->action_Navigate_Tile_Up, &QAction::triggered, this, [&](){ App::getState()->moveTileSelection( 0,-1); });
+    connect(ui->action_Navigate_Tile_Left, &QAction::triggered, this, [&](){ App::getState()->moveTileSelection(-1, 0); });
+    connect(ui->action_Navigate_Tile_Right, &QAction::triggered, this, [&](){ App::getState()->moveTileSelection(+1, 0); });
 
     connect(ui->action_Navigate_Editor_Home, &QAction::triggered, this, [&](){ App::getState()->moveEditorRootHome(); });
     connect(ui->action_Navigate_References_Home, &QAction::triggered, this, [&](){ App::getState()->moveReferenceOffsetHome(); });
@@ -175,6 +167,34 @@ void MainWindow::loadScenes(QList<Scene*> const * value)
         QString newText = QString("%1: %2").arg(number, s->name);
         ui->cbScenes->addItem(newText);
     }
+}
+
+void MainWindow::restoreSelectedScene()
+{
+    if (_lastSceneID < 1)
+    {
+        ui->cbScenes->setCurrentIndex(_lastSceneID+1);
+        return;
+    }
+
+    auto scenes = App::getState()->allScenes();
+
+    for (qsizetype i=0;i!=scenes->size();++i)
+    {
+        if (scenes->at(i)->id == _lastSceneID)
+        {
+            ui->cbScenes->setCurrentIndex(i+2);
+            return;
+        }
+    }
+
+    if (!scenes->isEmpty())
+        ui->cbScenes->setCurrentIndex(0);
+}
+
+void MainWindow::saveSelectedScene()
+{
+    _lastSceneID = App::getState()->selectedSceneID();
 }
 
 MainWindow::~MainWindow()
@@ -276,40 +296,21 @@ void MainWindow::onAction_File_QuitProject()
     close();
 }
 
-//void MainWindow::onAction_View_Reference(ReferenceMode mode)
-//{
-//    App::getState()->setReferenceMode(mode);
-
-//    if (App::getState()->referenceMode() != mode)
-//    if (App::getState()->previewMode() == "references")
-//    {
-//        if (App::getState()->referenceMode() == position)
-//            App::getState()->setPreviewMode("editor");
-//        else
-//            App::getState()->setReferenceScreenshot(position);
-//    }
-//    else
-//    {
-//        App::getState()->setReferenceScreenshot(position);
-//        App::getState()->setPreviewMode("references");
-//    }
-//}
-
 void MainWindow::onAction_Edit_Scenes()
 {
     DialogEditScenes dialog(this);
     dialog.exec();
-    App::getState()->setProjectScenes(App::getState()->projectScenes());
+    App::getState()->setAllScenes(App::getState()->allScenes());
 }
 
 void MainWindow::onAction_Edit_MoveTileToScene()
 {
     auto selectedTiles = App::getState()->selectedTiles();
 
-    if (selectedTiles == nullptr || selectedTiles->isEmpty())
+    if (selectedTiles->isEmpty())
         return;
 
-    auto scenes = App::getState()->projectScenes();
+    auto scenes = App::getState()->allScenes();
 
     QStringList options;
     options.append("NULL Scene");
@@ -325,9 +326,9 @@ void MainWindow::onAction_Edit_MoveTileToScene()
         App::getState()->setLastMoveToSceneResult(dialog.selectedOption());
 
         if (dialog.selectedOption() == 0)
-            App::getState()->tilesMoveSelectedTilesToScene(0);
+            App::getState()->moveSelectedTilesToScene(0);
         else
-            App::getState()->tilesMoveSelectedTilesToScene((*scenes)[dialog.selectedOption()-1]->id);
+            App::getState()->moveSelectedTilesToScene((*scenes)[dialog.selectedOption()-1]->id);
     }
 }
 
@@ -336,7 +337,7 @@ void MainWindow::onAction_Edit_MoveTilesetToScene()
     if (App::getState()->selectedTileset() == nullptr)
         return;
 
-    auto scenes = App::getState()->projectScenes();
+    auto scenes = App::getState()->allScenes();
 
     QStringList options;
     options.append("NULL Scene");
@@ -437,6 +438,6 @@ void MainWindow::showMessage(QString msg)
 {
     ui->lbStatusBar->setText(msg);
     if (msg != "")
-        QTimer::singleShot(5000, [&](){ showMessage("") ;});
+        QTimer::singleShot(5000, this, [&](){ showMessage("") ;});
 }
 

@@ -14,6 +14,7 @@ SOURCES += \
     appstyles.cpp \
     dialogeditscenes.cpp \
     dialogoptions.cpp \
+    editorcommand.cpp \
     fragmentcontextclosed.cpp \
     fragmentcontextopen.cpp \
     fragmenteditor.cpp \
@@ -35,16 +36,17 @@ SOURCES += \
     model/screenshot.cpp \
     model/tile.cpp \
     model/tileset.cpp \
+    range.cpp \
     servicecontext.cpp \
     tilecache.cpp \
     tilecachehd.cpp \
     tilesgridlist.cpp \
-    widgetgridtiles.cpp \
+    widgeteditor.cpp \
     widgetitempalette.cpp \
     widgetpalette.cpp \
     widgetpicture.cpp \
     widgetreference.cpp \
-    widgettileset.cpp \
+    widgettiles.cpp \
     widgetvscrollarea.cpp
 
 HEADERS += \
@@ -53,6 +55,7 @@ HEADERS += \
     appstyles.h \
     dialogeditscenes.h \
     dialogoptions.h \
+    editorcommand.h \
     errors.h \
     fragmentcontextclosed.h \
     fragmentcontextopen.h \
@@ -75,16 +78,17 @@ HEADERS += \
     model/screenshot.h \
     model/tile.h \
     model/tileset.h \
+    range.h \
     servicecontext.h \
     tilecache.h \
     tilecachehd.h \
     tilesgridlist.h \
-    widgetgridtiles.h \
+    widgeteditor.h \
     widgetitempalette.h \
     widgetpalette.h \
     widgetpicture.h \
     widgetreference.h \
-    widgettileset.h \
+    widgettiles.h \
     widgetvscrollarea.h
 
 FORMS += \

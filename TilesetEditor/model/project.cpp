@@ -16,6 +16,7 @@ bool Project::initFromJson(QJsonObject data)
     getIntOrFail(lastReferenceID, data, "Project", "LastReferenceID");
     getIntOrFail(lastScreenshotID, data, "Project", "LastScreenshotID");
     getIntOrFail(lastSceneID, data, "Project", "LastSceneID");
+    getIntOrFail(lastCellID, data, "Project", "LastCellID");
 
     return true;
 }
@@ -30,6 +31,7 @@ QJsonObject Project::exportAsJson()
     data["LastReferenceID"] = lastReferenceID;
     data["LastScreenshotID"] = lastScreenshotID;
     data["LastSceneID"] = lastSceneID;
+    data["LastCellID"] = lastCellID;
     return data;
 }
 
@@ -42,4 +44,6 @@ void Project::clear()
     lastReferenceID = 0;
     lastScreenshotID = 0;
     lastSceneID = 0;
+    lastCellID = 0;
 }
+

@@ -1,7 +1,8 @@
-#ifndef WIDGETGRIDTILES_H
-#define WIDGETGRIDTILES_H
+#ifndef WIDGETTILES_H
+#define WIDGETTILES_H
 
 #include "model/tile.h"
+#include "range.h"
 #include <QWidget>
 #include <QPen>
 
@@ -13,22 +14,21 @@ public:
     int j;
     QPixmap * pixmap;
     QRect rect;
-//    bool selected;
 };
 
-class WidgetGridTiles : public QWidget
+class WidgetTiles : public QWidget
 {
     Q_OBJECT
 
 public:
-    explicit WidgetGridTiles(QWidget *parent = nullptr);
+    explicit WidgetTiles(QWidget *parent = nullptr);
     void setTiles(QList<Tile*> const * value);
-    void setSelection(int start, int end);
+    void setSelection(Range range);
     void repack();
-    void moveToTile(int rx, int ry);
+    void moveTileSelection(int rx, int ry);
 
 signals:
-    void onSelectedTileChanged(int start, int end);
+    void onSelectedTileChanged(Range range);
 
 protected:
     void paintEvent(QPaintEvent *event);
@@ -42,8 +42,7 @@ private:
     int _cols;
     int _rows;
     QList<ViewHolder> _views;
-    int _selectionStart;
-    int _selectionEnd;
+    Range _selection;
 };
 
-#endif // WIDGETGRIDTILES_H
+#endif // WIDGETTILES_H

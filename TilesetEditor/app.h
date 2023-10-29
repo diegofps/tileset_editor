@@ -18,6 +18,7 @@ private:
 public:
 
     App();
+
     static AppState * getState();
     static AppStyles * getStyles();
     static TileCache * getOriginalTileCache();

@@ -1,7 +1,7 @@
 #ifndef FRAGMENTTILESETS_H
 #define FRAGMENTTILESETS_H
 
-#include "model/tileset.h"
+//#include "model/tileset.h"
 #include <QWidget>
 
 namespace Ui {
@@ -17,12 +17,12 @@ public:
     ~FragmentTilesets();
 
 private:
-    void filterTilesets(int sceneID, QList<Tileset*> const * value);
+//    void filterTilesets(int sceneID, QList<Tileset*> const * value);
     void updateTilesetsWidget();
 
 private:
     Ui::FragmentTilesets * ui;
-    QList<Tileset*> _tilesets;
+//    QList<Tileset*> _tilesets;
 };
 
 #endif // FRAGMENTTILESETS_H
