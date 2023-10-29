@@ -48,6 +48,7 @@ private:
     int _viewportPower;
     QBrush _brushRoot;
     QBrush _brushOffset;
+    QBrush _brushLink;
     QPen _penGrid;
     QBrush _brushBackground;
     int _gridWidth;

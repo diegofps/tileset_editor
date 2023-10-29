@@ -14,6 +14,8 @@ void TileCacheHD::clear()
 
 QPixmap * TileCacheHD::getTilePixmap(Tile * tile, Palette * palette)
 {
+    (void) tile;
+    (void) palette;
     return nullptr;
 //    if (tile == nullptr || palette == nullptr)
 //        return nullptr;

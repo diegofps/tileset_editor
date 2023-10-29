@@ -561,7 +561,7 @@ QMenu::item:selected {
     <string>Ctrl+Z</string>
    </property>
    <property name="visible">
-    <bool>false</bool>
+    <bool>true</bool>
    </property>
   </action>
   <action name="action_Edit_Redo">
@@ -572,7 +572,7 @@ QMenu::item:selected {
     <string>Ctrl+Shift+Z</string>
    </property>
    <property name="visible">
-    <bool>false</bool>
+    <bool>true</bool>
    </property>
   </action>
   <action name="action_View_Reference_ZoomIn">

@@ -15,25 +15,25 @@ FragmentTilePreview::FragmentTilePreview(QWidget * parent) :
 {
     ui->setupUi(this);
 
-    TileFilter & tileMode = App::getState()->tileMode();
+    TilePreviewFilter & tileMode = App::getState()->tilePreviewFilter();
     styleButton(ui->btHFlip, tileMode.hFlip);
     styleButton(ui->btVFlip, tileMode.vFlip);
 
     connect(ui->btHFlip, &QPushButton::clicked, this, [&]()
     {
-        TileFilter filter = App::getState()->tileMode();
+        TilePreviewFilter filter = App::getState()->tilePreviewFilter();
         filter.hFlip = !filter.hFlip;
         App::getState()->setTilePreviewFilter(filter);
     });
 
     connect(ui->btVFlip, &QPushButton::clicked, this, [&]()
     {
-        TileFilter tileMode = App::getState()->tileMode();
+        TilePreviewFilter tileMode = App::getState()->tilePreviewFilter();
         tileMode.vFlip = !tileMode.vFlip;
         App::getState()->setTilePreviewFilter(tileMode);
     });
 
-    connect(App::getState(), &AppState::onTileFilterChanged, this, [&](TileFilter const & filter)
+    connect(App::getState(), &AppState::onTileFilterChanged, this, [&](TilePreviewFilter const & filter)
     {
         styleButton(ui->btHFlip, filter.hFlip);
         styleButton(ui->btVFlip, filter.vFlip);
@@ -57,7 +57,7 @@ FragmentTilePreview::FragmentTilePreview(QWidget * parent) :
 
 void FragmentTilePreview::updateTileWidget()
 {
-    TileFilter const & mode = App::getState()->tileMode();
+    TilePreviewFilter const & mode = App::getState()->tilePreviewFilter();
     Tile * selectedTile = App::getState()->selectedTile();
     Palette * palette = App::getState()->selectedPalette();
 

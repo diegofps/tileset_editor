@@ -1,6 +1,7 @@
 #include "widgeteditor.h"
 #include <QPainter>
 #include <QMouseEvent>
+#include "app.h"
 
 WidgetEditor::WidgetEditor(QWidget *parent)
     : QWidget{parent},
@@ -20,6 +21,9 @@ WidgetEditor::WidgetEditor(QWidget *parent)
     _brushOffset.setColor(QColor::fromString("#660000ff"));
     _brushOffset.setStyle(Qt::SolidPattern);
 
+    _brushLink.setColor(QColor::fromString("#66ffff00"));
+    _brushLink.setStyle(Qt::SolidPattern);
+
     _penGrid.setColor(QColor::fromString("#66ffffff"));
     _penGrid.setStyle(Qt::SolidLine);
 
@@ -31,6 +35,8 @@ WidgetEditor::WidgetEditor(QWidget *parent)
     update();
 }
 
+#define REPROJECT(x,w,vw) (vw==0?0:(x)*(w)/(vw))
+
 inline void
 drawRectangleInViewport(QRect const & rect,
                         QSize const & painterSize,
@@ -39,8 +45,6 @@ drawRectangleInViewport(QRect const & rect,
                         QPen const & pen,
                         QPainter & painter)
 {
-#define REPROJECT(x,w,vw) (vw==0?0:(x)*(w)/(vw))
-
     int const x1 = REPROJECT(rect.x()-viewport.x(), painterSize.width(), viewport.width());
     int const y1 = REPROJECT(rect.y()-viewport.y(), painterSize.height(), viewport.height());
     int const x2 = REPROJECT(rect.x()+rect.width()-viewport.x(), painterSize.width(), viewport.width());
@@ -51,12 +55,48 @@ drawRectangleInViewport(QRect const & rect,
     painter.drawRect(QRect(x1,y1,x2-x1,y2-y1));
 }
 
+inline void
+drawPixmapInViewport(QRect const & rect,
+                     QSize const & painterSize,
+                     QRect const & viewport,
+                     QPixmap const & pixmap,
+                     QPainter & painter)
+{
+    int const x1 = REPROJECT(rect.x()-viewport.x(), painterSize.width(), viewport.width());
+    int const y1 = REPROJECT(rect.y()-viewport.y(), painterSize.height(), viewport.height());
+    int const x2 = REPROJECT(rect.x()+rect.width()-viewport.x(), painterSize.width(), viewport.width());
+    int const y2 = REPROJECT(rect.y()+rect.height()-viewport.y(), painterSize.height(), viewport.height());
+
+    painter.drawPixmap(QRect(x1,y1,x2-x1,y2-y1), pixmap);
+}
+
 void WidgetEditor::paintEvent(QPaintEvent * event)
 {
     (void)event;
     QPainter painter(this);
+
+    // Draw background color
     painter.fillRect(rect(), _brushBackground);
+
+    // Draw grid box
     drawRectangleInViewport(QRect(0,0,_gridWidth*8, _gridHeight*8), size(), _viewport, Qt::NoBrush, _penGrid, painter);
+
+    // Draw cells
+    for (auto pair: _cells->asKeyValueRange())
+    {
+        auto cell = pair.second;
+        auto tile = App::getState()->getTileById(cell->tileID);
+        auto palette = App::getState()->getPaletteById(cell->paletteID);
+        auto pixmap = App::getOriginalTileCache()->getTilePixmap(tile, palette, cell->hFlip, cell->vFlip);
+        QRect cellRect(cell->x*8, cell->y*8, 8, 8);
+
+        drawPixmapInViewport(cellRect, size(), _viewport, *pixmap, painter);
+
+        if (tile->linkedCellID == cell->id)
+            drawRectangleInViewport(cellRect, size(), _viewport, _brushLink, Qt::NoPen, painter);
+    }
+
+    // Draw root and offset
     drawRectangleInViewport(QRect(_root.x()*8, _root.y()*8, 8, 8), size(), _viewport, _brushRoot, Qt::NoPen, painter);
     drawRectangleInViewport(QRect(_offset.x()*8, _offset.y()*8, 8, 8), size(), _viewport, _brushOffset, Qt::NoPen, painter);
 }

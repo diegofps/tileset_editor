@@ -74,14 +74,14 @@ void ServiceContext::close(ContextReport * report)
     QList<Tile*> emptyTiles;
 
     App::getState()->setProject(nullptr);
+    App::getState()->setSelectedTileset(nullptr);
+    App::getState()->setSelectedTiles(emptyTiles);
+    App::getState()->setAllPalettes(nullptr);
     App::getState()->setAllTiles(nullptr);
     App::getState()->setAllTilesets(nullptr);
-    App::getState()->setAllPalettes(nullptr);
     App::getState()->setAllReferences(nullptr);
     App::getState()->setAllScreenshots(nullptr);
     App::getState()->setAllScenes(nullptr);
-    App::getState()->setSelectedTileset(nullptr);
-    App::getState()->setSelectedTiles(emptyTiles);
     App::getOriginalTileCache()->clear();
 
     if (report != nullptr)
@@ -396,6 +396,8 @@ void ServiceContext::importDump(QString const & folderpath, ContextReport * repo
 
     auto project = App::getState()->project();
 
+    App::getState()->updateFilteredTiles();
+
     App::getState()->setProject(project);
     App::getState()->setProjectHasChanges(true);
 
@@ -448,11 +450,17 @@ bool ServiceContext::loadContext(QDir contextDir, Project * context)
         return false;
     }
 
-    if (!context->initFromJson(doc.object()))
-    {
-        qWarning() << "Context is not valid: " << file.fileName();
+    try {
+        if (!context->initFromJson(doc.object()))
+        {
+            qWarning() << "Context is not valid: " << file.fileName();
+            return false;
+        }
+    } catch (ContextError & e) {
+        qWarning() << e.msg();
         return false;
     }
+
 
     return true;
 }

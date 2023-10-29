@@ -8,18 +8,23 @@
 #include <QHash>
 #include <QPair>
 
+class CellCommand;
+class AppState;
+
 class Tileset
 {
 public:
 
     int id;
     int sceneId;
-    QString name;
-    QColor bgColor;
     int gridW;
     int gridH;
-
+    QString name;
+    QColor bgColor;
     QHash<QPair<int,int>,Cell*> cells;
+
+    QList<CellCommand*> _history;
+    qsizetype _historyPosition;
 
 public:
 
@@ -28,6 +33,11 @@ public:
     ~Tileset();
     QJsonObject exportAsJson();
 //    QByteArray & uniqueKey();
+
+    void historyClear();
+    void historyAdd(AppState * state, CellCommand * cmd);
+    bool historyUndo(AppState * state);
+    bool historyRedo(AppState * state);
 
 };
 

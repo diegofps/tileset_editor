@@ -74,7 +74,7 @@ public:
     }
 };
 
-class TileFilter
+class TilePreviewFilter
 {
 public:
 
@@ -83,14 +83,14 @@ public:
 
 public:
 
-    TileFilter() : hFlip(false), vFlip(false) {}
+    TilePreviewFilter() : hFlip(false), vFlip(false) {}
 
-    bool operator!=(TileFilter const & other) const
+    bool operator!=(TilePreviewFilter const & other) const
     {
         return !(*this == other);
     }
 
-    bool operator==(TileFilter const & other) const
+    bool operator==(TilePreviewFilter const & other) const
     {
         return hFlip == other.hFlip && vFlip == other.vFlip;
     }
@@ -151,7 +151,7 @@ private:
     Palette     * _selectedPalette;
 
     // Tile Preview
-    TileFilter _tileFilter;
+    TilePreviewFilter _tilePreviewFilter;
 
     // Tilesets
     Tileset * _selectedTileset;
@@ -247,9 +247,12 @@ public:
     void editorPaintCellUsingSelection(int x, int y);
     void editorEraseCell(int x, int y);
     void editorColorPickCell(int x, int y);
-    void editorLinkCell(int x, int y);
+    void editorToggleCellIsLink(int x, int y);
     void editorUndo();
     void editorRedo();
+
+    void notifyCellCreated(Cell const * cell);
+    void notifyCellDeleted(Cell const * cell);
 
     // References Toolbox
     ReferenceMode referenceMode() const;
@@ -281,8 +284,8 @@ public:
     void        setSelectedPalette(Palette * value);
 
     // Tile Preview
-    TileFilter& tileMode();
-    void      setTilePreviewFilter(TileFilter const & value);
+    TilePreviewFilter& tilePreviewFilter();
+    void      setTilePreviewFilter(TilePreviewFilter const & value);
 
     // Tilesets
     Tileset* selectedTileset() const;
@@ -353,7 +356,7 @@ signals:
     void onSelectedPaletteChanged(Palette * value);
 
     // Tile Preview
-    void onTileFilterChanged(TileFilter const & value);
+    void onTileFilterChanged(TilePreviewFilter const & value);
 
     // Tilesets
     void onSelectedTilesetChanged(Tileset * value);

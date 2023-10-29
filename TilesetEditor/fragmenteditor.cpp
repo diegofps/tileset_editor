@@ -4,44 +4,6 @@
 #include "ui_fragmenteditor.h"
 #include "widgeteditor.h"
 
-void FragmentEditor::styleToolButtons(EditorTool const value)
-{
-    if (value == PENCIL)
-    {
-        ui->btPencil->setStyleSheet(App::getStyles()->get("button_checked"));
-        ui->btEraser->setStyleSheet(App::getStyles()->get("button_unchecked"));
-        ui->btLinker->setStyleSheet(App::getStyles()->get("button_unchecked"));
-    }
-    else if (value == ERASER)
-    {
-        ui->btPencil->setStyleSheet(App::getStyles()->get("button_unchecked"));
-        ui->btEraser->setStyleSheet(App::getStyles()->get("button_checked"));
-        ui->btLinker->setStyleSheet(App::getStyles()->get("button_unchecked"));
-    }
-    else if (value == LINKER)
-    {
-        ui->btPencil->setStyleSheet(App::getStyles()->get("button_unchecked"));
-        ui->btEraser->setStyleSheet(App::getStyles()->get("button_unchecked"));
-        ui->btLinker->setStyleSheet(App::getStyles()->get("button_checked"));
-    }
-    else
-    {
-        ui->btPencil->setStyleSheet(App::getStyles()->get("button_unchecked"));
-        ui->btEraser->setStyleSheet(App::getStyles()->get("button_unchecked"));
-        ui->btLinker->setStyleSheet(App::getStyles()->get("button_unchecked"));
-    }
-
-    ui->btPencil->update();
-    ui->btEraser->update();
-    ui->btLinker->update();
-}
-
-void FragmentEditor::styleButton(bool const value, QPushButton * const button)
-{
-    button->setStyleSheet(App::getStyles()->get(value ? "button_checked" : "button_unchecked"));
-    button->update();
-}
-
 FragmentEditor::FragmentEditor(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::FragmentEditor)
@@ -88,21 +50,20 @@ FragmentEditor::FragmentEditor(QWidget *parent) :
     connect(ui->widgetEditor, &WidgetEditor::onPaintCell, this, [&](int x, int y) { App::getState()->editorPaintCellUsingSelection(x, y); });
     connect(ui->widgetEditor, &WidgetEditor::onEraseCell, this, [&](int x, int y) { App::getState()->editorEraseCell(x, y); });
     connect(ui->widgetEditor, &WidgetEditor::onColorPickCell, this, [&](int x, int y) { App::getState()->editorColorPickCell(x, y); });
-    connect(ui->widgetEditor, &WidgetEditor::onLinkCell, this, [&](int x, int y) { App::getState()->editorLinkCell(x, y); });
+    connect(ui->widgetEditor, &WidgetEditor::onLinkCell, this, [&](int x, int y) { App::getState()->editorToggleCellIsLink(x, y); });
 
     connect(ui->widgetEditor, &WidgetEditor::onHoverCell, this, [&](int x, int y, Cell const * cell)
     {
         if (cell == nullptr)
             ui->lbExtraInfo->setText(QString("X:%1, Y:%2").arg(x).arg(y));
         else
-            ui->lbExtraInfo->setText(QString("X:%1, Y:%2, TileID:%3, PaletteID:%4, HFlip:%5, VFlip:%6, Link:%7")
+            ui->lbExtraInfo->setText(QString("X:%1, Y:%2, TileID:%3, PaletteID:%4, HFlip:%5, VFlip:%6")
                                  .arg(x)
                                  .arg(y)
                                  .arg(cell->tileID)
                                  .arg(cell->paletteID)
                                  .arg(cell->hFlip)
-                                 .arg(cell->vFlip)
-                                 .arg(cell->isLink));
+                                 .arg(cell->vFlip));
     });
 
     updateTilesetWidget(App::getState()->selectedTileset());
@@ -129,4 +90,42 @@ void FragmentEditor::updateTilesetWidget(Tileset * value)
     ui->widgetEditor->setRoot(root.x(), root.y());
     ui->widgetEditor->setOffset(offset.x(), offset.y());
     ui->widgetEditor->setCells(&value->cells);
+}
+
+void FragmentEditor::styleToolButtons(EditorTool const value)
+{
+    if (value == PENCIL)
+    {
+        ui->btPencil->setStyleSheet(App::getStyles()->get("button_checked"));
+        ui->btEraser->setStyleSheet(App::getStyles()->get("button_unchecked"));
+        ui->btLinker->setStyleSheet(App::getStyles()->get("button_unchecked"));
+    }
+    else if (value == ERASER)
+    {
+        ui->btPencil->setStyleSheet(App::getStyles()->get("button_unchecked"));
+        ui->btEraser->setStyleSheet(App::getStyles()->get("button_checked"));
+        ui->btLinker->setStyleSheet(App::getStyles()->get("button_unchecked"));
+    }
+    else if (value == LINKER)
+    {
+        ui->btPencil->setStyleSheet(App::getStyles()->get("button_unchecked"));
+        ui->btEraser->setStyleSheet(App::getStyles()->get("button_unchecked"));
+        ui->btLinker->setStyleSheet(App::getStyles()->get("button_checked"));
+    }
+    else
+    {
+        ui->btPencil->setStyleSheet(App::getStyles()->get("button_unchecked"));
+        ui->btEraser->setStyleSheet(App::getStyles()->get("button_unchecked"));
+        ui->btLinker->setStyleSheet(App::getStyles()->get("button_unchecked"));
+    }
+
+    ui->btPencil->update();
+    ui->btEraser->update();
+    ui->btLinker->update();
+}
+
+void FragmentEditor::styleButton(bool const value, QPushButton * const button)
+{
+    button->setStyleSheet(App::getStyles()->get(value ? "button_checked" : "button_unchecked"));
+    button->update();
 }

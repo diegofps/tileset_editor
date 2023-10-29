@@ -14,10 +14,10 @@ public:
     int y;
     bool hFlip;
     bool vFlip;
-    bool isLink;
 
 public:
 
+    Cell();
     Cell(QJsonObject & data);
     QJsonObject exportAsJson();
 
