@@ -33,14 +33,8 @@ Tile::Tile(QJsonObject & data)
     int bestID = 0;
     int bestFreq = 0;
 
-//    if (id == 169)
-//        qDebug() << "Selecting preferred palette for tile " << id;
-
     for (auto pair : palettesUsed.asKeyValueRange())
     {
-//        if (id == 169)
-//            qDebug() << "    " << pair.first << ":" << pair.second;
-
         if (pair.second > bestFreq)
         {
             bestFreq = pair.second;
@@ -48,11 +42,7 @@ Tile::Tile(QJsonObject & data)
         }
     }
 
-    preferredPalette = bestID;
-
-//    if (id == 169)
-//        qDebug() << "Selected palette with id " << preferredPalette;
-
+    favoritePaletteID = bestID;
 }
 
 QJsonObject Tile::exportAsJson()

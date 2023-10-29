@@ -79,7 +79,20 @@ void FragmentTilePreview::updatePaletteWidget()
 {
     auto palette = App::getState()->selectedPalette();
     auto selectedTile = App::getState()->selectedTile();
-    ui->palettePreview->setPalette(palette, selectedTile);
+
+    if (palette == nullptr || selectedTile == nullptr)
+        ui->lbExtraInfo->setText("");
+    else
+        ui->lbExtraInfo->setText(QString("TID:%1, PID:%2, LinkID:%3, FavPID:%4, S:%5, B:%6, H:%7, V:%8")
+                                 .arg(selectedTile->id)
+                                 .arg(palette->id)
+                                 .arg(selectedTile->linkedCellID)
+                                 .arg(selectedTile->favoritePaletteID)
+                                 .arg(selectedTile->usedInSprite)
+                                 .arg(selectedTile->usedInBackground)
+                                 .arg(selectedTile->usedWithHFlip())
+                                 .arg(selectedTile->usedWithVFlip()));
+
 }
 
 FragmentTilePreview::~FragmentTilePreview()

@@ -29,7 +29,7 @@ public:
     int  refFNID;
     int  refNFID;
     int  refFFID;
-    int  preferredPalette; // The palette id most used by this tile
+    int  favoritePaletteID; // The palette id most used by this tile
 
     QHash<int, int> palettesUsed; // Memorizes the palette colors and frequency they were used
 

@@ -41,7 +41,7 @@ void WidgetTiles::setTiles(QList<Tile*> const * value)
     {
         auto & view = _views[i];
         auto tile   = _tiles[i];
-        Palette * palette = App::getState()->getPaletteById(tile->preferredPalette);
+        Palette * palette = App::getState()->getPaletteById(tile->favoritePaletteID);
 
         view.i = 0;
         view.j = 0;

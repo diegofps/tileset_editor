@@ -114,7 +114,7 @@ void FragmentPalettes::restoreSelectedPalette()
 
     if (selectedTile != nullptr)
     {
-        int const preferredTile = selectedTile->preferredPalette;
+        int const preferredTile = selectedTile->favoritePaletteID;
 
         for (qsizetype i=0;i!=palettes->size();++i)
         {
