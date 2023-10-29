@@ -87,6 +87,11 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->action_Edit_MoveTilesetToScene, &QAction::triggered, this, &MainWindow::onAction_Edit_MoveTilesetToScene);
     connect(ui->action_Edit_InsertNearestReferenceTile, &QAction::triggered, this, [](){ App::getState()->editorPaintCellUsingSibling(); });
 
+    connect(ui->action_Edit_MoveCellsInTileset_Down, &QAction::triggered, this, [](){ App::getState()->moveCellsInTileset(0,+1); });
+    connect(ui->action_Edit_MoveCellsInTileset_Up, &QAction::triggered, this, [](){ App::getState()->moveCellsInTileset(0,-1); });
+    connect(ui->action_Edit_MoveCellsInTileset_Left, &QAction::triggered, this, [](){ App::getState()->moveCellsInTileset(-1,0); });
+    connect(ui->action_Edit_MoveCellsInTileset_Right, &QAction::triggered, this, [](){ App::getState()->moveCellsInTileset(+1,0); });
+
 
     // View menu
     connect(ui->action_View_Reference_1, &QAction::triggered, this, [&](){ App::getState()->setReferenceMode(REF_1); });

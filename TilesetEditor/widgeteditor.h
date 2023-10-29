@@ -49,6 +49,7 @@ private:
     QBrush _brushRoot;
     QBrush _brushOffset;
     QBrush _brushLink;
+    QPen _penLinkRequired;
     QPen _penGrid;
     QBrush _brushBackground;
     int _gridWidth;

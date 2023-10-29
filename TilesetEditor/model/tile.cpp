@@ -5,6 +5,7 @@ Tile::Tile(QJsonObject & data)
 {
     getIntOrFail(id, data, "Tile", "ID");
     getIntOrDefault(sceneId, data, "Tile", "SceneID", 0);
+    getIntOrDefault(linkedCellID, data, "Tile", "LinkedCellID", 0);
     getIntArrayOrFail(pixels, data, "Tile", "Pixels", 64);
     getIntIntQHashOrFail(palettesUsed, data, "Tile", "Palettes");
     getIntOrFail(paletteSize, data, "Tile", "PaletteSize");
@@ -67,6 +68,7 @@ QJsonObject Tile::exportAsJson()
     QJsonObject jTile;
     jTile["ID"] = id;
     jTile["SceneID"] = sceneId;
+    jTile["LinkedCellID"] = linkedCellID;
     jTile["Pixels"] = jPixels;
     jTile["Palettes"] = jPalettes;
     jTile["PalettesSeen"] = palettesUsed.size();

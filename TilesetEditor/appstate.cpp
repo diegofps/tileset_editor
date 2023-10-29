@@ -623,6 +623,33 @@ int AppState::editorZoom()
     return _editorZoom;
 }
 
+void AppState::moveCellsInTileset(int rx, int ry)
+{
+    auto tileset = _selectedTileset;
+
+    if (tileset == nullptr)
+        return;
+
+    QList<Cell*> cells;
+
+    for (auto pair : tileset->cells.asKeyValueRange())
+    {
+        pair.second->x += rx;
+        pair.second->y += ry;
+        cells.append(pair.second);
+    }
+
+    tileset->cells.clear();
+
+    for (auto cell : cells)
+    {
+        QPair<int,int> key(cell->x, cell->y);
+        tileset->cells.insert(key, cell);
+    }
+
+    emit onSelectedTilesetChanged(tileset);
+}
+
 void AppState::moveViewport(int rx, int ry)
 {
     emit onMoveViewport(rx, ry);

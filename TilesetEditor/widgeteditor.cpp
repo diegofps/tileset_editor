@@ -24,6 +24,10 @@ WidgetEditor::WidgetEditor(QWidget *parent)
     _brushLink.setColor(QColor::fromString("#66ffff00"));
     _brushLink.setStyle(Qt::SolidPattern);
 
+    _penLinkRequired.setColor(QColor::fromString("#66ffff00"));
+    _penLinkRequired.setStyle(Qt::SolidLine);
+    _penLinkRequired.setWidth(1);
+
     _penGrid.setColor(QColor::fromString("#66ffffff"));
     _penGrid.setStyle(Qt::SolidLine);
 
@@ -82,18 +86,25 @@ void WidgetEditor::paintEvent(QPaintEvent * event)
     drawRectangleInViewport(QRect(0,0,_gridWidth*8, _gridHeight*8), size(), _viewport, Qt::NoBrush, _penGrid, painter);
 
     // Draw cells
-    for (auto pair: _cells->asKeyValueRange())
+    if (_cells != nullptr)
     {
-        auto cell = pair.second;
-        auto tile = App::getState()->getTileById(cell->tileID);
-        auto palette = App::getState()->getPaletteById(cell->paletteID);
-        auto pixmap = App::getOriginalTileCache()->getTilePixmap(tile, palette, cell->hFlip, cell->vFlip);
-        QRect cellRect(cell->x*8, cell->y*8, 8, 8);
+        for (auto pair: _cells->asKeyValueRange())
+        {
+            auto cell = pair.second;
+            auto tile = App::getState()->getTileById(cell->tileID);
+            auto palette = App::getState()->getPaletteById(cell->paletteID);
+            auto pixmap = App::getOriginalTileCache()->getTilePixmap(tile, palette, cell->hFlip, cell->vFlip);
+            QRect cellRect(cell->x*8, cell->y*8, 8, 8);
 
-        drawPixmapInViewport(cellRect, size(), _viewport, *pixmap, painter);
+            drawPixmapInViewport(cellRect, size(), _viewport, *pixmap, painter);
 
-        if (tile->linkedCellID == cell->id)
-            drawRectangleInViewport(cellRect, size(), _viewport, _brushLink, Qt::NoPen, painter);
+            if (tile->linkedCellID == 0)
+                drawRectangleInViewport(cellRect, size(), _viewport, Qt::NoBrush, _penLinkRequired, painter);
+
+            else if (tile->linkedCellID == cell->id)
+                drawRectangleInViewport(cellRect, size(), _viewport, _brushLink, Qt::NoPen, painter);
+
+        }
     }
 
     // Draw root and offset
@@ -203,10 +214,13 @@ void WidgetEditor::mousePressEvent(QMouseEvent * event)
 
     auto pos = event->pos();
 
-    int const x = (_viewport.x() + pos.x() * _viewport.width() / width()) / 8;
-    int const y = (_viewport.y() + pos.y() * _viewport.height() / height()) / 8;
+    int const offX = pos.x()*_viewport.width()/width();
+    int const offY = pos.y()*_viewport.height()/height();
 
-    qDebug() << x << " " << y;
+    int const x = (_viewport.x()+offX)/8-(offX<-_viewport.x()?1:0);
+    int const y = (_viewport.y()+offY)/8-(offY<-_viewport.y()?1:0);
+
+    qDebug() << pos << _viewport << x << " " << y;
 
     if (event->modifiers().testFlag(Qt::ShiftModifier))
         emit onLinkCell(x,y);
@@ -225,8 +239,11 @@ void WidgetEditor::mouseMoveEvent(QMouseEvent * event)
 {
     auto pos = event->pos();
 
-    int const x = (_viewport.x() + pos.x() * _viewport.width() / width()) / 8;
-    int const y = (_viewport.y() + pos.y() * _viewport.height() / height()) / 8;
+    int const offX = pos.x()*_viewport.width()/width();
+    int const offY = pos.y()*_viewport.height()/height();
+
+    int const x = (_viewport.x()+offX)/8-(offX<-_viewport.x()?1:0);
+    int const y = (_viewport.y()+offY)/8-(offY<-_viewport.y()?1:0);
 
     QPair<int,int> key(x,y);
 

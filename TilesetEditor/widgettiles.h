@@ -37,6 +37,7 @@ protected:
 
 private:
     QPen _pen;
+    QPen _penLinkRequired;
     QBrush _brush;
     QList<Tile*> _tiles;
     int _cols;

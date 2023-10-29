@@ -179,6 +179,15 @@ QMenu::item:selected {
     <property name="title">
      <string>&amp;Edit</string>
     </property>
+    <widget class="QMenu" name="menuEdit_MoveTilesInTileset">
+     <property name="title">
+      <string>Move Tiles in Tileset</string>
+     </property>
+     <addaction name="action_Edit_MoveCellsInTileset_Left"/>
+     <addaction name="action_Edit_MoveCellsInTileset_Up"/>
+     <addaction name="action_Edit_MoveCellsInTileset_Right"/>
+     <addaction name="action_Edit_MoveCellsInTileset_Down"/>
+    </widget>
     <addaction name="action_Edit_Undo"/>
     <addaction name="action_Edit_Redo"/>
     <addaction name="separator"/>
@@ -186,6 +195,7 @@ QMenu::item:selected {
     <addaction name="action_Edit_MoveTileToScene"/>
     <addaction name="action_Edit_MoveTilesetToScene"/>
     <addaction name="action_Edit_InsertNearestReferenceTile"/>
+    <addaction name="menuEdit_MoveTilesInTileset"/>
    </widget>
    <widget class="QMenu" name="menuView">
     <property name="title">
@@ -612,7 +622,7 @@ QMenu::item:selected {
     <string>Editor Zoom In</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl+Shift+=</string>
+    <string>+</string>
    </property>
   </action>
   <action name="action_View_Editor_ZoomOut">
@@ -620,7 +630,7 @@ QMenu::item:selected {
     <string>Editor Zoom Out</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl+Shift+-</string>
+    <string>_</string>
    </property>
   </action>
   <action name="action_Navigate_Viewport_Left">
@@ -628,7 +638,7 @@ QMenu::item:selected {
     <string>Left</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl+Shift+Left</string>
+    <string>Shift+Left</string>
    </property>
   </action>
   <action name="action_Navigate_Viewport_Up">
@@ -636,7 +646,7 @@ QMenu::item:selected {
     <string>Up</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl+Shift+Up</string>
+    <string>Shift+Up</string>
    </property>
   </action>
   <action name="action_Navigate_Viewport_Right">
@@ -644,7 +654,7 @@ QMenu::item:selected {
     <string>Right</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl+Shift+Right</string>
+    <string>Shift+Right</string>
    </property>
   </action>
   <action name="action_Navigate_Viewport_Down">
@@ -652,7 +662,7 @@ QMenu::item:selected {
     <string>Down</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl+Shift+Down</string>
+    <string>Shift+Down</string>
    </property>
   </action>
   <action name="action_Navigate_Viewport_Home">
@@ -660,7 +670,7 @@ QMenu::item:selected {
     <string>Home</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl+Shift+Home</string>
+    <string>Shift+Home</string>
    </property>
   </action>
   <action name="action_Navigate_Tile_Left">
@@ -709,6 +719,38 @@ QMenu::item:selected {
    </property>
    <property name="shortcut">
     <string>4</string>
+   </property>
+  </action>
+  <action name="action_Edit_MoveCellsInTileset_Left">
+   <property name="text">
+    <string>Left</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+Left</string>
+   </property>
+  </action>
+  <action name="action_Edit_MoveCellsInTileset_Up">
+   <property name="text">
+    <string>Up</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+Up</string>
+   </property>
+  </action>
+  <action name="action_Edit_MoveCellsInTileset_Right">
+   <property name="text">
+    <string>Right</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+Right</string>
+   </property>
+  </action>
+  <action name="action_Edit_MoveCellsInTileset_Down">
+   <property name="text">
+    <string>Down</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+Down</string>
    </property>
   </action>
  </widget>

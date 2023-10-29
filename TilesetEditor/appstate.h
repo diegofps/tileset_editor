@@ -240,6 +240,7 @@ public:
     void zoomOutEditor();
     int  editorZoom();
 
+    void moveCellsInTileset(int rx, int ry);
     void moveViewport(int rx, int ry);
     void moveViewportHome();
 

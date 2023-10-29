@@ -22,6 +22,10 @@ WidgetTiles::WidgetTiles(QWidget *parent)
     _pen.setStyle(Qt::SolidLine);
     _pen.setWidth(3);
 
+    _penLinkRequired.setColor(QColor::fromString("#66ffff00"));
+    _penLinkRequired.setStyle(Qt::SolidLine);
+    _penLinkRequired.setWidth(1);
+
     _brush.setColor(QColor::fromRgba(qRgba(128,128,255,160)));
     _brush.setStyle(Qt::SolidPattern);
 }
@@ -119,6 +123,13 @@ void WidgetTiles::paintEvent(QPaintEvent * event)
 
             if (i == _selection.start)
                 painter.drawRect(view.rect);
+        }
+
+        if (view.tile->linkedCellID == 0)
+        {
+            painter.setPen(_penLinkRequired);
+            painter.setBrush(Qt::NoBrush);
+            painter.drawRect(view.rect);
         }
     }
 }
