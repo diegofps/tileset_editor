@@ -80,23 +80,23 @@ FragmentTiles::FragmentTiles(QWidget *parent) :
         _widgetTiles->setShowLinkInfo(value);
     });
 
-//    connect(App::getState(), &AppState::onSelectedTilesChanged, this, [&](QList<Tile*> tiles)
-//    {
-//        _widgetTiles->setSelection(tilesPos.isEmpty()?Range(0,0):tilesPos);
-//    });
-
-    connect(_widgetTiles, &WidgetTiles::onSelectedTileChanged, this, [&](Range range)
+    connect(App::getState(), &AppState::onSelectedTilesChanged, this, [&](QList<Tile*> const * tiles)
     {
-        if (range.start>=0 && range.end>=0)
-        {
-            QList<Tile*> selectedTiles;
-            auto tiles = App::getState()->filteredTiles();
+        _widgetTiles->setSelection(tiles);
+    });
 
-            for (int i=range.start;i<=range.end;++i)
-                selectedTiles.append(tiles->at(i));
+    connect(_widgetTiles, &WidgetTiles::onSelectedTileChanged, this, [&](QHash<qsizetype, Tile*> const & selection)
+    {
+        QList<Tile*> selectedTiles;
 
-            App::getState()->setSelectedTiles(selectedTiles);
-        }
+        for (auto pair : selection.asKeyValueRange())
+            selectedTiles.append(pair.second);
+
+        std::sort(selectedTiles.begin(), selectedTiles.end(), [](Tile const * a, Tile const * b) {
+            return a->id < b->id;
+        });
+
+        App::getState()->setSelectedTiles(selectedTiles);
     });
 
     connect(App::getState(), &AppState::onMoveTileSelection, this, [&](int rx, int ry)
@@ -106,7 +106,7 @@ FragmentTiles::FragmentTiles(QWidget *parent) :
 
     updateFilterWidgets();
     updateTilesWidget();
-    _widgetTiles->setSelection(Range(0,0));
+    _widgetTiles->clearSelection();
 
 }
 
@@ -152,13 +152,13 @@ void FragmentTiles::restoreSelectedTile()
         {
             if (tiles->at(i)->id == _lastSelectedItemID)
             {
-                _widgetTiles->setSelection(Range(i,i));
+                _widgetTiles->setSelection(i);
                 return;
             }
         }
     }
 
-    _widgetTiles->setSelection(Range(0,0));
+    _widgetTiles->clearSelection();
 };
 
 void FragmentTiles::styleButton(QPushButton * btn, int const value)

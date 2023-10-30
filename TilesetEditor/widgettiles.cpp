@@ -13,7 +13,7 @@ WidgetTiles::WidgetTiles(QWidget *parent)
 
       _cols(0),
       _rows(0),
-      _selection(-1,-1),
+      _lastSelectionPosition(0),
       _showLinkInfo(true)
 {
     setMinimumHeight(100);
@@ -51,8 +51,6 @@ void WidgetTiles::setTiles(QList<Tile*> const * value)
         view.rect = QRect();
     }
 
-    _selection.set(-1,-1);
-
     update();
 }
 
@@ -84,16 +82,8 @@ void WidgetTiles::repack()
 
 void WidgetTiles::moveTileSelection(int rx, int ry)
 {
-    int const newStart = _selection.start + _cols * ry + rx;
-    int const newEnd = _selection.end + _cols * ry + rx;
-
-    if (newStart >= 0 && newStart < _tiles.size() && newEnd >= 0 && newEnd < _tiles.size())
-    {
-        _selection.set(newStart, newEnd);
-        emit onSelectedTileChanged(_selection);
-    }
-
-    update();
+    int const position = _lastSelectionPosition + _cols * ry + rx;
+    setSelection(position);
 }
 
 void WidgetTiles::setShowLinkInfo(bool value)
@@ -102,13 +92,28 @@ void WidgetTiles::setShowLinkInfo(bool value)
     update();
 }
 
-void WidgetTiles::setSelection(Range range)
+void WidgetTiles::setSelection(int position)
 {
-    range.limit(-1, _tiles.size()-1);
-    _selection = range;
-    update();
+    if (position >= 0 && position < _tiles.size())
+    {
+        _selection.clear();
+        _selection.insert(position, _views[position].tile);
+        _lastSelectionPosition = position;
+        emit onSelectedTileChanged(_selection);
+    }
 
-    emit onSelectedTileChanged(_selection);
+    update();
+}
+
+void WidgetTiles::setSelection(QList<Tile *> const * )
+{
+
+}
+
+void WidgetTiles::clearSelection()
+{
+    _selection.clear();
+    update();
 }
 
 void WidgetTiles::paintEvent(QPaintEvent * event)
@@ -122,14 +127,14 @@ void WidgetTiles::paintEvent(QPaintEvent * event)
         if (view.pixmap != nullptr)
             painter.drawPixmap(view.rect, *view.pixmap);
 
-        if (i >= _selection.start && i <= _selection.end)
+        if (_selection.contains(i))
         {
             painter.setPen(Qt::NoPen);
             painter.setBrush(_brush);
             painter.drawRect(view.rect);
 
-            if (i == _selection.start)
-                painter.drawRect(view.rect);
+//            if (i == _selection.start)
+//                painter.drawRect(view.rect);
         }
 
         if (_showLinkInfo && view.tile->linkedCellID == 0)
@@ -165,7 +170,33 @@ void WidgetTiles::mousePressEvent(QMouseEvent *event)
 
             if (view.rect.contains(pos))
             {
-                _selection.end = i;
+                if (i >= _lastSelectionPosition)
+                {
+                    for (qsizetype k=_lastSelectionPosition;k<=i;++k)
+                        _selection.insert(k, _views[k].tile);
+                }
+                else
+                {
+                    for (qsizetype k=i;k<=_lastSelectionPosition;++k)
+                        _selection.insert(k, _views[k].tile);
+                }
+
+                _lastSelectionPosition = i;
+                mustEmit = true;
+                break;
+            }
+        }
+    }
+    else if (event->modifiers().testFlag(Qt::ControlModifier))
+    {
+        for (qsizetype i=0;i!=_views.size();++i)
+        {
+            auto & view = _views[i];
+
+            if (view.rect.contains(pos))
+            {
+                _selection.insert(i, view.tile);
+                _lastSelectionPosition = i;
                 mustEmit = true;
                 break;
             }
@@ -179,19 +210,13 @@ void WidgetTiles::mousePressEvent(QMouseEvent *event)
 
             if (view.rect.contains(pos))
             {
-                _selection.start = i;
-                _selection.end = i;
+                _selection.clear();
+                _selection.insert(i, view.tile);
+                _lastSelectionPosition = i;
                 mustEmit = true;
                 break;
             }
         }
-    }
-
-    if (_selection.start > _selection.end)
-    {
-        int tmp = _selection.start;
-        _selection.start = _selection.end;
-        _selection.end = tmp;
     }
 
     if (mustEmit)

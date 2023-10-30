@@ -27,9 +27,13 @@ public:
     void repack();
     void moveTileSelection(int rx, int ry);
     void setShowLinkInfo(bool value);
+    void setSelection(int position);
+    void setSelection(QList<Tile *> const * tiles);
+    void clearSelection();
+
 
 signals:
-    void onSelectedTileChanged(Range range);
+    void onSelectedTileChanged(QHash<qsizetype,Tile*> const & selection);
 
 protected:
     void paintEvent(QPaintEvent *event);
@@ -44,7 +48,8 @@ private:
     int _cols;
     int _rows;
     QList<ViewHolder> _views;
-    Range _selection;
+    QHash<qsizetype,Tile*> _selection;
+    qsizetype _lastSelectionPosition;
     bool _showLinkInfo;
 };
 
