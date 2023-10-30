@@ -71,7 +71,7 @@ void IOService::close(IOReport * report)
     }
 
     QString path = project->path;
-    QList<Tile*> emptyTiles;
+    QList<qsizetype> emptyTiles;
 
     App::getState()->setProject(nullptr);
     App::getState()->setSelectedTileset(nullptr);

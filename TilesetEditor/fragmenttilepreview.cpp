@@ -46,7 +46,7 @@ FragmentTilePreview::FragmentTilePreview(QWidget * parent) :
         updatePaletteWidget();
     });
 
-    connect(App::getState(), &AppState::onSelectedTilesChanged, this, [&](QList<Tile*> const *)
+    connect(App::getState(), &AppState::onSelectedTilesChanged, this, [&](QList<qsizetype> const *)
     {
         updateTileWidget();
     });

@@ -28,7 +28,7 @@ public:
     void moveTileSelection(int rx, int ry);
     void setShowLinkInfo(bool value);
     void setSelection(int position);
-    void setSelection(QList<Tile *> const * tiles);
+    void setSelection(QList<qsizetype> const * tiles);
     void clearSelection();
 
 

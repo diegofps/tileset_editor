@@ -130,10 +130,6 @@ private:
 
 
     // Editor Toolbox
-//    EditorTool _editorTool;
-//    bool       _editorShowLinkedTiles;
-//    bool       _editorShowUnlinkedTiles;
-//    bool       _editorShowGrid;
     QPoint     _editorRoot;
     int        _editorZoom;
 
@@ -144,8 +140,8 @@ private:
     QPoint          _referenceOffset;
 
     // Tiles
-    TilesFilter  _tilesFilter;
-    QList<Tile*> _selectedTiles;
+    TilesFilter      _tilesFilter;
+    QList<qsizetype> _selectedTiles;
 
     // Palettes
     PaletteMode   _palettesMode;
@@ -283,11 +279,11 @@ public:
     void   moveReferenceOffsetHome();
 
     // Tiles
-    TilesFilter const&  tilesFilter() const;
-    QList<Tile*> const* selectedTiles() const;
-    Tile*               selectedTile() const;
-    void                moveSelectedTilesToScene(int sceneID);
-    void                moveTileSelection(int rx, int ry);
+    TilesFilter const&      tilesFilter() const;
+    QList<qsizetype> const* selectedTiles() const;
+    Tile*                   selectedTile() const;
+    void                    moveSelectedTilesToScene(int sceneID);
+    void                    moveTileSelection(int rx, int ry);
 
     // Palettes
     PaletteMode palettesMode() const;
@@ -311,7 +307,7 @@ public:
 
     //Tiles
     void setTilesFilter(TilesFilter const & value);
-    void setSelectedTiles(QList<Tile*> & value);
+    void setSelectedTiles(QList<qsizetype> & value);
 
 signals:
 
@@ -358,7 +354,7 @@ signals:
 
     // Tiles
     void onTilesFilterChanged(TilesFilter const & value);
-    void onSelectedTilesChanged(QList<Tile*> const * tiles);
+    void onSelectedTilesChanged(QList<qsizetype> const * tiles);
     void onMoveTileSelection(int rx, int ry);
 
     // Palettes

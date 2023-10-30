@@ -80,21 +80,19 @@ FragmentTiles::FragmentTiles(QWidget *parent) :
         _widgetTiles->setShowLinkInfo(value);
     });
 
-    connect(App::getState(), &AppState::onSelectedTilesChanged, this, [&](QList<Tile*> const * tiles)
+    connect(App::getState(), &AppState::onSelectedTilesChanged, this, [&](QList<qsizetype> const * tiles)
     {
         _widgetTiles->setSelection(tiles);
     });
 
     connect(_widgetTiles, &WidgetTiles::onSelectedTileChanged, this, [&](QHash<qsizetype, Tile*> const & selection)
     {
-        QList<Tile*> selectedTiles;
+        QList<qsizetype> selectedTiles;
 
         for (auto pair : selection.asKeyValueRange())
-            selectedTiles.append(pair.second);
+            selectedTiles.append(pair.first);
 
-        std::sort(selectedTiles.begin(), selectedTiles.end(), [](Tile const * a, Tile const * b) {
-            return a->id < b->id;
-        });
+        std::sort(selectedTiles.begin(), selectedTiles.end());
 
         App::getState()->setSelectedTiles(selectedTiles);
     });

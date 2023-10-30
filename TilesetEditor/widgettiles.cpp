@@ -105,9 +105,38 @@ void WidgetTiles::setSelection(int position)
     update();
 }
 
-void WidgetTiles::setSelection(QList<Tile *> const * )
+void WidgetTiles::setSelection(QList<qsizetype> const * selection)
 {
+    bool same = true;
 
+    if (selection->size() != _selection.size())
+    {
+        same = false;
+    }
+    else
+    {
+        for (auto pos : *selection)
+        {
+            if (!_selection.contains(pos))
+            {
+                same = false;
+                break;
+            }
+        }
+    }
+
+    if (same)
+        return;
+
+    _selection.clear();
+    for (auto pos : *selection)
+    {
+        _lastSelectionPosition = pos;
+        if (pos >= 0 && pos < _views.size())
+            _selection.insert(pos, _views[pos].tile);
+    }
+
+    update();
 }
 
 void WidgetTiles::clearSelection()

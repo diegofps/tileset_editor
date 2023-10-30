@@ -286,8 +286,9 @@ void AppState::updateFilteredPalettes()
     {
         bool add = false;
 
-        for (auto tile : _selectedTiles)
+        for (auto tilePos : _selectedTiles)
         {
+            auto tile = _filteredTiles.value(tilePos);
             if (tile != nullptr && tile->palettesUsed.contains(palette->id))
             {
                 add = true;
@@ -823,11 +824,15 @@ void AppState::editorColorPickCell(int x, int y)
 
     auto tile = getTileById(it.value()->tileID);
     auto palette = getPaletteById(it.value()->paletteID);
+    auto index = _filteredTiles.indexOf(tile);
 
-    QList<Tile*> selectedTiles;
-    selectedTiles.append(tile);
-    setSelectedTiles(selectedTiles);
-    setSelectedPalette(palette);
+    if (index >= 0)
+    {
+        QList<qsizetype> selectedTiles;
+        selectedTiles.append(index);
+        setSelectedTiles(selectedTiles);
+        setSelectedPalette(palette);
+    }
 }
 
 void AppState::editorToggleCellIsLink(int x, int y)
@@ -1090,7 +1095,7 @@ void AppState::setTilesFilter(TilesFilter const & value)
     }
 }
 
-void AppState::setSelectedTiles(QList<Tile*> & tiles)
+void AppState::setSelectedTiles(QList<qsizetype> & tiles)
 {
     _selectedTiles = tiles;
     emit onSelectedTilesChanged(&_selectedTiles);
@@ -1103,33 +1108,30 @@ TilesFilter const & AppState::tilesFilter() const
     return _tilesFilter;
 }
 
-QList<Tile*> const * AppState::selectedTiles() const
+QList<qsizetype> const * AppState::selectedTiles() const
 {
     return &_selectedTiles;
 }
 
 Tile * AppState::selectedTile() const
 {
-    return _selectedTiles.isEmpty() ? nullptr : _selectedTiles[0];
+    return _selectedTiles.isEmpty() ? nullptr : _filteredTiles.value(_selectedTiles[0]);
 }
 
 void AppState::moveSelectedTilesToScene(int sceneID)
 {
     auto tiles = _selectedTiles;
 
-    if (sceneID == -1)
+    int newSceneID = sceneID == -1 ? 0 : sceneID;
+
+    for (auto tilePos : tiles)
     {
-        for (auto tile : tiles)
-            tile->sceneId = 0;
-    }
-    else
-    {
-        for (auto tile : tiles)
-            tile->sceneId = sceneID;
+        auto tile = _filteredTiles.value(tilePos);
+        if (tile != nullptr)
+            tile->sceneId = newSceneID;
     }
 
     _projectHasChanges = true;
-
     emit onAllTilesChanged(_projectTiles);
     updateFilteredTiles();
 }

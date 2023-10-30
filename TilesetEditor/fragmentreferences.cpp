@@ -59,7 +59,7 @@ FragmentReferences::FragmentReferences(QWidget *parent) :
         updateReferenceWidget();
     });
 
-    connect(App::getState(), &AppState::onSelectedTilesChanged, this, [&](QList<Tile*> const *)
+    connect(App::getState(), &AppState::onSelectedTilesChanged, this, [&](QList<qsizetype> const *)
     {
         updateReferenceWidget();
     });
