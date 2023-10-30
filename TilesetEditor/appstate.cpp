@@ -888,6 +888,65 @@ void AppState::editorRedo()
         emit onSelectedTilesetChanged(tileset);
 }
 
+void AppState::autoLink()
+{
+    auto tileset = _selectedTileset;
+
+    if (tileset == nullptr)
+        return;
+
+    bool emitChanges = false;
+
+    for (auto pair : tileset->cells.asKeyValueRange())
+    {
+        auto tile = getTileById(pair.second->tileID);
+        if (tile != nullptr && tile->linkedCellID == 0)
+        {
+            editorToggleCellIsLink(pair.second->x, pair.second->y);
+            emitChanges = true;
+        }
+    }
+
+    if (emitChanges)
+    {
+        _projectHasChanges = true;
+        updateFilteredTiles();
+        emit onSelectedTilesetChanged(tileset);
+    }
+}
+
+void AppState::autoUnlink()
+{
+    auto tileset = _selectedTileset;
+
+    if (tileset == nullptr)
+        return;
+
+    bool emitChanges = false;
+
+    for (auto pair : tileset->cells.asKeyValueRange())
+    {
+        auto tile = getTileById(pair.second->tileID);
+        if (tile != nullptr && tile->linkedCellID == pair.second->id)
+        {
+            editorToggleCellIsLink(pair.second->x, pair.second->y);
+            emitChanges = true;
+        }
+    }
+
+    if (emitChanges)
+    {
+        _projectHasChanges = true;
+        updateFilteredTiles();
+        emit onSelectedTilesetChanged(tileset);
+    }
+}
+
+void AppState::clearCell()
+{
+    editorEraseCell(_editorRoot.x()+_referenceOffset.x(), _editorRoot.y()+_referenceOffset.y());
+}
+
 void AppState::notifyCellCreated(Cell const *)
 {
 

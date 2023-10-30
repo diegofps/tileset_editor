@@ -196,6 +196,9 @@ QMenu::item:selected {
     <addaction name="action_Edit_MoveTilesetToScene"/>
     <addaction name="action_Edit_InsertNearestReferenceTile"/>
     <addaction name="menuEdit_MoveTilesInTileset"/>
+    <addaction name="action_Edit_AutoLink"/>
+    <addaction name="action_Edit_AutoUnlink"/>
+    <addaction name="action_Edit_ClearCell"/>
    </widget>
    <widget class="QMenu" name="menuView">
     <property name="title">
@@ -751,6 +754,30 @@ QMenu::item:selected {
    </property>
    <property name="shortcut">
     <string>Ctrl+Shift+Down</string>
+   </property>
+  </action>
+  <action name="action_Edit_AutoLink">
+   <property name="text">
+    <string>Auto Link</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+L</string>
+   </property>
+  </action>
+  <action name="action_Edit_AutoUnlink">
+   <property name="text">
+    <string>Auto Unlink</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+L</string>
+   </property>
+  </action>
+  <action name="action_Edit_ClearCell">
+   <property name="text">
+    <string>Clear Cell</string>
+   </property>
+   <property name="shortcut">
+    <string>Del</string>
    </property>
   </action>
  </widget>

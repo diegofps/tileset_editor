@@ -109,7 +109,6 @@ void WidgetEditor::paintEvent(QPaintEvent * event)
 
         else if (tile->linkedCellID == cell->id)
             drawRectangleInViewport(cellRect, size(), _viewport, _brushLink, Qt::NoPen, painter);
-
     }
 
     // Draw root and offset

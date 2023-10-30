@@ -252,6 +252,9 @@ public:
     void editorToggleCellIsLink(int x, int y);
     void editorUndo();
     void editorRedo();
+    void autoLink();
+    void autoUnlink();
+    void clearCell();
 
     void notifyCellCreated(Cell const * cell);
     void notifyCellDeleted(Cell const * cell);

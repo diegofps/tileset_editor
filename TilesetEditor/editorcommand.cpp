@@ -104,6 +104,7 @@ inline void updateLinkedCellID(AppState * state, QPair<int,int> const & position
         return;
 
     tile->linkedCellID = value;
+    App::getState()->updateFilteredTiles();
 }
 
 void LinkCommand::execute(AppState *state)

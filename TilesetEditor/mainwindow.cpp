@@ -81,6 +81,9 @@ MainWindow::MainWindow(QWidget *parent)
     // Edit menu
     connect(ui->action_Edit_Undo, &QAction::triggered, this, [&]() { App::getState()->editorUndo(); });
     connect(ui->action_Edit_Redo, &QAction::triggered, this, [&]() { App::getState()->editorRedo(); });
+    connect(ui->action_Edit_AutoLink, &QAction::triggered, this, [&]() { App::getState()->autoLink(); });
+    connect(ui->action_Edit_AutoUnlink, &QAction::triggered, this, [&]() { App::getState()->autoUnlink(); });
+    connect(ui->action_Edit_ClearCell, &QAction::triggered, this, [&]() { App::getState()->clearCell(); });
 
     connect(ui->action_Edit_Scenes, &QAction::triggered, this, &MainWindow::onAction_Edit_Scenes);
     connect(ui->action_Edit_MoveTileToScene, &QAction::triggered, this, &MainWindow::onAction_Edit_MoveTileToScene);
