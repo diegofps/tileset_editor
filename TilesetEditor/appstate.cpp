@@ -283,7 +283,7 @@ void AppState::updateFilteredPalettes()
     {
         for (auto item : *_projectPalettes)
             _filteredPalettes.append(item);
-        qDebug() << "Filter found " << _filteredPalettes.size() << " palettes using all";
+//        qDebug() << "Filter found " << _filteredPalettes.size() << " palettes using all";
         emit onFilteredPalettesChanged(&_filteredPalettes);
         return;
     }
@@ -308,7 +308,7 @@ void AppState::updateFilteredPalettes()
             _filteredPalettes.append(palette);
     }
 
-    qDebug() << "Filter found " << _filteredPalettes.size() << " palettes not using all";
+//    qDebug() << "Filter found " << _filteredPalettes.size() << " palettes not using all";
     emit onFilteredPalettesChanged(&_filteredPalettes);
 }
 
@@ -662,15 +662,15 @@ void AppState::moveViewportHome()
     emit onMoveViewportHome();
 }
 
-inline int imageDistance(QImage const * candidate, QImage const * query, int & spread, float & score)
+inline void imageDistance(QImage const * candidate, QImage const * query, int & pixels, float & score)
 {
-    score  = 999999;
-    spread = 0;
+    score  = 0;
+    pixels = 0;
 
     if (candidate == nullptr || query == nullptr || candidate->width() != query->width() || candidate->height() != query->height())
-        return INT_MAX;
+        return;
 
-    int distance = 0;
+    int distance = 255;
 
     for (int i=0;i!=candidate->height();++i)
     {
@@ -684,14 +684,12 @@ inline int imageDistance(QImage const * candidate, QImage const * query, int & s
                 distance += std::abs(qRed(candidateLine[j])-qRed(queryLine[j]));
                 distance += std::abs(qGreen(candidateLine[j])-qGreen(queryLine[j]));
                 distance += std::abs(qBlue(candidateLine[j])-qBlue(queryLine[j]));
-                spread += 1;
+                pixels += 1;
             }
         }
     }
 
-    score = distance * (64-spread+1) / float(64+1);
-
-    return distance;
+    score = pixels == 0 ? 0 : distance / float((pixels+1)*255*3);
 }
 
 void AppState::editorPaintCellUsingSibling()
@@ -699,13 +697,12 @@ void AppState::editorPaintCellUsingSibling()
     if (_referenceOffsetImage == nullptr || _filteredTiles.isEmpty())
         return;
 
-    float bestScore = -1;;
-    int bestDistance = -1;
-    int bestSpread = -1;
-    Tile * bestTile = nullptr;
     Palette * bestPalette = nullptr;
+    Tile * bestTile = nullptr;
     bool bestHFlip = false;
     bool bestVFlip = false;
+    float bestScore = -1;
+    int bestPixels = -1;
 
 #define TRY_ARRANGEMENT(H_FLIP, V_FLIP) {\
     for (auto tile : _filteredTiles)\
@@ -716,19 +713,17 @@ void AppState::editorPaintCellUsingSibling()
             if (palette != nullptr) {\
                 QImage const * const currImage = App::getOriginalTileCache()->getTileImage(tile, palette, (H_FLIP), (V_FLIP));\
                 float currScore;\
-                int currSpread;\
-                int const currDistance = imageDistance(currImage, _referenceOffsetImage, currSpread, currScore);\
-                if (palette->id == 15 && (tile->id == 7 || tile->id == 16))\
-                    qDebug() << "TARGET" << tile->id << " " << currDistance << " " << currSpread << " " << currScore;\
-                if (currScore < bestScore || bestTile == nullptr)\
+                int currPixels;\
+                imageDistance(currImage, _referenceOffsetImage, currPixels, currScore);\
+                /*if (palette->id == 15)\
+                    qDebug() << tile->id << currScore << currPixels << bestScore << bestPixels;*/\
+                if (bestTile == nullptr || currScore < bestScore || (currScore == bestScore && currPixels > bestPixels))\
                 {\
-                    qDebug() << "Searching... " << currDistance;\
                     bestTile = tile;\
                     bestPalette = palette;\
-                    bestDistance = currDistance;\
                     bestHFlip = H_FLIP;\
                     bestVFlip = V_FLIP;\
-                    bestSpread = currSpread;\
+                    bestPixels = currPixels;\
                     bestScore = currScore;\
                 }\
             }\
@@ -741,67 +736,12 @@ void AppState::editorPaintCellUsingSibling()
     TRY_ARRANGEMENT(false, true);
     TRY_ARRANGEMENT(true, true);
 
-
-//#define TRY_ARRANGEMENT(H_FLIP, V_FLIP) {\
-//        QImage const * const currImage = App::getOriginalTileCache()->getTileImage(tile, palette, (H_FLIP), (V_FLIP));\
-//        int const currDistance = imageDistance(currImage, _referenceOffsetImage);\
-//        if (currDistance < bestDistance || bestTile == nullptr)\
-//        {\
-//            qDebug() << "Searching... " << currDistance;\
-//            bestTile = tile;\
-//            bestPalette = palette;\
-//            bestDistance = currDistance;\
-//            bestHFlip = H_FLIP;\
-//            bestVFlip = V_FLIP;\
-//        }\
-//    }
-
-
-//    for (auto tile : _filteredTiles)
-//    {
-//        for (auto pair : tile->palettesUsed.asKeyValueRange())
-//        {
-//            auto palette = getPaletteById(pair.first);
-//            if (palette != nullptr)
-//                TRY_ARRANGEMENT(false, false);
-//        }
-//    }
-
-//    for (auto tile : _filteredTiles)
-//    {
-//        for (auto pair : tile->palettesUsed.asKeyValueRange())
-//        {
-//            auto palette = getPaletteById(pair.first);
-//            if (palette != nullptr)
-//                TRY_ARRANGEMENT(true, false);
-//        }
-//    }
-
-//    for (auto tile : _filteredTiles)
-//    {
-//        for (auto pair : tile->palettesUsed.asKeyValueRange())
-//        {
-//            auto palette = getPaletteById(pair.first);
-//            if (palette != nullptr)
-//                TRY_ARRANGEMENT(false, true);
-//        }
-//    }
-
-//    for (auto tile : _filteredTiles)
-//    {
-//        for (auto pair : tile->palettesUsed.asKeyValueRange())
-//        {
-//            auto palette = getPaletteById(pair.first);
-//            if (palette != nullptr)
-//                TRY_ARRANGEMENT(true, true);
-//        }
-//    }
-
     if (bestTile == nullptr || bestPalette == nullptr)
         return;
 
-    qDebug() << QString("SEARCH Result| D:%1, TID:%2, PID:%3, H:%4, V:%5")
-                .arg(bestDistance)
+    qDebug() << QString("SEARCH Result| D:%1, P:%2, TID:%3, PID:%4, H:%5, V:%6")
+                .arg(bestScore)
+                .arg(bestPixels)
                 .arg(bestTile->id)
                 .arg(bestPalette->id)
                 .arg(bestHFlip)

@@ -80,14 +80,14 @@ void FragmentPalettes::updatePalettesWidget()
     }
 
     ui->listPalettes->update();
-    qDebug() << "updatePaletteWidget added " << ui->listPalettes->size() << " palettes";
+//    qDebug() << "updatePaletteWidget added " << ui->listPalettes->size() << " palettes";
 }
 
 void FragmentPalettes::saveSelectedPalette()
 {
     auto palette = App::getState()->selectedPalette();
     _lastSelectedItemID = palette == nullptr?0:palette->id;
-    qDebug() << "Saving " << _lastSelectedItemID;
+//    qDebug() << "Saving " << _lastSelectedItemID;
 }
 
 void FragmentPalettes::restoreSelectedPalette()
@@ -103,7 +103,7 @@ void FragmentPalettes::restoreSelectedPalette()
         {
             if (palettes->at(i)->id == _lastSelectedItemID)
             {
-                qDebug() << "Found id " << _lastSelectedItemID << " at position " << i;
+//                qDebug() << "Found id " << _lastSelectedItemID << " at position " << i;
                 ui->listPalettes->setCurrentRow(i);
                 return;
             }
@@ -120,7 +120,7 @@ void FragmentPalettes::restoreSelectedPalette()
         {
             if (palettes->at(i)->id == preferredTile)
             {
-                qDebug() << "Found preferred tile id " << preferredTile << " at position " << i;
+//                qDebug() << "Found preferred tile id " << preferredTile << " at position " << i;
                 ui->listPalettes->setCurrentRow(i);
                 return;
             }

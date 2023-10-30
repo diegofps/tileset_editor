@@ -70,7 +70,7 @@ void FragmentTilesetProperties::loadTileset(Tileset * ts)
 {
     if (ts == nullptr)
     {
-        qDebug() << "Changed to nullptr";
+//        qDebug() << "Changed to nullptr";
 
         ui->leName->setEnabled(false);
         ui->sbGridW->setEnabled(false);
@@ -85,7 +85,7 @@ void FragmentTilesetProperties::loadTileset(Tileset * ts)
     }
     else
     {
-        qDebug() << "Changed to " << ts->id;
+//        qDebug() << "Changed to " << ts->id;
 
         ui->leName->setEnabled(true);
         ui->sbGridW->setEnabled(true);
