@@ -25,6 +25,7 @@ SOURCES += \
     fragmenttiles.cpp \
     fragmenttilesetproperties.cpp \
     fragmenttilesets.cpp \
+    ioservice.cpp \
     layoutabsolute.cpp \
     main.cpp \
     mainwindow.cpp \
@@ -37,7 +38,6 @@ SOURCES += \
     model/tile.cpp \
     model/tileset.cpp \
     range.cpp \
-    servicecontext.cpp \
     tilecache.cpp \
     tilecachehd.cpp \
     tilesgridlist.cpp \
@@ -67,6 +67,7 @@ HEADERS += \
     fragmenttiles.h \
     fragmenttilesetproperties.h \
     fragmenttilesets.h \
+    ioservice.h \
     layoutabsolute.h \
     mainwindow.h \
     model/cell.h \
@@ -79,7 +80,6 @@ HEADERS += \
     model/tile.h \
     model/tileset.h \
     range.h \
-    servicecontext.h \
     tilecache.h \
     tilecachehd.h \
     tilesgridlist.h \

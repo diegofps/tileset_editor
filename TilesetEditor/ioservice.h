@@ -1,5 +1,5 @@
-#ifndef SERVICECONTEXT_H
-#define SERVICECONTEXT_H
+#ifndef IOSERVICE_H
+#define IOSERVICE_H
 
 #include <QString>
 #include <QDir>
@@ -56,4 +56,4 @@ private:
 
 };
 
-#endif // SERVICECONTEXT_H
+#endif // IOSERVICE_H
