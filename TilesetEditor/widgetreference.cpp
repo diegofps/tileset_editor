@@ -21,6 +21,10 @@ WidgetReference::WidgetReference(QWidget *parent)
     _brushOffset.setColor(QColor::fromString("#660000ff"));
     _brushOffset.setStyle(Qt::SolidPattern);
 
+
+    QPainter painter(&_offsetImageBuffer);
+    painter.fillRect(_offsetImageBuffer.rect(), QColor::fromString("#FF000000"));
+
     updateViewport();
     update();
 }
@@ -151,11 +155,11 @@ void WidgetReference::updateOffsetImage()
 
     for (int i=0;i!=_offsetImageBuffer.height();++i)
     {
-        QRgb * srcLine = reinterpret_cast<QRgb*>(_img->scanLine(i));
+        QRgb * srcLine = reinterpret_cast<QRgb*>(_img->scanLine(_offset.y() + i));
         QRgb * dstLine = reinterpret_cast<QRgb*>(_offsetImageBuffer.scanLine(i));
 
         for (int j=0;j!=_offsetImageBuffer.width();++j)
-            dstLine[i] = srcLine[i];
+            dstLine[j] = srcLine[_offset.x() + j];
     }
 }
 

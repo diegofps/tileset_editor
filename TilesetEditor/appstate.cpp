@@ -1,6 +1,7 @@
 #include "appstate.h"
 #include "editorcommand.h"
 #include "app.h"
+#include <QRgb>
 
 AppState::AppState()
 {
@@ -263,6 +264,8 @@ void AppState::updateFilteredTilesets()
         _filteredTilesets.append(ts);
     }
 
+    updateFilteredTiles();
+
     emit onFilteredTilesetsChanged(&_filteredTilesets);
 }
 
@@ -407,6 +410,7 @@ void AppState::insertTileset(int const position, Tileset * value)
     _projectTilesets->insert(position, value);
     _index_Tileset_ID[value->id] = value;
     _projectHasChanges = true;
+    updateFilteredTilesets();
 
     emit onTilesetInserted(_projectTilesets, position);
 }
@@ -421,6 +425,15 @@ void AppState::removeTileset(int const position)
     _index_Tileset_ID.remove(ts->id);
     _projectHasChanges = true;
 
+    for (auto pair : ts->cells.asKeyValueRange())
+    {
+        auto tile = getTileById(pair.second->tileID);
+        if (tile != nullptr && tile->linkedCellID == pair.second->id)
+            tile->linkedCellID = 0;
+    }
+
+    updateFilteredTilesets();
+
     emit onTilesetRemoved(_projectTilesets, position);
     delete ts;
 }
@@ -433,6 +446,7 @@ void AppState::moveUpTileset(int const position)
     auto ts = _projectTilesets->takeAt(position);
     _projectTilesets->insert(position+1, ts);
     _projectHasChanges = true;
+    updateFilteredTilesets();
 
     emit onTilesetMoved(_projectTilesets, position, position+1);
 }
@@ -445,6 +459,7 @@ void AppState::moveDownTileset(int const position)
     auto ts = _projectTilesets->takeAt(position);
     _projectTilesets->insert(position-1, ts);
     _projectHasChanges = true;
+    updateFilteredTilesets();
 
     emit onTilesetMoved(_projectTilesets, position, position-1);
 }
@@ -503,20 +518,6 @@ QList<Scene *> *AppState::allScenes() const
 {
     return _projectScenes;
 }
-
-//int AppState::scenePos2ID(int scenePos)
-//{
-//    if (scenePos < 2)
-//        return scenePos - 1;
-
-//    scenePos -= 2;
-
-//    if (scenePos >= _projectScenes->size())
-//        return 0;
-
-//    else
-//        return _projectScenes->at(scenePos)->id;
-//}
 
 QList<Tileset *> * AppState::allTilesets() const
 {
@@ -661,19 +662,34 @@ void AppState::moveViewportHome()
     emit onMoveViewportHome();
 }
 
-inline int imageDistance(QImage const * img1, QImage const * img2)
+inline int imageDistance(QImage const * candidate, QImage const * query, int & spread, float & score)
 {
-    if (img1 == nullptr || img2 == nullptr || img1->width() != img2->width() || img1->height() != img2->height())
+    score  = 999999;
+    spread = 0;
+
+    if (candidate == nullptr || query == nullptr || candidate->width() != query->width() || candidate->height() != query->height())
         return INT_MAX;
 
     int distance = 0;
 
-    for (int i=0;i!=img1->height();++i)
+    for (int i=0;i!=candidate->height();++i)
     {
-        img1->constScanLine(i);
+        QRgb const * candidateLine = reinterpret_cast<const QRgb*>(candidate->constScanLine(i));
+        QRgb const * queryLine     = reinterpret_cast<const QRgb*>(query->constScanLine(i));
+
+        for (int j=0;j!=candidate->width();++j)
+        {
+            if (qAlpha(candidateLine[j]) == 255)
+            {
+                distance += std::abs(qRed(candidateLine[j])-qRed(queryLine[j]));
+                distance += std::abs(qGreen(candidateLine[j])-qGreen(queryLine[j]));
+                distance += std::abs(qBlue(candidateLine[j])-qBlue(queryLine[j]));
+                spread += 1;
+            }
+        }
     }
 
-    // TODO
+    score = distance * (64-spread+1) / float(64+1);
 
     return distance;
 }
@@ -683,64 +699,137 @@ void AppState::editorPaintCellUsingSibling()
     if (_referenceOffsetImage == nullptr || _filteredTiles.isEmpty())
         return;
 
+    float bestScore = -1;;
     int bestDistance = -1;
+    int bestSpread = -1;
     Tile * bestTile = nullptr;
     Palette * bestPalette = nullptr;
+    bool bestHFlip = false;
+    bool bestVFlip = false;
 
 #define TRY_ARRANGEMENT(H_FLIP, V_FLIP) {\
-        QImage const * const currImage = App::getOriginalTileCache()->getTileImage(tile, palette, (H_FLIP), (V_FLIP));\
-        int const currDistance = imageDistance(currImage, _referenceOffsetImage);\
-        if (currDistance < bestDistance || bestTile == nullptr)\
+    for (auto tile : _filteredTiles)\
+    {\
+        for (auto pair : tile->palettesUsed.asKeyValueRange())\
         {\
-            bestTile = tile;\
-            bestPalette = palette;\
-            bestDistance = currDistance;\
+            auto palette = getPaletteById(pair.first);\
+            if (palette != nullptr) {\
+                QImage const * const currImage = App::getOriginalTileCache()->getTileImage(tile, palette, (H_FLIP), (V_FLIP));\
+                float currScore;\
+                int currSpread;\
+                int const currDistance = imageDistance(currImage, _referenceOffsetImage, currSpread, currScore);\
+                if (palette->id == 15 && (tile->id == 7 || tile->id == 16))\
+                    qDebug() << "TARGET" << tile->id << " " << currDistance << " " << currSpread << " " << currScore;\
+                if (currScore < bestScore || bestTile == nullptr)\
+                {\
+                    qDebug() << "Searching... " << currDistance;\
+                    bestTile = tile;\
+                    bestPalette = palette;\
+                    bestDistance = currDistance;\
+                    bestHFlip = H_FLIP;\
+                    bestVFlip = V_FLIP;\
+                    bestSpread = currSpread;\
+                    bestScore = currScore;\
+                }\
+            }\
         }\
-    }
+    }\
+}
 
-    for (auto tile : _filteredTiles)
-    {
-        for (auto pair : tile->palettesUsed.asKeyValueRange())
-        {
-            auto palette = getPaletteById(pair.first);
+    TRY_ARRANGEMENT(false, false);
+    TRY_ARRANGEMENT(true, false);
+    TRY_ARRANGEMENT(false, true);
+    TRY_ARRANGEMENT(true, true);
 
-            if (palette == nullptr)
-                continue;
 
-            TRY_ARRANGEMENT(false, false);
-            TRY_ARRANGEMENT(false, true);
-            TRY_ARRANGEMENT(true, false);
-            TRY_ARRANGEMENT(true, true);
-        }
-    }
+//#define TRY_ARRANGEMENT(H_FLIP, V_FLIP) {\
+//        QImage const * const currImage = App::getOriginalTileCache()->getTileImage(tile, palette, (H_FLIP), (V_FLIP));\
+//        int const currDistance = imageDistance(currImage, _referenceOffsetImage);\
+//        if (currDistance < bestDistance || bestTile == nullptr)\
+//        {\
+//            qDebug() << "Searching... " << currDistance;\
+//            bestTile = tile;\
+//            bestPalette = palette;\
+//            bestDistance = currDistance;\
+//            bestHFlip = H_FLIP;\
+//            bestVFlip = V_FLIP;\
+//        }\
+//    }
+
+
+//    for (auto tile : _filteredTiles)
+//    {
+//        for (auto pair : tile->palettesUsed.asKeyValueRange())
+//        {
+//            auto palette = getPaletteById(pair.first);
+//            if (palette != nullptr)
+//                TRY_ARRANGEMENT(false, false);
+//        }
+//    }
+
+//    for (auto tile : _filteredTiles)
+//    {
+//        for (auto pair : tile->palettesUsed.asKeyValueRange())
+//        {
+//            auto palette = getPaletteById(pair.first);
+//            if (palette != nullptr)
+//                TRY_ARRANGEMENT(true, false);
+//        }
+//    }
+
+//    for (auto tile : _filteredTiles)
+//    {
+//        for (auto pair : tile->palettesUsed.asKeyValueRange())
+//        {
+//            auto palette = getPaletteById(pair.first);
+//            if (palette != nullptr)
+//                TRY_ARRANGEMENT(false, true);
+//        }
+//    }
+
+//    for (auto tile : _filteredTiles)
+//    {
+//        for (auto pair : tile->palettesUsed.asKeyValueRange())
+//        {
+//            auto palette = getPaletteById(pair.first);
+//            if (palette != nullptr)
+//                TRY_ARRANGEMENT(true, true);
+//        }
+//    }
 
     if (bestTile == nullptr || bestPalette == nullptr)
         return;
 
+    qDebug() << QString("SEARCH Result| D:%1, TID:%2, PID:%3, H:%4, V:%5")
+                .arg(bestDistance)
+                .arg(bestTile->id)
+                .arg(bestPalette->id)
+                .arg(bestHFlip)
+                .arg(bestVFlip);
+
     int x = _editorRoot.x()+_referenceOffset.x();
     int y = _editorRoot.y()+_referenceOffset.y();
 
-    editorPaintCell(x, y, bestTile, bestPalette);
+    editorPaintCell(x, y, bestTile, bestPalette, bestHFlip, bestVFlip);
 }
 
 void AppState::editorPaintCellUsingSelection(int x, int y)
 {
-    editorPaintCell(x, y, selectedTile(), _selectedPalette);
+    editorPaintCell(x, y, selectedTile(), _selectedPalette, _tilePreviewFilter.hFlip, _tilePreviewFilter.vFlip);
 }
 
-void AppState::editorPaintCell(int x, int y, Tile * tile, Palette * palette)
+void AppState::editorPaintCell(int x, int y, Tile * tile, Palette * palette, bool hFlip, bool vFlip)
 {
     auto  project = _project;
     auto  tileset = _selectedTileset;
-    auto& tilePreviewFilter = _tilePreviewFilter;
 
     if (project == nullptr || palette == nullptr || tile == nullptr || tileset == nullptr)
         return;
 
     Cell cell;
     cell.id = ++_project->lastCellID;
-    cell.hFlip = tilePreviewFilter.hFlip;
-    cell.vFlip = tilePreviewFilter.vFlip;
+    cell.hFlip = hFlip;
+    cell.vFlip = vFlip;
     cell.paletteID = palette->id;
     cell.tileID = tile->id;
     cell.x = x;

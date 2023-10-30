@@ -78,6 +78,12 @@ drawPixmapInViewport(QRect const & rect,
 void WidgetEditor::paintEvent(QPaintEvent * event)
 {
     (void)event;
+
+    if (_cells == nullptr)
+    {
+        return;
+    }
+
     QPainter painter(this);
 
     // Draw background color
@@ -87,25 +93,23 @@ void WidgetEditor::paintEvent(QPaintEvent * event)
     drawRectangleInViewport(QRect(0,0,_gridWidth*8, _gridHeight*8), size(), _viewport, Qt::NoBrush, _penGrid, painter);
 
     // Draw cells
-    if (_cells != nullptr)
+
+    for (auto pair: _cells->asKeyValueRange())
     {
-        for (auto pair: _cells->asKeyValueRange())
-        {
-            auto cell = pair.second;
-            auto tile = App::getState()->getTileById(cell->tileID);
-            auto palette = App::getState()->getPaletteById(cell->paletteID);
-            auto pixmap = App::getOriginalTileCache()->getTilePixmap(tile, palette, cell->hFlip, cell->vFlip);
-            QRect cellRect(cell->x*8, cell->y*8, 8, 8);
+        auto cell = pair.second;
+        auto tile = App::getState()->getTileById(cell->tileID);
+        auto palette = App::getState()->getPaletteById(cell->paletteID);
+        auto pixmap = App::getOriginalTileCache()->getTilePixmap(tile, palette, cell->hFlip, cell->vFlip);
+        QRect cellRect(cell->x*8, cell->y*8, 8, 8);
 
-            drawPixmapInViewport(cellRect, size(), _viewport, *pixmap, painter);
+        drawPixmapInViewport(cellRect, size(), _viewport, *pixmap, painter);
 
-            if (tile->linkedCellID == 0)
-                drawRectangleInViewport(cellRect, size(), _viewport, Qt::NoBrush, _penLinkRequired, painter);
+        if (tile->linkedCellID == 0)
+            drawRectangleInViewport(cellRect, size(), _viewport, Qt::NoBrush, _penLinkRequired, painter);
 
-            else if (tile->linkedCellID == cell->id)
-                drawRectangleInViewport(cellRect, size(), _viewport, _brushLink, Qt::NoPen, painter);
+        else if (tile->linkedCellID == cell->id)
+            drawRectangleInViewport(cellRect, size(), _viewport, _brushLink, Qt::NoPen, painter);
 
-        }
     }
 
     // Draw root and offset
