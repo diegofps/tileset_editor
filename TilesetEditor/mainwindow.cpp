@@ -89,6 +89,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->action_Edit_MoveTileToScene, &QAction::triggered, this, &MainWindow::onAction_Edit_MoveTileToScene);
     connect(ui->action_Edit_MoveTilesetToScene, &QAction::triggered, this, &MainWindow::onAction_Edit_MoveTilesetToScene);
     connect(ui->action_Edit_InsertNearestReferenceTile, &QAction::triggered, this, [](){ App::getState()->editorPaintCellUsingSibling(); });
+    connect(ui->action_Edit_InsertSelectedTile, &QAction::triggered, this, [](){ App::getState()->editorPaintCellUsingSelection(); });
 
     connect(ui->action_Edit_MoveCellsInTileset_Down, &QAction::triggered, this, [](){ App::getState()->moveCellsInTileset(0,+1); });
     connect(ui->action_Edit_MoveCellsInTileset_Up, &QAction::triggered, this, [](){ App::getState()->moveCellsInTileset(0,-1); });
@@ -131,15 +132,15 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->action_View_FocusEditor, &QAction::triggered, this, [&]() { ui->contentFrame->setFocus(); });
 
     //Navigate menu
-    connect(ui->action_Navigate_Editor_Down, &QAction::triggered, this, [&](){ App::getState()->moveEditorRoot( 0,+1); });
-    connect(ui->action_Navigate_Editor_Up, &QAction::triggered, this, [&](){ App::getState()->moveEditorRoot( 0,-1); });
-    connect(ui->action_Navigate_Editor_Left, &QAction::triggered, this, [&](){ App::getState()->moveEditorRoot(-1, 0); });
-    connect(ui->action_Navigate_Editor_Right, &QAction::triggered, this, [&](){ App::getState()->moveEditorRoot(+1, 0); });
+    connect(ui->action_Navigate_Root_Down, &QAction::triggered, this, [&](){ App::getState()->moveEditorRoot( 0,+1); });
+    connect(ui->action_Navigate_Root_Up, &QAction::triggered, this, [&](){ App::getState()->moveEditorRoot( 0,-1); });
+    connect(ui->action_Navigate_Root_Left, &QAction::triggered, this, [&](){ App::getState()->moveEditorRoot(-1, 0); });
+    connect(ui->action_Navigate_Root_Right, &QAction::triggered, this, [&](){ App::getState()->moveEditorRoot(+1, 0); });
 
-    connect(ui->action_Navigate_References_Down, &QAction::triggered, this, [&](){ App::getState()->moveReferenceOffset( 0,+1); });
-    connect(ui->action_Navigate_References_Up, &QAction::triggered, this, [&](){ App::getState()->moveReferenceOffset( 0,-1); });
-    connect(ui->action_Navigate_References_Left, &QAction::triggered, this, [&](){ App::getState()->moveReferenceOffset(-1, 0); });
-    connect(ui->action_Navigate_References_Right, &QAction::triggered, this, [&](){ App::getState()->moveReferenceOffset(+1, 0); });
+    connect(ui->action_Navigate_Offset_Down, &QAction::triggered, this, [&](){ App::getState()->moveReferenceOffset( 0,+1); });
+    connect(ui->action_Navigate_Offset_Up, &QAction::triggered, this, [&](){ App::getState()->moveReferenceOffset( 0,-1); });
+    connect(ui->action_Navigate_Offset_Left, &QAction::triggered, this, [&](){ App::getState()->moveReferenceOffset(-1, 0); });
+    connect(ui->action_Navigate_Offset_Right, &QAction::triggered, this, [&](){ App::getState()->moveReferenceOffset(+1, 0); });
 
     connect(ui->action_Navigate_Viewport_Down, &QAction::triggered, this, [&](){ App::getState()->moveViewport( 0,+1); });
     connect(ui->action_Navigate_Viewport_Up, &QAction::triggered, this, [&](){ App::getState()->moveViewport( 0,-1); });
@@ -151,8 +152,8 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->action_Navigate_Tile_Left, &QAction::triggered, this, [&](){ App::getState()->moveTileSelection(-1, 0); });
     connect(ui->action_Navigate_Tile_Right, &QAction::triggered, this, [&](){ App::getState()->moveTileSelection(+1, 0); });
 
-    connect(ui->action_Navigate_Editor_Home, &QAction::triggered, this, [&](){ App::getState()->moveEditorRootHome(); });
-    connect(ui->action_Navigate_References_Home, &QAction::triggered, this, [&](){ App::getState()->moveReferenceOffsetHome(); });
+    connect(ui->action_Navigate_Root_Home, &QAction::triggered, this, [&](){ App::getState()->moveEditorRootHome(); });
+    connect(ui->action_Navigate_Offset_Home, &QAction::triggered, this, [&](){ App::getState()->moveReferenceOffsetHome(); });
     connect(ui->action_Navigate_Viewport_Home, &QAction::triggered, this, [&](){ App::getState()->moveViewportHome(); });
 
     // Execute menu
@@ -386,17 +387,46 @@ void MainWindow::prepareUIForProject(Project * value)
         layout->replaceWidget(layout->itemAt(0)->widget(), hasProject?createFragmentContextOpen():createFragmentContextClosed());
     }
 
+    ui->menu_View_ReferenceScreenshot->setEnabled(hasProject);
+    ui->menu_Navigate_Offset->setEnabled(hasProject);
+    ui->menu_Navigate_Root->setEnabled(hasProject);
+    ui->menu_Navigate_Viewport->setEnabled(hasProject);
+    ui->menu_Navigate_Tile->setEnabled(hasProject);
+    ui->menu_Edit_MoveTilesInTileset->setEnabled(hasProject);
+
+    ui->menu_Navigate->setEnabled(hasProject);
+    ui->menu_View->setEnabled(hasProject);
+    ui->menu_Execute->setEnabled(hasProject);
+    ui->menu_Edit->setEnabled(hasProject);
+
     ui->action_File_SaveProject->setEnabled(hasProject);
     ui->action_File_CloseProject->setEnabled(hasProject);
     ui->action_File_LoadDump->setEnabled(hasProject);
     ui->action_File_ReloadDump->setEnabled(hasProject);
 
-    ui->action_Execute_BreakTilesets->setEnabled(hasProject);
-    ui->action_Execute_BuildTilesets->setEnabled(hasProject);
-    ui->action_Execute_EncodeHDTiles->setEnabled(hasProject);
-    ui->action_Execute_Pipelines->setEnabled(hasProject);
+    ui->action_Edit_Scenes->setEnabled(hasProject);
+    ui->action_Edit_MoveTileToScene->setEnabled(hasProject);
+    ui->action_Edit_MoveTilesetToScene->setEnabled(hasProject);
+    ui->action_Edit_Undo->setEnabled(hasProject);
+    ui->action_Edit_Redo->setEnabled(hasProject);
+    ui->action_Edit_AutoLink->setEnabled(hasProject);
+    ui->action_Edit_AutoUnlink->setEnabled(hasProject);
+    ui->action_Edit_InsertNearestReferenceTile->setEnabled(hasProject);
+    ui->action_Edit_InsertSelectedTile->setEnabled(hasProject);
+    ui->action_Edit_ClearCell->setEnabled(hasProject);
+    ui->action_Edit_MoveCellsInTileset_Down->setEnabled(hasProject);
+    ui->action_Edit_MoveCellsInTileset_Up->setEnabled(hasProject);
+    ui->action_Edit_MoveCellsInTileset_Left->setEnabled(hasProject);
+    ui->action_Edit_MoveCellsInTileset_Right->setEnabled(hasProject);
 
     ui->action_View_NextTileUsage->setEnabled(hasProject);
+    ui->action_View_FlipTileHorizontally->setEnabled(hasProject);
+    ui->action_View_FlipTileVertically->setEnabled(hasProject);
+    ui->action_View_Reference_ZoomIn->setEnabled(hasProject);
+    ui->action_View_Reference_ZoomOut->setEnabled(hasProject);
+    ui->action_View_FocusEditor->setEnabled(hasProject);
+    ui->action_View_Editor_ZoomIn->setEnabled(hasProject);
+    ui->action_View_Editor_ZoomOut->setEnabled(hasProject);
     ui->action_View_Reference_1->setEnabled(hasProject);
     ui->action_View_Reference_25->setEnabled(hasProject);
     ui->action_View_Reference_50->setEnabled(hasProject);
@@ -407,9 +437,32 @@ void MainWindow::prepareUIForProject(Project * value)
     ui->action_View_Reference_FN->setEnabled(hasProject);
     ui->action_View_Reference_FF->setEnabled(hasProject);
 
-    ui->action_Edit_Scenes->setEnabled(hasProject);
-    ui->action_Edit_MoveTileToScene->setEnabled(hasProject);
-    ui->action_Edit_MoveTilesetToScene->setEnabled(hasProject);
+    ui->action_Navigate_Offset_Down->setEnabled(hasProject);
+    ui->action_Navigate_Offset_Up->setEnabled(hasProject);
+    ui->action_Navigate_Offset_Left->setEnabled(hasProject);
+    ui->action_Navigate_Offset_Right->setEnabled(hasProject);
+    ui->action_Navigate_Offset_Home->setEnabled(hasProject);
+    ui->action_Navigate_Root_Down->setEnabled(hasProject);
+    ui->action_Navigate_Root_Up->setEnabled(hasProject);
+    ui->action_Navigate_Root_Left->setEnabled(hasProject);
+    ui->action_Navigate_Root_Right->setEnabled(hasProject);
+    ui->action_Navigate_Root_Home->setEnabled(hasProject);
+    ui->action_Navigate_Tile_Down->setEnabled(hasProject);
+    ui->action_Navigate_Tile_Up->setEnabled(hasProject);
+    ui->action_Navigate_Tile_Left->setEnabled(hasProject);
+    ui->action_Navigate_Tile_Right->setEnabled(hasProject);
+    ui->action_Navigate_Viewport_Down->setEnabled(hasProject);
+    ui->action_Navigate_Viewport_Up->setEnabled(hasProject);
+    ui->action_Navigate_Viewport_Left->setEnabled(hasProject);
+    ui->action_Navigate_Viewport_Right->setEnabled(hasProject);
+    ui->action_Navigate_Viewport_Home->setEnabled(hasProject);
+
+    ui->action_Execute_BreakTilesets->setEnabled(hasProject);
+    ui->action_Execute_BuildTilesets->setEnabled(hasProject);
+    ui->action_Execute_EncodeHDTiles->setEnabled(hasProject);
+    ui->action_Execute_Pipelines->setEnabled(hasProject);
+
+    ui->action_Help_VerifyInconsistencies->setEnabled(hasProject);
 
     ui->cbScenes->setVisible(hasProject);
 }

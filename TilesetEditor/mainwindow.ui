@@ -144,7 +144,7 @@ QMenu::item:selected {
 }
 </string>
    </property>
-   <widget class="QMenu" name="menuFile">
+   <widget class="QMenu" name="menu_File">
     <property name="title">
      <string>&amp;File</string>
     </property>
@@ -158,7 +158,7 @@ QMenu::item:selected {
     <addaction name="separator"/>
     <addaction name="action_File_Quit"/>
    </widget>
-   <widget class="QMenu" name="menuExecute">
+   <widget class="QMenu" name="menu_Execute">
     <property name="title">
      <string>E&amp;xecute</string>
     </property>
@@ -167,19 +167,18 @@ QMenu::item:selected {
     <addaction name="action_Execute_BreakTilesets"/>
     <addaction name="action_Execute_EncodeHDTiles"/>
    </widget>
-   <widget class="QMenu" name="menuHelp">
+   <widget class="QMenu" name="menu_Help">
     <property name="title">
      <string>&amp;Help</string>
     </property>
     <addaction name="action_Help_About"/>
     <addaction name="action_Help_VerifyInconsistencies"/>
-    <addaction name="action_Help_Statistics"/>
    </widget>
-   <widget class="QMenu" name="menuEdit">
+   <widget class="QMenu" name="menu_Edit">
     <property name="title">
      <string>&amp;Edit</string>
     </property>
-    <widget class="QMenu" name="menuEdit_MoveTilesInTileset">
+    <widget class="QMenu" name="menu_Edit_MoveTilesInTileset">
      <property name="title">
       <string>Move Tiles in Tileset</string>
      </property>
@@ -194,61 +193,70 @@ QMenu::item:selected {
     <addaction name="action_Edit_Scenes"/>
     <addaction name="action_Edit_MoveTileToScene"/>
     <addaction name="action_Edit_MoveTilesetToScene"/>
+    <addaction name="separator"/>
     <addaction name="action_Edit_InsertNearestReferenceTile"/>
-    <addaction name="menuEdit_MoveTilesInTileset"/>
+    <addaction name="action_Edit_InsertSelectedTile"/>
+    <addaction name="menu_Edit_MoveTilesInTileset"/>
     <addaction name="action_Edit_AutoLink"/>
     <addaction name="action_Edit_AutoUnlink"/>
     <addaction name="action_Edit_ClearCell"/>
    </widget>
-   <widget class="QMenu" name="menuView">
+   <widget class="QMenu" name="menu_View">
     <property name="title">
      <string>&amp;View</string>
     </property>
+    <widget class="QMenu" name="menu_View_ReferenceScreenshot">
+     <property name="title">
+      <string>Reference Screenshot</string>
+     </property>
+     <addaction name="action_View_Reference_1"/>
+     <addaction name="action_View_Reference_25"/>
+     <addaction name="action_View_Reference_50"/>
+     <addaction name="action_View_Reference_75"/>
+     <addaction name="action_View_Reference_100"/>
+     <addaction name="action_View_Reference_NN"/>
+     <addaction name="action_View_Reference_NF"/>
+     <addaction name="action_View_Reference_FN"/>
+     <addaction name="action_View_Reference_FF"/>
+    </widget>
+    <addaction name="action_View_NextTileUsage"/>
     <addaction name="action_View_FlipTileHorizontally"/>
     <addaction name="action_View_FlipTileVertically"/>
-    <addaction name="action_View_FocusEditor"/>
-    <addaction name="action_View_NextTileUsage"/>
     <addaction name="separator"/>
-    <addaction name="action_View_Reference_1"/>
-    <addaction name="action_View_Reference_25"/>
-    <addaction name="action_View_Reference_50"/>
-    <addaction name="action_View_Reference_75"/>
-    <addaction name="action_View_Reference_100"/>
-    <addaction name="action_View_Reference_NN"/>
-    <addaction name="action_View_Reference_NF"/>
-    <addaction name="action_View_Reference_FN"/>
-    <addaction name="action_View_Reference_FF"/>
     <addaction name="separator"/>
+    <addaction name="menu_View_ReferenceScreenshot"/>
     <addaction name="action_View_Reference_ZoomIn"/>
     <addaction name="action_View_Reference_ZoomOut"/>
+    <addaction name="separator"/>
+    <addaction name="action_View_FocusEditor"/>
     <addaction name="action_View_Editor_ZoomIn"/>
     <addaction name="action_View_Editor_ZoomOut"/>
    </widget>
-   <widget class="QMenu" name="menuNavigate">
+   <widget class="QMenu" name="menu_Navigate">
     <property name="title">
      <string>Navigate</string>
     </property>
-    <widget class="QMenu" name="menuNavigateReferences">
+    <widget class="QMenu" name="menu_Navigate_Offset">
      <property name="title">
       <string>Offset</string>
      </property>
-     <addaction name="action_Navigate_References_Left"/>
-     <addaction name="action_Navigate_References_Up"/>
-     <addaction name="action_Navigate_References_Right"/>
-     <addaction name="action_Navigate_References_Down"/>
-     <addaction name="action_Navigate_References_Home"/>
+     <addaction name="action_Navigate_Offset_Left"/>
+     <addaction name="action_Navigate_Offset_Up"/>
+     <addaction name="action_Navigate_Offset_Right"/>
+     <addaction name="action_Navigate_Offset_Down"/>
+     <addaction name="action_Navigate_Offset_Home"/>
     </widget>
-    <widget class="QMenu" name="menuNavigateEditor">
+    <widget class="QMenu" name="menu_Navigate_Root">
      <property name="title">
       <string>Root</string>
      </property>
-     <addaction name="action_Navigate_Editor_Left"/>
-     <addaction name="action_Navigate_Editor_Up"/>
-     <addaction name="action_Navigate_Editor_Right"/>
-     <addaction name="action_Navigate_Editor_Down"/>
-     <addaction name="action_Navigate_Editor_Home"/>
+     <addaction name="action_Navigate_Root_Left"/>
+     <addaction name="action_Navigate_Root_Up"/>
+     <addaction name="action_Navigate_Root_Right"/>
+     <addaction name="action_Navigate_Root_Down"/>
+     <addaction name="action_Navigate_Root_Home"/>
     </widget>
-    <widget class="QMenu" name="menuViewport">
+    <widget class="QMenu" name="menu_Navigate_Viewport">
      <property name="title">
       <string>Viewport</string>
      </property>
@@ -258,7 +266,7 @@ QMenu::item:selected {
      <addaction name="action_Navigate_Viewport_Down"/>
      <addaction name="action_Navigate_Viewport_Home"/>
     </widget>
-    <widget class="QMenu" name="menuTile">
+    <widget class="QMenu" name="menu_Navigate_Tile">
      <property name="title">
       <string>Tile</string>
      </property>
@@ -267,17 +275,17 @@ QMenu::item:selected {
      <addaction name="action_Navigate_Tile_Right"/>
      <addaction name="action_Navigate_Tile_Down"/>
     </widget>
-    <addaction name="menuNavigateReferences"/>
-    <addaction name="menuNavigateEditor"/>
-    <addaction name="menuViewport"/>
-    <addaction name="menuTile"/>
+    <addaction name="menu_Navigate_Offset"/>
+    <addaction name="menu_Navigate_Root"/>
+    <addaction name="menu_Navigate_Viewport"/>
+    <addaction name="menu_Navigate_Tile"/>
    </widget>
-   <addaction name="menuFile"/>
-   <addaction name="menuEdit"/>
-   <addaction name="menuView"/>
-   <addaction name="menuNavigate"/>
-   <addaction name="menuExecute"/>
-   <addaction name="menuHelp"/>
+   <addaction name="menu_File"/>
+   <addaction name="menu_Edit"/>
+   <addaction name="menu_View"/>
+   <addaction name="menu_Navigate"/>
+   <addaction name="menu_Execute"/>
+   <addaction name="menu_Help"/>
   </widget>
   <action name="action_File_OpenProject">
    <property name="text">
@@ -404,81 +412,12 @@ QMenu::item:selected {
     <string>Alt+S</string>
    </property>
   </action>
-  <action name="action_View_Reference_1">
-   <property name="text">
-    <string>&amp;Reference 1</string>
-   </property>
-   <property name="shortcut">
-    <string>1</string>
-   </property>
-  </action>
-  <action name="action_View_Reference_25">
-   <property name="text">
-    <string>Reference 25</string>
-   </property>
-   <property name="shortcut">
-    <string>2</string>
-   </property>
-  </action>
-  <action name="action_View_Reference_100">
-   <property name="text">
-    <string>Re&amp;ference 100</string>
-   </property>
-   <property name="shortcut">
-    <string>5</string>
-   </property>
-  </action>
   <action name="action_Help_VerifyInconsistencies">
    <property name="text">
     <string>Verify Inconsistencies</string>
    </property>
   </action>
-  <action name="action_Help_Statistics">
-   <property name="text">
-    <string>Statistics</string>
-   </property>
-  </action>
-  <action name="action_View_Reference_50">
-   <property name="text">
-    <string>Refe&amp;rence 50</string>
-   </property>
-   <property name="shortcut">
-    <string>3</string>
-   </property>
-  </action>
-  <action name="action_View_Reference_NN">
-   <property name="text">
-    <string>Reference NN</string>
-   </property>
-   <property name="shortcut">
-    <string>6</string>
-   </property>
-  </action>
-  <action name="action_View_Reference_NF">
-   <property name="text">
-    <string>Reference NF</string>
-   </property>
-   <property name="shortcut">
-    <string>7</string>
-   </property>
-  </action>
-  <action name="action_View_Reference_FN">
-   <property name="text">
-    <string>Reference FN</string>
-   </property>
-   <property name="shortcut">
-    <string>8</string>
-   </property>
-  </action>
-  <action name="action_View_Reference_FF">
-   <property name="text">
-    <string>Reference FF</string>
-   </property>
-   <property name="shortcut">
-    <string>9</string>
-   </property>
-  </action>
-  <action name="action_Navigate_References_Left">
+  <action name="action_Navigate_Offset_Left">
    <property name="text">
     <string>Left</string>
    </property>
@@ -486,7 +425,7 @@ QMenu::item:selected {
     <string>Left</string>
    </property>
   </action>
-  <action name="action_Navigate_References_Up">
+  <action name="action_Navigate_Offset_Up">
    <property name="text">
     <string>Up</string>
    </property>
@@ -494,7 +433,7 @@ QMenu::item:selected {
     <string>Up</string>
    </property>
   </action>
-  <action name="action_Navigate_References_Right">
+  <action name="action_Navigate_Offset_Right">
    <property name="text">
     <string>Right</string>
    </property>
@@ -502,7 +441,7 @@ QMenu::item:selected {
     <string>Right</string>
    </property>
   </action>
-  <action name="action_Navigate_References_Down">
+  <action name="action_Navigate_Offset_Down">
    <property name="text">
     <string>Down</string>
    </property>
@@ -510,7 +449,7 @@ QMenu::item:selected {
     <string>Down</string>
    </property>
   </action>
-  <action name="action_Navigate_References_Home">
+  <action name="action_Navigate_Offset_Home">
    <property name="text">
     <string>Home</string>
    </property>
@@ -518,7 +457,7 @@ QMenu::item:selected {
     <string>Home</string>
    </property>
   </action>
-  <action name="action_Navigate_Editor_Left">
+  <action name="action_Navigate_Root_Left">
    <property name="text">
     <string>Left</string>
    </property>
@@ -526,7 +465,7 @@ QMenu::item:selected {
     <string>Ctrl+Left</string>
    </property>
   </action>
-  <action name="action_Navigate_Editor_Up">
+  <action name="action_Navigate_Root_Up">
    <property name="text">
     <string>Up</string>
    </property>
@@ -534,7 +473,7 @@ QMenu::item:selected {
     <string>Ctrl+Up</string>
    </property>
   </action>
-  <action name="action_Navigate_Editor_Right">
+  <action name="action_Navigate_Root_Right">
    <property name="text">
     <string>Right</string>
    </property>
@@ -542,7 +481,7 @@ QMenu::item:selected {
     <string>Ctrl+Right</string>
    </property>
   </action>
-  <action name="action_Navigate_Editor_Down">
+  <action name="action_Navigate_Root_Down">
    <property name="text">
     <string>Down</string>
    </property>
@@ -550,7 +489,7 @@ QMenu::item:selected {
     <string>Ctrl+Down</string>
    </property>
   </action>
-  <action name="action_Navigate_Editor_Home">
+  <action name="action_Navigate_Root_Home">
    <property name="text">
     <string>Home</string>
    </property>
@@ -716,14 +655,6 @@ QMenu::item:selected {
     <string>Esc</string>
    </property>
   </action>
-  <action name="action_View_Reference_75">
-   <property name="text">
-    <string>Reference 75</string>
-   </property>
-   <property name="shortcut">
-    <string>4</string>
-   </property>
-  </action>
   <action name="action_Edit_MoveCellsInTileset_Left">
    <property name="text">
     <string>Left</string>
@@ -778,6 +709,83 @@ QMenu::item:selected {
    </property>
    <property name="shortcut">
     <string>Del</string>
+   </property>
+  </action>
+  <action name="action_View_Reference_1">
+   <property name="text">
+    <string>Ref1</string>
+   </property>
+   <property name="shortcut">
+    <string>1</string>
+   </property>
+  </action>
+  <action name="action_View_Reference_25">
+   <property name="text">
+    <string>Ref25</string>
+   </property>
+   <property name="shortcut">
+    <string>2</string>
+   </property>
+  </action>
+  <action name="action_View_Reference_50">
+   <property name="text">
+    <string>Ref50</string>
+   </property>
+   <property name="shortcut">
+    <string>3</string>
+   </property>
+  </action>
+  <action name="action_View_Reference_75">
+   <property name="text">
+    <string>Ref75</string>
+   </property>
+   <property name="shortcut">
+    <string>4</string>
+   </property>
+  </action>
+  <action name="action_View_Reference_100">
+   <property name="text">
+    <string>Ref100</string>
+   </property>
+   <property name="shortcut">
+    <string>5</string>
+   </property>
+  </action>
+  <action name="action_View_Reference_NN">
+   <property name="text">
+    <string>RefNN</string>
+   </property>
+   <property name="shortcut">
+    <string>6</string>
+   </property>
+  </action>
+  <action name="action_View_Reference_NF">
+   <property name="text">
+    <string>RefNF</string>
+   </property>
+   <property name="shortcut">
+    <string>7</string>
+   </property>
+  </action>
+  <action name="action_View_Reference_FN">
+   <property name="text">
+    <string>RefFN</string>
+   </property>
+   <property name="shortcut">
+    <string>8</string>
+   </property>
+  </action>
+  <action name="action_View_Reference_FF">
+   <property name="text">
+    <string>RefFF</string>
+   </property>
+   <property name="shortcut">
+    <string>9</string>
+   </property>
+  </action>
+  <action name="action_Edit_InsertSelectedTile">
+   <property name="text">
+    <string>Insert Selected Tile</string>
    </property>
   </action>
  </widget>

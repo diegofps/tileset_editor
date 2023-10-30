@@ -20,7 +20,7 @@ AppState::AppState()
     _editorShowUnlinkedTiles = true;
     _editorShowGrid = true;
     _editorRoot = QPoint(0,0);
-    _editorZoom = 15;
+    _editorZoom = 17;
 
     _project = nullptr;
     _projectHasChanges = false;
@@ -751,6 +751,14 @@ void AppState::editorPaintCellUsingSibling()
     int y = _editorRoot.y()+_referenceOffset.y();
 
     editorPaintCell(x, y, bestTile, bestPalette, bestHFlip, bestVFlip);
+}
+
+void AppState::editorPaintCellUsingSelection()
+{
+    int x = _editorRoot.x()+_referenceOffset.x();
+    int y = _editorRoot.y()+_referenceOffset.y();
+
+    editorPaintCell(x, y, selectedTile(), _selectedPalette, _tilePreviewFilter.hFlip, _tilePreviewFilter.vFlip);
 }
 
 void AppState::editorPaintCellUsingSelection(int x, int y)
