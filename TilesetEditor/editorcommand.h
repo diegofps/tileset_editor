@@ -9,8 +9,8 @@ public:
 
     CellCommand();
     virtual ~CellCommand() {}
-    virtual void execute(AppState * state) = 0;
-    virtual void unexecute(AppState * state) = 0;
+    virtual bool execute(AppState * state) = 0;
+    virtual bool unexecute(AppState * state) = 0;
 
 };
 
@@ -19,8 +19,8 @@ class PaintCommand : public CellCommand
 public:
 
     PaintCommand(QPair<int,int> const & position, Cell const * prev, Cell const * next, bool wasLinked);
-    virtual void execute(AppState * state);
-    virtual void unexecute(AppState * state);
+    virtual bool execute(AppState * state);
+    virtual bool unexecute(AppState * state);
 
 private:
 
@@ -37,8 +37,8 @@ class LinkCommand : public CellCommand
 public:
 
     LinkCommand(QPair<int,int> const & position, int previousCellID, int nextCellID);
-    virtual void execute(AppState * state);
-    virtual void unexecute(AppState * state);
+    virtual bool execute(AppState * state);
+    virtual bool unexecute(AppState * state);
 
 private:
 

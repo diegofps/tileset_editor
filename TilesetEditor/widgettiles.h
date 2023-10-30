@@ -26,6 +26,7 @@ public:
     void setSelection(Range range);
     void repack();
     void moveTileSelection(int rx, int ry);
+    void setShowLinkInfo(bool value);
 
 signals:
     void onSelectedTileChanged(Range range);
@@ -44,6 +45,7 @@ private:
     int _rows;
     QList<ViewHolder> _views;
     Range _selection;
+    bool _showLinkInfo;
 };
 
 #endif // WIDGETTILES_H

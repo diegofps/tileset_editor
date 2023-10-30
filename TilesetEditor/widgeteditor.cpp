@@ -14,7 +14,8 @@ WidgetEditor::WidgetEditor(QWidget *parent)
     _gridWidth(0),
     _gridHeight(0),
     _cells(nullptr),
-    _lastHoverKey(-1,-1)
+    _lastHoverKey(-1,-1),
+    _showLinkInfo(true)
 {
     _brushRoot.setColor(QColor::fromString("#66ffffff"));
     _brushRoot.setStyle(Qt::SolidPattern);
@@ -104,11 +105,14 @@ void WidgetEditor::paintEvent(QPaintEvent * event)
 
         drawPixmapInViewport(cellRect, size(), _viewport, *pixmap, painter);
 
-        if (tile->linkedCellID == 0)
-            drawRectangleInViewport(cellRect, size(), _viewport, Qt::NoBrush, _penLinkRequired, painter);
+        if (_showLinkInfo)
+        {
+            if (tile->linkedCellID == 0)
+                drawRectangleInViewport(cellRect, size(), _viewport, Qt::NoBrush, _penLinkRequired, painter);
 
-        else if (tile->linkedCellID == cell->id)
-            drawRectangleInViewport(cellRect, size(), _viewport, _brushLink, Qt::NoPen, painter);
+            else if (tile->linkedCellID == cell->id)
+                drawRectangleInViewport(cellRect, size(), _viewport, _brushLink, Qt::NoPen, painter);
+        }
     }
 
     // Draw root and offset
@@ -195,6 +199,12 @@ void WidgetEditor::setZoom(int value)
     update();
 }
 
+void WidgetEditor::setShowLinkInfo(bool value)
+{
+    _showLinkInfo = value;
+    update();
+}
+
 void WidgetEditor::updateViewport()
 {
     int const centerX = _viewport.x() + _viewport.width() / 2;
@@ -214,32 +224,47 @@ void WidgetEditor::mousePressEvent(QMouseEvent * event)
     int const btns = event->buttons();
 
     if (btns & Qt::MiddleButton)
+    {
         _lastDraggingPosition = event->pos();
+    }
 
-    if (!(btns & Qt::LeftButton))
-        return;
+    if (btns & Qt::LeftButton)
+    {
+        auto pos = event->pos();
 
-    auto pos = event->pos();
+        int const offX = pos.x()*_viewport.width()/width();
+        int const offY = pos.y()*_viewport.height()/height();
 
-    int const offX = pos.x()*_viewport.width()/width();
-    int const offY = pos.y()*_viewport.height()/height();
+        int const x = (_viewport.x()+offX)/8-(offX<-_viewport.x()?1:0);
+        int const y = (_viewport.y()+offY)/8-(offY<-_viewport.y()?1:0);
 
-    int const x = (_viewport.x()+offX)/8-(offX<-_viewport.x()?1:0);
-    int const y = (_viewport.y()+offY)/8-(offY<-_viewport.y()?1:0);
+//        qDebug() << pos << _viewport << x << " " << y;
 
-    qDebug() << pos << _viewport << x << " " << y;
+        if (event->modifiers().testFlag(Qt::ShiftModifier))
+            emit onLinkCell(x,y);
 
-    if (event->modifiers().testFlag(Qt::ShiftModifier))
-        emit onLinkCell(x,y);
+        else if (event->modifiers().testFlag(Qt::ControlModifier))
+            emit onEraseCell(x,y);
 
-    else if (event->modifiers().testFlag(Qt::ControlModifier))
-        emit onEraseCell(x,y);
+        else if (event->modifiers().testFlag(Qt::AltModifier))
+            emit onColorPickCell(x,y);
 
-    else if (event->modifiers().testFlag(Qt::AltModifier))
-        emit onColorPickCell(x,y);
+        else
+            emit onPaintCell(x,y, true, true);
+    }
 
-    else
-        emit onPaintCell(x,y);
+    if (btns & Qt::RightButton)
+    {
+        auto pos = event->pos();
+
+        int const offX = pos.x()*_viewport.width()/width();
+        int const offY = pos.y()*_viewport.height()/height();
+
+        int const x = (_viewport.x()+offX)/8-(offX<-_viewport.x()?1:0);
+        int const y = (_viewport.y()+offY)/8-(offY<-_viewport.y()?1:0);
+
+        emit onPaintCell(x,y, false, true);
+    }
 }
 
 void WidgetEditor::mouseMoveEvent(QMouseEvent * event)

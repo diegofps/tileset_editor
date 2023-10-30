@@ -32,10 +32,11 @@ public:
     void moveViewport(int rx, int ry);
     void moveViewportHome();
     void setZoom(int value);
+    void setShowLinkInfo(bool value);
 
 signals:
 
-    void onPaintCell(int x, int y); // Left click
+    void onPaintCell(int x, int y, bool paintTile, bool paintPalette); // Left click
     void onEraseCell(int x, int y); // Ctrl + Left CLick
     void onColorPickCell(int x, int y); // Alt + Left click
     void onLinkCell(int x, int y); // Shift + Left click
@@ -61,7 +62,7 @@ private:
     QHash<QPair<int, int>, Cell *> const * _cells;
     QPair<int,int> _lastHoverKey;
     QPointF _lastDraggingPosition;
-
+    bool _showLinkInfo;
 };
 
 #endif // WIDGETEDITOR_H

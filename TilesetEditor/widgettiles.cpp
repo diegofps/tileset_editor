@@ -13,7 +13,8 @@ WidgetTiles::WidgetTiles(QWidget *parent)
 
       _cols(0),
       _rows(0),
-      _selection(-1,-1)
+      _selection(-1,-1),
+      _showLinkInfo(true)
 {
     setMinimumHeight(100);
 //    setMouseTracking(true);
@@ -95,6 +96,12 @@ void WidgetTiles::moveTileSelection(int rx, int ry)
     update();
 }
 
+void WidgetTiles::setShowLinkInfo(bool value)
+{
+    _showLinkInfo = value;
+    update();
+}
+
 void WidgetTiles::setSelection(Range range)
 {
     range.limit(-1, _tiles.size()-1);
@@ -125,7 +132,7 @@ void WidgetTiles::paintEvent(QPaintEvent * event)
                 painter.drawRect(view.rect);
         }
 
-        if (view.tile->linkedCellID == 0)
+        if (_showLinkInfo && view.tile->linkedCellID == 0)
         {
             painter.setPen(_penLinkRequired);
             painter.setBrush(Qt::NoBrush);

@@ -19,14 +19,14 @@ PaintCommand::PaintCommand(QPair<int,int> const & position, Cell const * prev, C
         _next = *next;
 }
 
-inline void updateCell(AppState * state,
+inline bool updateCell(AppState * state,
                        QPair<int,int> const & position,
                        bool const erase,
                        Cell const & newValue,
                        bool link)
 {
     if (state == nullptr || state->selectedTileset() == nullptr)
-        return;
+        return false;
 
     auto & cells = state->selectedTileset()->cells;
 
@@ -35,7 +35,7 @@ inline void updateCell(AppState * state,
         auto it = cells.constFind(position);
         if (it != cells.constEnd())
         {
-            state->notifyCellDeleted(it.value());
+            state->notifyCellDeleted(it.value(), 0);
             delete it.value();
             cells.erase(it);
         }
@@ -54,7 +54,7 @@ inline void updateCell(AppState * state,
         else
         {
             cell = it.value();
-            state->notifyCellDeleted(cell);
+            state->notifyCellDeleted(cell, cell->tileID == newValue.tileID ? newValue.id : 0);
             *cell = newValue;
             state->notifyCellCreated(cell);
         }
@@ -67,17 +67,18 @@ inline void updateCell(AppState * state,
         }
     }
 
-    state->updateFilteredTiles();
+//    state->updateFilteredTiles();
+    return true;
 }
 
-void PaintCommand::execute(AppState *state)
+bool PaintCommand::execute(AppState *state)
 {
-    updateCell(state, _position, _becomesNullptr, _next, false);
+    return updateCell(state, _position, _becomesNullptr, _next, false);
 }
 
-void PaintCommand::unexecute(AppState *state)
+bool PaintCommand::unexecute(AppState *state)
 {
-    updateCell(state, _position, _wasNullptr, _prev, _wasLinked);
+    return updateCell(state, _position, _wasNullptr, _prev, _wasLinked);
 }
 
 LinkCommand::LinkCommand(const QPair<int, int> &position, int previousCellID, int nextCellID) :
@@ -86,33 +87,35 @@ LinkCommand::LinkCommand(const QPair<int, int> &position, int previousCellID, in
 
 }
 
-inline void updateLinkedCellID(AppState * state, QPair<int,int> const & position, int const value)
+inline bool updateLinkedCellID(AppState * state, QPair<int,int> const & position, int const value)
 {
     if (state == nullptr || state->selectedTileset() == nullptr)
-        return;
+        return false;
 
     auto & cells = state->selectedTileset()->cells;
 
     auto it = cells.find(position);
 
     if (it == cells.end())
-        return;
+        return false;
 
     auto tile = App::getState()->getTileById(it.value()->tileID);
 
     if (tile == nullptr)
-        return;
+        return false;
 
     tile->linkedCellID = value;
-    App::getState()->updateFilteredTiles();
+//    App::getState()->updateFilteredTiles();
+
+    return true;
 }
 
-void LinkCommand::execute(AppState *state)
+bool LinkCommand::execute(AppState *state)
 {
-    updateLinkedCellID(state, _position, _next);
+    return updateLinkedCellID(state, _position, _next);
 }
 
-void LinkCommand::unexecute(AppState *state)
+bool LinkCommand::unexecute(AppState *state)
 {
-    updateLinkedCellID(state, _position, _prev);
+    return updateLinkedCellID(state, _position, _prev);
 }

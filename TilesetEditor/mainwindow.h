@@ -44,6 +44,7 @@ private:
     void loadScenes(QList<Scene*> const * value);
     void restoreSelectedScene();
     void saveSelectedScene();
+    void loadFlags();
 
 private:
     Ui::MainWindow * ui;

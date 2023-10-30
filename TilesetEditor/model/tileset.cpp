@@ -78,14 +78,15 @@ void Tileset::historyClear()
     _historyPosition = 0;
 }
 
-void Tileset::historyAdd(AppState * state, CellCommand * cmd)
+bool Tileset::historyAdd(AppState * state, CellCommand * cmd)
 {
     for (qsizetype tmp=_historyPosition;tmp<_history.size();++tmp)
         delete _history[tmp];
 
     _history.resize(_historyPosition+1);
     _history[_historyPosition++] = cmd;
-    cmd->execute(state);
+
+    return cmd->execute(state);
 }
 
 bool Tileset::historyUndo(AppState * state)
@@ -93,8 +94,7 @@ bool Tileset::historyUndo(AppState * state)
     if (_historyPosition == 0)
         return false;
 
-    _history[--_historyPosition]->unexecute(state);
-    return true;
+    return _history[--_historyPosition]->unexecute(state);
 }
 
 bool Tileset::historyRedo(AppState * state)
@@ -102,6 +102,5 @@ bool Tileset::historyRedo(AppState * state)
     if (_historyPosition == _history.size())
         return false;
 
-    _history[_historyPosition++]->execute(state);
-    return true;
+    return _history[_historyPosition++]->execute(state);
 }

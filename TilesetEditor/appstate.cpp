@@ -15,10 +15,10 @@ AppState::AppState()
     _referenceOffsetImage = nullptr;
     _referenceOffset = QPoint(0,0);
 
-    _editorTool = PENCIL;
-    _editorShowLinkedTiles = true;
-    _editorShowUnlinkedTiles = true;
-    _editorShowGrid = true;
+//    _editorTool = PENCIL;
+//    _editorShowLinkedTiles = true;
+//    _editorShowUnlinkedTiles = true;
+//    _editorShowGrid = true;
     _editorRoot = QPoint(0,0);
     _editorZoom = 16;
 
@@ -479,6 +479,20 @@ int AppState::selectedSceneID()
     return _selectedSceneID;
 }
 
+void AppState::setShowLinkInfo(bool value)
+{
+    if (_showLinkInfo != value)
+    {
+        _showLinkInfo = value;
+        emit onShowLinkInfoChanged(value);
+    }
+}
+
+bool AppState::showLinkInfo()
+{
+    return _showLinkInfo;
+}
+
 Project * AppState::project() const
 {
     return _project;
@@ -527,61 +541,61 @@ QList<Tileset *> * AppState::allTilesets() const
 
 // Editor Toolbox
 
-EditorTool AppState::editorTool() const
-{
-    return _editorTool;
-}
+//EditorTool AppState::editorTool() const
+//{
+//    return _editorTool;
+//}
 
-bool AppState::editorShowLinkedTiles() const
-{
-    return _editorShowLinkedTiles;
-}
+//bool AppState::editorShowLinkedTiles() const
+//{
+//    return _editorShowLinkedTiles;
+//}
 
-bool AppState::editorShowUnlinkedTiles() const
-{
-    return _editorShowUnlinkedTiles;
-}
+//bool AppState::editorShowUnlinkedTiles() const
+//{
+//    return _editorShowUnlinkedTiles;
+//}
 
-bool AppState::editorShowGrid() const
-{
-    return _editorShowGrid;
-}
+//bool AppState::editorShowGrid() const
+//{
+//    return _editorShowGrid;
+//}
 
-void AppState::setEditorTool(EditorTool const value)
-{
-    if (value != _editorTool)
-    {
-        _editorTool = value;
-        emit onEditorToolChanged(value);
-    }
-}
+//void AppState::setEditorTool(EditorTool const value)
+//{
+//    if (value != _editorTool)
+//    {
+//        _editorTool = value;
+//        emit onEditorToolChanged(value);
+//    }
+//}
 
-void AppState::setEditorShowLinkedTiles(bool value)
-{
-    if (value != _editorShowLinkedTiles)
-    {
-        _editorShowLinkedTiles = value;
-        emit onEditorShowLinkedTilesChanged(value);
-    }
-}
+//void AppState::setEditorShowLinkedTiles(bool value)
+//{
+//    if (value != _editorShowLinkedTiles)
+//    {
+//        _editorShowLinkedTiles = value;
+//        emit onEditorShowLinkedTilesChanged(value);
+//    }
+//}
 
-void AppState::setEditorShowUnlinkedTiles(bool value)
-{
-    if (value != _editorShowUnlinkedTiles)
-    {
-        _editorShowUnlinkedTiles = value;
-        emit onEditorShowUnlinkedTilesChanged(value);
-    }
-}
+//void AppState::setEditorShowUnlinkedTiles(bool value)
+//{
+//    if (value != _editorShowUnlinkedTiles)
+//    {
+//        _editorShowUnlinkedTiles = value;
+//        emit onEditorShowUnlinkedTilesChanged(value);
+//    }
+//}
 
-void AppState::setEditorShowGrid(bool value)
-{
-    if (value != _editorShowGrid)
-    {
-        _editorShowGrid = value;
-        emit onEditorShowGridChanged(value);
-    }
-}
+//void AppState::setEditorShowGrid(bool value)
+//{
+//    if (value != _editorShowGrid)
+//    {
+//        _editorShowGrid = value;
+//        emit onEditorShowGridChanged(value);
+//    }
+//}
 
 QPoint AppState::editorRoot()
 {
@@ -761,42 +775,73 @@ void AppState::editorPaintCellUsingSelection()
     editorPaintCell(x, y, selectedTile(), _selectedPalette, _tilePreviewFilter.hFlip, _tilePreviewFilter.vFlip);
 }
 
-void AppState::editorPaintCellUsingSelection(int x, int y)
+void AppState::editorPaintCellUsingSelection(int x, int y, bool paintTile, bool paintPalette)
 {
-    editorPaintCell(x, y, selectedTile(), _selectedPalette, _tilePreviewFilter.hFlip, _tilePreviewFilter.vFlip);
+    auto tile = paintTile ? selectedTile() : nullptr;
+    auto palette = paintPalette ? _selectedPalette : nullptr;
+    editorPaintCell(x, y, tile, palette, _tilePreviewFilter.hFlip, _tilePreviewFilter.vFlip);
 }
 
 void AppState::editorPaintCell(int x, int y, Tile * tile, Palette * palette, bool hFlip, bool vFlip)
 {
-    auto  project = _project;
-    auto  tileset = _selectedTileset;
+    auto project = _project;
+    auto tileset = _selectedTileset;
 
-    if (project == nullptr || palette == nullptr || tile == nullptr || tileset == nullptr)
+    if (project == nullptr || tileset == nullptr || (tile == nullptr && palette == nullptr))
         return;
-
-    Cell cell;
-    cell.id = ++_project->lastCellID;
-    cell.hFlip = hFlip;
-    cell.vFlip = vFlip;
-    cell.paletteID = palette->id;
-    cell.tileID = tile->id;
-    cell.x = x;
-    cell.y = y;
 
     QPair<int,int> position(x,y);
     auto it = tileset->cells.constFind(position);
     auto previous = it == tileset->cells.constEnd() ? nullptr : it.value();
     bool wasLinked = false;
 
-    if (previous != nullptr)
+    if (previous == nullptr)
     {
+        if (tile == nullptr || palette == nullptr)
+            return;
+
+        Cell cell;
+        cell.id = ++_project->lastCellID;
+        cell.hFlip = hFlip;
+        cell.vFlip = vFlip;
+        cell.paletteID = palette->id;
+        cell.tileID = tile->id;
+        cell.x = x;
+        cell.y = y;
+
+        if (tileset->historyAdd(this, new PaintCommand(position, previous, &cell, wasLinked)))
+        {
+            updateFilteredTilesets();
+            emit onSelectedTilesetChanged(tileset);
+        }
+    }
+    else
+    {
+        Cell cell = *it.value();
+        cell.id = ++_project->lastCellID;
+
+        if (tile != nullptr)
+        {
+            cell.hFlip = hFlip;
+            cell.vFlip = vFlip;
+            cell.tileID = tile->id;
+        }
+
+        if (palette != nullptr)
+        {
+            cell.paletteID = palette->id;
+        }
+
         auto previousTile = getTileById(previous->tileID);
         if (previousTile != nullptr && previousTile->linkedCellID == previous->id)
             wasLinked = true;
-    }
 
-    tileset->historyAdd(this, new PaintCommand(position, previous, &cell, wasLinked));
-    emit onSelectedTilesetChanged(tileset);
+        if (tileset->historyAdd(this, new PaintCommand(position, previous, &cell, wasLinked)))
+        {
+            updateFilteredTilesets();
+            emit onSelectedTilesetChanged(tileset);
+        }
+    }
 }
 
 void AppState::editorEraseCell(int x, int y)
@@ -822,8 +867,11 @@ void AppState::editorEraseCell(int x, int y)
             wasLinked = true;
     }
 
-    tileset->historyAdd(this, new PaintCommand(position, it.value(), nullptr, wasLinked));
-    emit onSelectedTilesetChanged(tileset);
+    if (tileset->historyAdd(this, new PaintCommand(position, it.value(), nullptr, wasLinked)))
+    {
+        updateFilteredTilesets();
+        emit onSelectedTilesetChanged(tileset);
+    }
 }
 
 void AppState::editorColorPickCell(int x, int y)
@@ -870,8 +918,11 @@ void AppState::editorToggleCellIsLink(int x, int y)
     int const oldCellID = tile->linkedCellID;
     int const newCellID = tile->linkedCellID==cell->id ? 0 : cell->id;
 
-    tileset->historyAdd(this, new LinkCommand(position, oldCellID, newCellID));
-    emit onSelectedTilesetChanged(tileset);
+    if (tileset->historyAdd(this, new LinkCommand(position, oldCellID, newCellID)))
+    {
+        updateFilteredTilesets();
+        emit onSelectedTilesetChanged(tileset);
+    }
 }
 
 void AppState::editorUndo()
@@ -910,7 +961,23 @@ void AppState::autoLink()
         auto tile = getTileById(pair.second->tileID);
         if (tile != nullptr && tile->linkedCellID == 0)
         {
-            editorToggleCellIsLink(pair.second->x, pair.second->y);
+            QPair<int,int> position(pair.second->x, pair.second->y);
+            auto it = tileset->cells.constFind(position);
+
+            if (it == tileset->cells.constEnd())
+                continue;
+
+            auto & cell = it.value();
+            auto tile = getTileById(cell->tileID);
+
+            if (tile == nullptr)
+                continue;
+
+            int const oldCellID = tile->linkedCellID;
+            int const newCellID = tile->linkedCellID==cell->id ? 0 : cell->id;
+
+            tileset->historyAdd(this, new LinkCommand(position, oldCellID, newCellID));
+//            editorToggleCellIsLink(pair.second->x, pair.second->y);
             emitChanges = true;
         }
     }
@@ -937,7 +1004,23 @@ void AppState::autoUnlink()
         auto tile = getTileById(pair.second->tileID);
         if (tile != nullptr && tile->linkedCellID == pair.second->id)
         {
-            editorToggleCellIsLink(pair.second->x, pair.second->y);
+            QPair<int,int> position(pair.second->x, pair.second->y);
+            auto it = tileset->cells.constFind(position);
+
+            if (it == tileset->cells.constEnd())
+                continue;
+
+            auto & cell = it.value();
+            auto tile = getTileById(cell->tileID);
+
+            if (tile == nullptr)
+                continue;
+
+            int const oldCellID = tile->linkedCellID;
+            int const newCellID = tile->linkedCellID==cell->id ? 0 : cell->id;
+
+            tileset->historyAdd(this, new LinkCommand(position, oldCellID, newCellID));
+//            editorToggleCellIsLink(pair.second->x, pair.second->y);
             emitChanges = true;
         }
     }
@@ -955,19 +1038,43 @@ void AppState::clearCell()
     editorEraseCell(_editorRoot.x()+_referenceOffset.x(), _editorRoot.y()+_referenceOffset.y());
 }
 
+void AppState::flushCellsWithSelectedPalettes()
+{
+    auto tileset = _selectedTileset;
+    auto palette = _selectedPalette;
+
+    if (tileset == nullptr || palette == nullptr)
+        return;
+
+    bool emitChanges = false;
+
+    for (auto pair : tileset->cells.asKeyValueRange())
+    {
+        auto cell = pair.second;
+        cell->paletteID = palette->id;
+        emitChanges = true;
+    }
+
+    if (emitChanges)
+    {
+        _projectHasChanges = true;
+        emit onSelectedTilesetChanged(tileset);
+    }
+}
+
 void AppState::notifyCellCreated(Cell const *)
 {
 
 }
 
-void AppState::notifyCellDeleted(Cell const * cell)
+void AppState::notifyCellDeleted(Cell const * cell, int moveLinkedCellID)
 {
     auto tile = getTileById(cell->tileID);
 
     if (tile == nullptr || tile->linkedCellID != cell->id)
         return;
 
-    tile->linkedCellID = 0;
+    tile->linkedCellID = moveLinkedCellID;
 }
 
 // References Toolbox

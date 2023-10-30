@@ -35,7 +35,7 @@ public:
 //    QByteArray & uniqueKey();
 
     void historyClear();
-    void historyAdd(AppState * state, CellCommand * cmd);
+    bool historyAdd(AppState * state, CellCommand * cmd);
     bool historyUndo(AppState * state);
     bool historyRedo(AppState * state);
 

@@ -4,21 +4,6 @@
 #include "widgettiles.h"
 #include "widgetvscrollarea.h"
 
-void FragmentTiles::styleButton(QPushButton * btn, int const value)
-{
-    auto stylesheet = App::getStyles()->get(value==0
-                                              ?"button_unchecked"
-                                              : value==1
-                                                ?"button_checked"
-                                                : "button_any");
-
-    if (btn->styleSheet() != stylesheet)
-    {
-        btn->setStyleSheet(stylesheet);
-        btn->update();
-    }
-}
-
 inline void nextButtonState(int & s)
 {
     if (s == 0) s = 1;
@@ -88,6 +73,11 @@ FragmentTiles::FragmentTiles(QWidget *parent) :
         saveSelectedTile();
         updateTilesWidget();
         restoreSelectedTile();
+    });
+
+    connect(App::getState(), &AppState::onShowLinkInfoChanged, this, [&](bool value)
+    {
+        _widgetTiles->setShowLinkInfo(value);
     });
 
 //    connect(App::getState(), &AppState::onSelectedTilesChanged, this, [&](QList<Tile*> tiles)
@@ -169,3 +159,18 @@ void FragmentTiles::restoreSelectedTile()
 
     _widgetTiles->setSelection(Range(0,0));
 };
+
+void FragmentTiles::styleButton(QPushButton * btn, int const value)
+{
+    auto stylesheet = App::getStyles()->get(value==0
+                                              ?"button_unchecked"
+                                              : value==1
+                                                ?"button_checked"
+                                                : "button_any");
+
+    if (btn->styleSheet() != stylesheet)
+    {
+        btn->setStyleSheet(stylesheet);
+        btn->update();
+    }
+}

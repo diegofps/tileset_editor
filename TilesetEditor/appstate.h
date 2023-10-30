@@ -15,12 +15,12 @@
 #include <string>
 #include <QPoint>
 
-enum EditorTool
-{
-    PENCIL,
-    ERASER,
-    LINKER
-};
+//enum EditorTool
+//{
+//    PENCIL,
+//    ERASER,
+//    LINKER
+//};
 
 enum ReferenceMode
 {
@@ -115,6 +115,7 @@ private:
     QList<Scene*>      * _projectScenes;
     int                  _selectedSceneID;
     int                  _lastMoveToSceneResult;
+    bool                 _showLinkInfo;
 
     QList<Tile*>    _filteredTiles;
     QList<Palette*> _filteredPalettes;
@@ -129,10 +130,10 @@ private:
 
 
     // Editor Toolbox
-    EditorTool _editorTool;
-    bool       _editorShowLinkedTiles;
-    bool       _editorShowUnlinkedTiles;
-    bool       _editorShowGrid;
+//    EditorTool _editorTool;
+//    bool       _editorShowLinkedTiles;
+//    bool       _editorShowUnlinkedTiles;
+//    bool       _editorShowGrid;
     QPoint     _editorRoot;
     int        _editorZoom;
 
@@ -221,16 +222,19 @@ public:
     // Scene
     int selectedSceneID();
 
-    // Editor Toolbox
-    EditorTool editorTool() const;
-    bool editorShowLinkedTiles() const;
-    bool editorShowUnlinkedTiles() const;
-    bool editorShowGrid() const;
+    void setShowLinkInfo(bool value);
+    bool showLinkInfo();
 
-    void setEditorTool(EditorTool const value);
-    void setEditorShowLinkedTiles(bool value);
-    void setEditorShowUnlinkedTiles(bool value);
-    void setEditorShowGrid(bool value);
+    // Editor Toolbox
+//    EditorTool editorTool() const;
+//    bool editorShowLinkedTiles() const;
+//    bool editorShowUnlinkedTiles() const;
+//    bool editorShowGrid() const;
+
+//    void setEditorTool(EditorTool const value);
+//    void setEditorShowLinkedTiles(bool value);
+//    void setEditorShowUnlinkedTiles(bool value);
+//    void setEditorShowGrid(bool value);
 
     QPoint editorRoot();
     void moveEditorRoot(int rx, int ry);
@@ -246,7 +250,7 @@ public:
 
     void editorPaintCellUsingSibling();
     void editorPaintCellUsingSelection();
-    void editorPaintCellUsingSelection(int x, int y);
+    void editorPaintCellUsingSelection(int x, int y, bool paintTile, bool paintPalette);
     void editorPaintCell(int x, int y, Tile * tile, Palette * palette, bool hFlip, bool vFlip);
     void editorEraseCell(int x, int y);
     void editorColorPickCell(int x, int y);
@@ -256,9 +260,11 @@ public:
     void autoLink();
     void autoUnlink();
     void clearCell();
+    void flushCellsWithSelectedPalettes();
 
     void notifyCellCreated(Cell const * cell);
-    void notifyCellDeleted(Cell const * cell);
+    void notifyCellDeleted(Cell const * cell, int moveLinkedCellID);
+
 
     // References Toolbox
     ReferenceMode referenceMode() const;
@@ -337,14 +343,12 @@ signals:
     void onFilteredPalettesChanged(QList<Palette *> const * value);
     void onFilteredTilesetsChanged(QList<Tileset *> const * value);
 
+    void onShowLinkInfoChanged(bool value);
+
     // Scene
     void onSelectedSceneIDChanged(int sceneID);
 
     // Editor Toolbox
-    void onEditorToolChanged(EditorTool const value);
-    void onEditorShowLinkedTilesChanged(bool const value);
-    void onEditorShowUnlinkedTilesChanged(bool const value);
-    void onEditorShowGridChanged(bool const value);
     void onEditorZoomChanged(int value);
     void onMoveViewport(int rx, int ry);
     void onMoveViewportHome();

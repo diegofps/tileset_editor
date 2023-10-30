@@ -200,6 +200,7 @@ QMenu::item:selected {
     <addaction name="action_Edit_AutoLink"/>
     <addaction name="action_Edit_AutoUnlink"/>
     <addaction name="action_Edit_ClearCell"/>
+    <addaction name="action_Edit_FlushCellsWithPalette"/>
    </widget>
    <widget class="QMenu" name="menu_View">
     <property name="title">
@@ -219,7 +220,7 @@ QMenu::item:selected {
      <addaction name="action_View_Reference_FN"/>
      <addaction name="action_View_Reference_FF"/>
     </widget>
-    <addaction name="action_View_NextTileUsage"/>
+    <addaction name="action_View_ShowLinkInfo"/>
     <addaction name="action_View_FlipTileHorizontally"/>
     <addaction name="action_View_FlipTileVertically"/>
     <addaction name="separator"/>
@@ -231,6 +232,7 @@ QMenu::item:selected {
     <addaction name="action_View_FocusEditor"/>
     <addaction name="action_View_Editor_ZoomIn"/>
     <addaction name="action_View_Editor_ZoomOut"/>
+    <addaction name="action_View_NextTileUsage"/>
    </widget>
    <widget class="QMenu" name="menu_Navigate">
     <property name="title">
@@ -544,6 +546,9 @@ QMenu::item:selected {
    </property>
   </action>
   <action name="action_View_FlipTileHorizontally">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>Flip Tile Horizontally</string>
    </property>
@@ -552,6 +557,9 @@ QMenu::item:selected {
    </property>
   </action>
   <action name="action_View_FlipTileVertically">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>Flip Tile Vertically</string>
    </property>
@@ -789,6 +797,22 @@ QMenu::item:selected {
    </property>
    <property name="shortcut">
     <string>Return</string>
+   </property>
+  </action>
+  <action name="action_View_ShowLinkInfo">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Link Info</string>
+   </property>
+   <property name="shortcut">
+    <string>L</string>
+   </property>
+  </action>
+  <action name="action_Edit_FlushCellsWithPalette">
+   <property name="text">
+    <string>Flush Cells With Current Palette</string>
    </property>
   </action>
  </widget>

@@ -12,7 +12,7 @@
 #include "model/palette.h"
 #include "model/tileset.h"
 
-class ContextReport
+class IOReport
 {
 private:
     bool _success;
@@ -24,18 +24,18 @@ public:
     const QString &message() const;
 };
 
-class ServiceContext
+class IOService
 {
 public:
 
-    ServiceContext();
+    IOService();
 
-    static void create(QString const & folderpath, ContextReport * report = nullptr);
-    static void close(ContextReport * report = nullptr);
-    static void load(QString const & folderpath, ContextReport * report = nullptr);
-    static void save(ContextReport * report = nullptr);
-    static void importDump(QString const & folderpath, ContextReport * report = nullptr);
-
+    static void create(QString const & folderpath, IOReport * report = nullptr);
+    static void close(IOReport * report = nullptr);
+    static void load(QString const & folderpath, IOReport * report = nullptr);
+    static void save(IOReport * report = nullptr);
+    static void importDump(QString const & folderpath, IOReport * report = nullptr);
+    static void buildTilesets();
 private:
 
     static bool loadContext(QDir contextDir, Project * context);

@@ -17,8 +17,6 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
-    prepareUIForProject(nullptr);
-
     connect(App::getState(), &AppState::onProjectChanged, this, [&](Project * value) {
         prepareUIForProject(value);
     });
@@ -48,6 +46,9 @@ MainWindow::MainWindow(QWidget *parent)
         App::getState()->setSelectedSceneID(newSceneID);
     });
 
+    connect(App::getState(), &AppState::onTileFilterChanged, this, [&](TilePreviewFilter const &) { loadFlags(); });
+    connect(App::getState(), &AppState::onShowLinkInfoChanged, this, [&](bool) { loadFlags(); });
+
 //    connect(App::getState(), &AppState::onSelectedSceneIDChanged, this, [&](int sceneID)
 //    {
 //        auto scenes = App::getState()->allScenes();
@@ -62,9 +63,6 @@ MainWindow::MainWindow(QWidget *parent)
         loadScenes(value);
         restoreSelectedScene();
     });
-
-    loadScenes(App::getState()->allScenes());
-    ui->cbScenes->setCurrentIndex(1);
 
     // File menu
 
@@ -96,6 +94,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->action_Edit_MoveCellsInTileset_Left, &QAction::triggered, this, [](){ App::getState()->moveCellsInTileset(-1,0); });
     connect(ui->action_Edit_MoveCellsInTileset_Right, &QAction::triggered, this, [](){ App::getState()->moveCellsInTileset(+1,0); });
 
+    connect(ui->action_Edit_FlushCellsWithPalette, &QAction::triggered, this, [](){ App::getState()->flushCellsWithSelectedPalettes(); });
 
     // View menu
     connect(ui->action_View_Reference_1, &QAction::triggered, this, [&](){ App::getState()->setReferenceMode(REF_1); });
@@ -129,6 +128,11 @@ MainWindow::MainWindow(QWidget *parent)
         App::getState()->setTilePreviewFilter(filter);
     });
 
+    connect(ui->action_View_ShowLinkInfo, &QAction::triggered, this, [&]()
+    {
+        App::getState()->setShowLinkInfo(ui->action_View_ShowLinkInfo->isChecked());
+    });
+
     connect(ui->action_View_FocusEditor, &QAction::triggered, this, [&]() { ui->contentFrame->setFocus(); });
 
     //Navigate menu
@@ -157,8 +161,31 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->action_Navigate_Viewport_Home, &QAction::triggered, this, [&](){ App::getState()->moveViewportHome(); });
 
     // Execute menu
+    connect(ui->action_Execute_BuildTilesets, &QAction::triggered, this, [&](){ IOService::buildTilesets(); });
 
     // Help menu
+
+    // Load widgets
+    prepareUIForProject(nullptr);
+
+    loadScenes(App::getState()->allScenes());
+    ui->cbScenes->setCurrentIndex(1);
+
+    loadFlags();
+}
+
+void MainWindow::loadFlags()
+{
+    auto filter = App::getState()->tilePreviewFilter();
+
+    if (ui->action_View_FlipTileHorizontally->isChecked() != filter.hFlip)
+        ui->action_View_FlipTileHorizontally->setChecked(filter.hFlip);
+
+    if (ui->action_View_FlipTileVertically->isChecked() != filter.vFlip)
+        ui->action_View_FlipTileVertically->setChecked(filter.vFlip);
+
+    if (ui->action_View_ShowLinkInfo->isChecked() != App::getState()->showLinkInfo())
+        ui->action_View_ShowLinkInfo->setChecked(App::getState()->showLinkInfo());
 }
 
 void MainWindow::loadScenes(QList<Scene*> const * value)
@@ -223,9 +250,9 @@ void MainWindow::onAction_File_NewProject()
 
     if (dialog.exec())
     {
-        ContextReport report;
+        IOReport report;
         fileNames = dialog.selectedFiles();
-        ServiceContext::create(fileNames.first(), &report);
+        IOService::create(fileNames.first(), &report);
         showMessage(report.message());
     }
     else
@@ -245,9 +272,9 @@ void MainWindow::onAction_File_OpenProject()
 
     if (dialog.exec())
     {
-        ContextReport report;
+        IOReport report;
         fileNames = dialog.selectedFiles();
-        ServiceContext::load(fileNames.first(), &report);
+        IOService::load(fileNames.first(), &report);
         showMessage(report.message());
     }
     else
@@ -258,15 +285,15 @@ void MainWindow::onAction_File_OpenProject()
 
 void MainWindow::onAction_File_SaveProject()
 {
-    ContextReport report;
-    ServiceContext::save(&report);
+    IOReport report;
+    IOService::save(&report);
     showMessage(report.message());
 }
 
 void MainWindow::onAction_File_CloseProject()
 {
-    ContextReport report;
-    ServiceContext::close(&report);
+    IOReport report;
+    IOService::close(&report);
     showMessage(report.message());
 }
 
@@ -281,9 +308,9 @@ void MainWindow::onAction_File_LoadDump()
 
     if (dialog.exec())
     {
-        ContextReport report;
+        IOReport report;
         fileNames = dialog.selectedFiles();
-        ServiceContext::importDump(fileNames.first(), &report);
+        IOService::importDump(fileNames.first(), &report);
         App::getState()->setProjectLastDumpFolder(fileNames.first());
         showMessage(report.message());
     }
@@ -295,8 +322,8 @@ void MainWindow::onAction_File_LoadDump()
 
 void MainWindow::onAction_File_ReloadDump()
 {
-    ContextReport report;
-    ServiceContext::importDump(App::getState()->projectLastDumpFolder(), &report);
+    IOReport report;
+    IOService::importDump(App::getState()->projectLastDumpFolder(), &report);
     showMessage(report.message());
 }
 

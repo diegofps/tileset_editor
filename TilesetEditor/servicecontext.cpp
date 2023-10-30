@@ -16,12 +16,12 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-ServiceContext::ServiceContext()
+IOService::IOService()
 {
 
 }
 
-void ServiceContext::create(const QString & folderpath, ContextReport * report)
+void IOService::create(const QString & folderpath, IOReport * report)
 {
     qInfo() << "Creating project";
     Project* project = new Project();
@@ -56,7 +56,7 @@ void ServiceContext::create(const QString & folderpath, ContextReport * report)
     save(report);
 }
 
-void ServiceContext::close(ContextReport * report)
+void IOService::close(IOReport * report)
 {
     qInfo() << "Closing project";
 
@@ -88,7 +88,7 @@ void ServiceContext::close(ContextReport * report)
         report->success(QString("Project %1 closed successfully").arg(path));
 }
 
-void ServiceContext::load(const QString & folderpath, ContextReport * report)
+void IOService::load(const QString & folderpath, IOReport * report)
 {
     qInfo() << "Loading project";
 
@@ -161,7 +161,7 @@ void ServiceContext::load(const QString & folderpath, ContextReport * report)
     }
 }
 
-void ServiceContext::save(ContextReport * report)
+void IOService::save(IOReport * report)
 {
     qInfo() << "Saving project";
     // TODO: Prevent partial save on errors
@@ -193,7 +193,7 @@ void ServiceContext::save(ContextReport * report)
     }
 }
 
-void ServiceContext::importDump(QString const & folderpath, ContextReport * report)
+void IOService::importDump(QString const & folderpath, IOReport * report)
 {
     qInfo() << "Importing dump";
     // TODO: Prevent partial import on errors
@@ -406,6 +406,11 @@ void ServiceContext::importDump(QString const & folderpath, ContextReport * repo
                         .arg(tilesImported).arg(palettesImported).arg(referencesImported).arg(screenshotsImported));
 }
 
+void IOService::buildTilesets()
+{
+
+}
+
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /// PRIVATE INTERFACE
@@ -414,7 +419,7 @@ void ServiceContext::importDump(QString const & folderpath, ContextReport * repo
 
 // METHODS TO LOAD THE DATA FROM JSON FILES
 
-bool ServiceContext::loadContext(QDir contextDir, Project * context)
+bool IOService::loadContext(QDir contextDir, Project * context)
 {
     context->path = contextDir.absolutePath();
 
@@ -527,32 +532,32 @@ bool loadItems(QDir baseDir, QString name, QList<ITEM*> * items)
     return true;
 }
 
-bool ServiceContext::loadTiles(QDir baseDir, QList<Tile*> * tiles)
+bool IOService::loadTiles(QDir baseDir, QList<Tile*> * tiles)
 {
     return loadItems(baseDir, "tiles", tiles);
 }
 
-bool ServiceContext::loadPalettes(QDir baseDir, QList<Palette*> * palettes)
+bool IOService::loadPalettes(QDir baseDir, QList<Palette*> * palettes)
 {
     return loadItems(baseDir, "palettes", palettes);
 }
 
-bool ServiceContext::loadReferences(QDir baseDir, QList<Reference*> * references)
+bool IOService::loadReferences(QDir baseDir, QList<Reference*> * references)
 {
     return loadItems(baseDir, "references", references);
 }
 
-bool ServiceContext::loadScenes(QDir baseDir, QList<Scene*> * scenes)
+bool IOService::loadScenes(QDir baseDir, QList<Scene*> * scenes)
 {
     return loadItems(baseDir, "scenes", scenes);
 }
 
-bool ServiceContext::loadTilesets(QDir baseDir, QList<Tileset*> * tilesets)
+bool IOService::loadTilesets(QDir baseDir, QList<Tileset*> * tilesets)
 {
     return loadItems(baseDir, "tilesets", tilesets);
 }
 
-bool ServiceContext::loadScreenshots(QDir baseDir, QList<Screenshot*> * screenshots)
+bool IOService::loadScreenshots(QDir baseDir, QList<Screenshot*> * screenshots)
 {
     if (!screenshots->isEmpty())
     {
@@ -574,7 +579,7 @@ bool ServiceContext::loadScreenshots(QDir baseDir, QList<Screenshot*> * screensh
 
 // METHODS TO SAVE THE DATA BACK AS JSON
 
-bool ServiceContext::saveContext(QDir contextFolder, Project * context)
+bool IOService::saveContext(QDir contextFolder, Project * context)
 {
     QString const filename = "context.json";
     QFile file = contextFolder.filePath(filename);
@@ -615,32 +620,32 @@ bool saveItems(QDir contextDir, QString name, QList<ITEM*> * items)
     return true;
 }
 
-bool ServiceContext::saveTiles(QDir contextDir, QList<Tile*> * tiles)
+bool IOService::saveTiles(QDir contextDir, QList<Tile*> * tiles)
 {
     return saveItems(contextDir, "tiles", tiles);
 }
 
-bool ServiceContext::savePalettes(QDir contextDir, QList<Palette*> * palettes)
+bool IOService::savePalettes(QDir contextDir, QList<Palette*> * palettes)
 {
     return saveItems(contextDir, "palettes", palettes);
 }
 
-bool ServiceContext::saveTilesets(QDir contextDir, QList<Tileset*> * tilesets)
+bool IOService::saveTilesets(QDir contextDir, QList<Tileset*> * tilesets)
 {
     return saveItems(contextDir, "tilesets", tilesets);
 }
 
-bool ServiceContext::saveReferences(QDir contextDir, QList<Reference*> * references)
+bool IOService::saveReferences(QDir contextDir, QList<Reference*> * references)
 {
     return saveItems(contextDir, "references", references);
 }
 
-bool ServiceContext::saveScenes(QDir contextDir, QList<Scene*> * scenes)
+bool IOService::saveScenes(QDir contextDir, QList<Scene*> * scenes)
 {
     return saveItems(contextDir, "scenes", scenes);
 }
 
-bool ServiceContext::saveScreenshots(QDir contextDir, QList<Screenshot*> * screenshots)
+bool IOService::saveScreenshots(QDir contextDir, QList<Screenshot*> * screenshots)
 {
     if (!contextDir.exists("screenshots") && !contextDir.mkdir("screenshots"))
     {
@@ -676,26 +681,26 @@ bool ServiceContext::saveScreenshots(QDir contextDir, QList<Screenshot*> * scree
 // CONTEXT_REPORT
 
 
-void ContextReport::success(QString const message)
+void IOReport::success(QString const message)
 {
 //    qInfo() << message;
     _success = true;
     _message = message;
 }
 
-void ContextReport::fail(QString const message)
+void IOReport::fail(QString const message)
 {
 //    qWarning() << message;
     _success = false;
     _message = message;
 }
 
-bool ContextReport::success() const
+bool IOReport::success() const
 {
     return _success;
 }
 
-const QString &ContextReport::message() const
+const QString &IOReport::message() const
 {
     return _message;
 }
