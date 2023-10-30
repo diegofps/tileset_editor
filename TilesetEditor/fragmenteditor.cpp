@@ -12,7 +12,7 @@ FragmentEditor::FragmentEditor(QWidget *parent) :
 
     // Listen to signals
 
-    connect(App::getState(), &AppState::onSelectedTilesetChanged, this, [&](Tileset * value) { updateTilesetWidget(value); });
+    connect(App::getState(), &AppState::onSelectedTilesetChanged, this, [&](Tileset *) { updateWidgetEditor(); });
     connect(App::getState(), &AppState::onEditorZoomChanged, this, [&](int value) { ui->widgetEditor->setZoom(value); });
     connect(App::getState(), &AppState::onMoveViewport, this, [&](int rx, int ry) { ui->widgetEditor->moveViewport(rx, ry); });
     connect(App::getState(), &AppState::onMoveViewportHome, this, [&]() { ui->widgetEditor->moveViewportHome(); });
@@ -58,7 +58,7 @@ FragmentEditor::FragmentEditor(QWidget *parent) :
             App::getState()->zoomOutEditor();
     });
 
-    updateTilesetWidget(App::getState()->selectedTileset());
+    updateWidgetEditor();
     ui->widgetEditor->setZoom(App::getState()->editorZoom());
 }
 
@@ -67,9 +67,11 @@ FragmentEditor::~FragmentEditor()
     delete ui;
 }
 
-void FragmentEditor::updateTilesetWidget(Tileset * value)
+void FragmentEditor::updateWidgetEditor()
 {
-    if (value == nullptr)
+    auto tileset = App::getState()->selectedTileset();
+
+    if (tileset == nullptr)
     {
         ui->widgetEditor->setCells(nullptr);
         return;
@@ -78,8 +80,9 @@ void FragmentEditor::updateTilesetWidget(Tileset * value)
     auto root = App::getState()->editorRoot();
     auto offset = App::getState()->referenceOffset();
 
-    ui->widgetEditor->setGridSize(value->gridW, value->gridH);
+    ui->widgetEditor->setShowLinkInfo(App::getState()->showLinkInfo());
+    ui->widgetEditor->setGridSize(tileset->gridW, tileset->gridH);
     ui->widgetEditor->setRoot(root.x(), root.y());
     ui->widgetEditor->setOffset(offset.x(), offset.y());
-    ui->widgetEditor->setCells(&value->cells);
+    ui->widgetEditor->setCells(&tileset->cells);
 }

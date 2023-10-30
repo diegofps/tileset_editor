@@ -127,6 +127,7 @@ void FragmentTiles::updateFilterWidgets()
 
 void FragmentTiles::updateTilesWidget()
 {
+    _widgetTiles->setShowLinkInfo(App::getState()->showLinkInfo());
     _widgetTiles->setTiles(App::getState()->filteredTiles());
     _widgetTiles->repack();
     _widgetTiles->update();

@@ -6,22 +6,15 @@
 AppState::AppState()
 {
     _selectedTileset = nullptr;
-
+    _showLinkInfo = true;
     _palettesMode = USED_BY_TILE;
     _selectedPalette = nullptr;
-
     _referenceMode = REF_25;
     _referenceZoom = 17;
     _referenceOffsetImage = nullptr;
     _referenceOffset = QPoint(0,0);
-
-//    _editorTool = PENCIL;
-//    _editorShowLinkedTiles = true;
-//    _editorShowUnlinkedTiles = true;
-//    _editorShowGrid = true;
     _editorRoot = QPoint(0,0);
     _editorZoom = 16;
-
     _project = nullptr;
     _projectHasChanges = false;
     _projectTiles = nullptr;
@@ -32,7 +25,6 @@ AppState::AppState()
     _projectScenes = nullptr;
     _selectedSceneID = 0;
     _lastMoveToSceneResult = 0;
-
 }
 
 // Context Folder
@@ -283,7 +275,6 @@ void AppState::updateFilteredPalettes()
     {
         for (auto item : *_projectPalettes)
             _filteredPalettes.append(item);
-//        qDebug() << "Filter found " << _filteredPalettes.size() << " palettes using all";
         emit onFilteredPalettesChanged(&_filteredPalettes);
         return;
     }
@@ -308,7 +299,6 @@ void AppState::updateFilteredPalettes()
             _filteredPalettes.append(palette);
     }
 
-//    qDebug() << "Filter found " << _filteredPalettes.size() << " palettes not using all";
     emit onFilteredPalettesChanged(&_filteredPalettes);
 }
 
@@ -541,62 +531,6 @@ QList<Tileset *> * AppState::allTilesets() const
 
 // Editor Toolbox
 
-//EditorTool AppState::editorTool() const
-//{
-//    return _editorTool;
-//}
-
-//bool AppState::editorShowLinkedTiles() const
-//{
-//    return _editorShowLinkedTiles;
-//}
-
-//bool AppState::editorShowUnlinkedTiles() const
-//{
-//    return _editorShowUnlinkedTiles;
-//}
-
-//bool AppState::editorShowGrid() const
-//{
-//    return _editorShowGrid;
-//}
-
-//void AppState::setEditorTool(EditorTool const value)
-//{
-//    if (value != _editorTool)
-//    {
-//        _editorTool = value;
-//        emit onEditorToolChanged(value);
-//    }
-//}
-
-//void AppState::setEditorShowLinkedTiles(bool value)
-//{
-//    if (value != _editorShowLinkedTiles)
-//    {
-//        _editorShowLinkedTiles = value;
-//        emit onEditorShowLinkedTilesChanged(value);
-//    }
-//}
-
-//void AppState::setEditorShowUnlinkedTiles(bool value)
-//{
-//    if (value != _editorShowUnlinkedTiles)
-//    {
-//        _editorShowUnlinkedTiles = value;
-//        emit onEditorShowUnlinkedTilesChanged(value);
-//    }
-//}
-
-//void AppState::setEditorShowGrid(bool value)
-//{
-//    if (value != _editorShowGrid)
-//    {
-//        _editorShowGrid = value;
-//        emit onEditorShowGridChanged(value);
-//    }
-//}
-
 QPoint AppState::editorRoot()
 {
     return _editorRoot;
@@ -761,16 +695,16 @@ void AppState::editorPaintCellUsingSibling()
                 .arg(bestHFlip)
                 .arg(bestVFlip);
 
-    int x = _editorRoot.x()+_referenceOffset.x();
-    int y = _editorRoot.y()+_referenceOffset.y();
+    int const x = _editorRoot.x()+_referenceOffset.x();
+    int const y = _editorRoot.y()+_referenceOffset.y();
 
     editorPaintCell(x, y, bestTile, bestPalette, bestHFlip, bestVFlip);
 }
 
 void AppState::editorPaintCellUsingSelection()
 {
-    int x = _editorRoot.x()+_referenceOffset.x();
-    int y = _editorRoot.y()+_referenceOffset.y();
+    int const x = _editorRoot.x()+_referenceOffset.x();
+    int const y = _editorRoot.y()+_referenceOffset.y();
 
     editorPaintCell(x, y, selectedTile(), _selectedPalette, _tilePreviewFilter.hFlip, _tilePreviewFilter.vFlip);
 }
@@ -977,7 +911,6 @@ void AppState::autoLink()
             int const newCellID = tile->linkedCellID==cell->id ? 0 : cell->id;
 
             tileset->historyAdd(this, new LinkCommand(position, oldCellID, newCellID));
-//            editorToggleCellIsLink(pair.second->x, pair.second->y);
             emitChanges = true;
         }
     }
@@ -1020,7 +953,6 @@ void AppState::autoUnlink()
             int const newCellID = tile->linkedCellID==cell->id ? 0 : cell->id;
 
             tileset->historyAdd(this, new LinkCommand(position, oldCellID, newCellID));
-//            editorToggleCellIsLink(pair.second->x, pair.second->y);
             emitChanges = true;
         }
     }
