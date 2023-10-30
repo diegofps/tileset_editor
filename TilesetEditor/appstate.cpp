@@ -20,7 +20,7 @@ AppState::AppState()
     _editorShowUnlinkedTiles = true;
     _editorShowGrid = true;
     _editorRoot = QPoint(0,0);
-    _editorZoom = 17;
+    _editorZoom = 16;
 
     _project = nullptr;
     _projectHasChanges = false;

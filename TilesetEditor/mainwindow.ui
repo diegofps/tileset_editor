@@ -787,6 +787,9 @@ QMenu::item:selected {
    <property name="text">
     <string>Insert Selected Tile</string>
    </property>
+   <property name="shortcut">
+    <string>Return</string>
+   </property>
   </action>
  </widget>
  <resources/>
