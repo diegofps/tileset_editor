@@ -1,5 +1,6 @@
 #include "appstate.h"
 #include "editorcommand.h"
+#include "app.h"
 
 AppState::AppState()
 {
@@ -660,17 +661,77 @@ void AppState::moveViewportHome()
     emit onMoveViewportHome();
 }
 
+inline int imageDistance(QImage const * img1, QImage const * img2)
+{
+    if (img1 == nullptr || img2 == nullptr || img1->width() != img2->width() || img1->height() != img2->height())
+        return INT_MAX;
+
+    int distance = 0;
+
+    for (int i=0;i!=img1->height();++i)
+    {
+        img1->constScanLine(i);
+    }
+
+    // TODO
+
+    return distance;
+}
+
 void AppState::editorPaintCellUsingSibling()
 {
+    if (_referenceOffsetImage == nullptr || _filteredTiles.isEmpty())
+        return;
 
+    int bestDistance = -1;
+    Tile * bestTile = nullptr;
+    Palette * bestPalette = nullptr;
+
+#define TRY_ARRANGEMENT(H_FLIP, V_FLIP) {\
+        QImage const * const currImage = App::getOriginalTileCache()->getTileImage(tile, palette, (H_FLIP), (V_FLIP));\
+        int const currDistance = imageDistance(currImage, _referenceOffsetImage);\
+        if (currDistance < bestDistance || bestTile == nullptr)\
+        {\
+            bestTile = tile;\
+            bestPalette = palette;\
+            bestDistance = currDistance;\
+        }\
+    }
+
+    for (auto tile : _filteredTiles)
+    {
+        for (auto pair : tile->palettesUsed.asKeyValueRange())
+        {
+            auto palette = getPaletteById(pair.first);
+
+            if (palette == nullptr)
+                continue;
+
+            TRY_ARRANGEMENT(false, false);
+            TRY_ARRANGEMENT(false, true);
+            TRY_ARRANGEMENT(true, false);
+            TRY_ARRANGEMENT(true, true);
+        }
+    }
+
+    if (bestTile == nullptr || bestPalette == nullptr)
+        return;
+
+    int x = _editorRoot.x()+_referenceOffset.x();
+    int y = _editorRoot.y()+_referenceOffset.y();
+
+    editorPaintCell(x, y, bestTile, bestPalette);
 }
 
 void AppState::editorPaintCellUsingSelection(int x, int y)
 {
+    editorPaintCell(x, y, selectedTile(), _selectedPalette);
+}
+
+void AppState::editorPaintCell(int x, int y, Tile * tile, Palette * palette)
+{
     auto  project = _project;
-    auto  palette = _selectedPalette;
     auto  tileset = _selectedTileset;
-    auto  tile = selectedTile();
     auto& tilePreviewFilter = _tilePreviewFilter;
 
     if (project == nullptr || palette == nullptr || tile == nullptr || tileset == nullptr)

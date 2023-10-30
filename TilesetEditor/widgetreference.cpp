@@ -1,5 +1,6 @@
 #include "widgetreference.h"
 #include <QPainter>
+#include <QWheelEvent>
 
 WidgetReference::WidgetReference(QWidget *parent)
     : QWidget{parent},
@@ -11,7 +12,8 @@ WidgetReference::WidgetReference(QWidget *parent)
     _root(0,0,8,8),
     _offset(0,0,8,8),
     _viewport(0,0,0,0),
-    _viewportPower(7)
+    _viewportPower(7),
+    _scrollPosition(0)
 {
     _brushRoot.setColor(QColor::fromString("#66ffffff"));
     _brushRoot.setStyle(Qt::SolidPattern);
@@ -108,6 +110,28 @@ void WidgetReference::resizeEvent(QResizeEvent *event)
     (void) event;
     updateViewport();
     update();
+}
+
+void WidgetReference::wheelEvent(QWheelEvent *event)
+{
+    _scrollPosition += event->angleDelta().ry();
+
+    if (_scrollPosition > 0)
+    {
+        while (_scrollPosition >= 120)
+        {
+            _scrollPosition -= 120;
+            emit onScrollWheel(true);
+        }
+    }
+    else
+    {
+        while (_scrollPosition <= -120)
+        {
+            _scrollPosition += 120;
+            emit onScrollWheel(false);
+        }
+    }
 }
 
 void WidgetReference::updateOffsetImage()

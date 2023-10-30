@@ -66,6 +66,14 @@ FragmentEditor::FragmentEditor(QWidget *parent) :
                                  .arg(cell->vFlip));
     });
 
+    connect(ui->widgetEditor, &WidgetEditor::onScrollWheel, this, [&](bool value)
+    {
+        if (value)
+            App::getState()->zoomInEditor();
+        else
+            App::getState()->zoomOutEditor();
+    });
+
     updateTilesetWidget(App::getState()->selectedTileset());
     ui->widgetEditor->setZoom(App::getState()->editorZoom());
 }

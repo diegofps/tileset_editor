@@ -76,6 +76,14 @@ FragmentReferences::FragmentReferences(QWidget *parent) :
         ui->widgetReference->setZoom(value);
     });
 
+    connect(ui->widgetReference, &WidgetReference::onScrollWheel, this, [&](bool value)
+    {
+        if (value)
+            App::getState()->zoomInReference();
+        else
+            App::getState()->zoomOutReference();
+    });
+
     ui->widgetReference->setZoom(App::getState()->referenceZoom());
     updateReferenceWidget();
 }

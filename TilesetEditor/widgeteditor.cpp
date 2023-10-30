@@ -10,6 +10,7 @@ WidgetEditor::WidgetEditor(QWidget *parent)
     _offset(0,0,1,1),
     _viewport(0,0,0,0),
     _viewportPower(15),
+    _scrollPosition(0),
     _gridWidth(0),
     _gridHeight(0),
     _cells(nullptr),
@@ -44,7 +45,7 @@ WidgetEditor::WidgetEditor(QWidget *parent)
 inline void
 drawRectangleInViewport(QRect const & rect,
                         QSize const & painterSize,
-                        QRect const & viewport,
+                        QRectF const & viewport,
                         QBrush const & brush,
                         QPen const & pen,
                         QPainter & painter)
@@ -62,7 +63,7 @@ drawRectangleInViewport(QRect const & rect,
 inline void
 drawPixmapInViewport(QRect const & rect,
                      QSize const & painterSize,
-                     QRect const & viewport,
+                     QRectF const & viewport,
                      QPixmap const & pixmap,
                      QPainter & painter)
 {
@@ -209,6 +210,9 @@ void WidgetEditor::mousePressEvent(QMouseEvent * event)
 {
     int const btns = event->buttons();
 
+    if (btns & Qt::MiddleButton)
+        _lastDraggingPosition = event->pos();
+
     if (!(btns & Qt::LeftButton))
         return;
 
@@ -237,8 +241,21 @@ void WidgetEditor::mousePressEvent(QMouseEvent * event)
 
 void WidgetEditor::mouseMoveEvent(QMouseEvent * event)
 {
+    int const btns = event->buttons();
     auto pos = event->pos();
 
+    // Drag viewport
+
+    if (btns & Qt::MiddleButton)
+    {
+        float const x = _viewport.x() - (pos.x() - _lastDraggingPosition.x()) * _viewport.width() / size().width();
+        float const y = _viewport.y() - (pos.y() - _lastDraggingPosition.y()) * _viewport.height() / size().height();
+        _viewport.setRect(x,y,_viewport.width(), _viewport.height());
+        _lastDraggingPosition = pos;
+        update();
+    }
+
+    // Emit hover events
     int const offX = pos.x()*_viewport.width()/width();
     int const offY = pos.y()*_viewport.height()/height();
 
@@ -262,5 +279,27 @@ void WidgetEditor::mouseMoveEvent(QMouseEvent * event)
         emit onHoverCell(x, y, it==_cells->end() ? nullptr : it.value());
     }
 
+}
+
+void WidgetEditor::wheelEvent(QWheelEvent *event)
+{
+    _scrollPosition += event->angleDelta().ry();
+
+    if (_scrollPosition > 0)
+    {
+        while (_scrollPosition >= 120)
+        {
+            _scrollPosition -= 120;
+            emit onScrollWheel(true);
+        }
+    }
+    else
+    {
+        while (_scrollPosition <= -120)
+        {
+            _scrollPosition += 120;
+            emit onScrollWheel(false);
+        }
+    }
 }
 

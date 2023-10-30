@@ -21,6 +21,11 @@ public:
 
     void paintEvent(QPaintEvent *event);
     void resizeEvent(QResizeEvent *event);
+    void wheelEvent(QWheelEvent *event);
+
+signals:
+
+    void onScrollWheel(bool up);
 
 private:
 
@@ -37,6 +42,7 @@ private:
     QRect _offset;
     QRect _viewport;
     int _viewportPower;
+    int _scrollPosition;
     QBrush _brushRoot;
     QBrush _brushOffset;
 

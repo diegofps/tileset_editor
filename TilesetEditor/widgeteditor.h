@@ -20,6 +20,7 @@ protected:
     void updateViewport();
     void mousePressEvent(QMouseEvent *event);
     void mouseMoveEvent(QMouseEvent *event);
+    void wheelEvent(QWheelEvent *event);
 
 public:
 
@@ -39,13 +40,16 @@ signals:
     void onColorPickCell(int x, int y); // Alt + Left click
     void onLinkCell(int x, int y); // Shift + Left click
     void onHoverCell(int x, int y, Cell const * cell);
+    void onScrollWheel(bool up);
+    void onDragViewport(int offX, int offY);
 
 private:
 
     QRect _root;
     QRect _offset;
-    QRect _viewport;
+    QRectF _viewport;
     int _viewportPower;
+    int _scrollPosition;
     QBrush _brushRoot;
     QBrush _brushOffset;
     QBrush _brushLink;
@@ -56,6 +60,7 @@ private:
     int _gridHeight;
     QHash<QPair<int, int>, Cell *> const * _cells;
     QPair<int,int> _lastHoverKey;
+    QPointF _lastDraggingPosition;
 
 };
 

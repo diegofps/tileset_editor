@@ -246,6 +246,7 @@ public:
 
     void editorPaintCellUsingSibling();
     void editorPaintCellUsingSelection(int x, int y);
+    void editorPaintCell(int x, int y, Tile * tile, Palette * palette);
     void editorEraseCell(int x, int y);
     void editorColorPickCell(int x, int y);
     void editorToggleCellIsLink(int x, int y);
