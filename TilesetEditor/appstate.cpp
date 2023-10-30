@@ -1047,6 +1047,7 @@ void AppState::setSelectedTiles(QList<Tile*> & tiles)
 {
     _selectedTiles = tiles;
     emit onSelectedTilesChanged(&_selectedTiles);
+    emit onReferenceOffsetChanged(_referenceOffset);
     updateFilteredPalettes();
 }
 
