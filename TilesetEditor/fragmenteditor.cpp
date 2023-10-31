@@ -36,9 +36,10 @@ FragmentEditor::FragmentEditor(QWidget *parent) :
         if (cell == nullptr)
             ui->lbExtraInfo->setText(QString("X:%1, Y:%2").arg(x).arg(y));
         else
-            ui->lbExtraInfo->setText(QString("X:%1, Y:%2, TileID:%3, PaletteID:%4, HFlip:%5, VFlip:%6")
+            ui->lbExtraInfo->setText(QString("X:%1, Y:%2, CellID:%3, TileID:%4, PaletteID:%5, HFlip:%6, VFlip:%7")
                                  .arg(x)
                                  .arg(y)
+                                 .arg(cell->id)
                                  .arg(cell->tileID)
                                  .arg(cell->paletteID)
                                  .arg(cell->hFlip)

@@ -9,8 +9,6 @@
 #include "model/palette.h"
 #include "model/tileset.h"
 
-#include "range.h"
-
 #include <QObject>
 #include <string>
 #include <QPoint>

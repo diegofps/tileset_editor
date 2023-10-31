@@ -19,7 +19,6 @@ SOURCES += \
     fragmentcontextopen.cpp \
     fragmenteditor.cpp \
     fragmentpalettes.cpp \
-    fragmentpreview.cpp \
     fragmentreferences.cpp \
     fragmenttilepreview.cpp \
     fragmenttiles.cpp \
@@ -37,7 +36,6 @@ SOURCES += \
     model/screenshot.cpp \
     model/tile.cpp \
     model/tileset.cpp \
-    range.cpp \
     tilecache.cpp \
     tilecachehd.cpp \
     tilesgridlist.cpp \
@@ -61,7 +59,6 @@ HEADERS += \
     fragmentcontextopen.h \
     fragmenteditor.h \
     fragmentpalettes.h \
-    fragmentpreview.h \
     fragmentreferences.h \
     fragmenttilepreview.h \
     fragmenttiles.h \
@@ -79,7 +76,6 @@ HEADERS += \
     model/screenshot.h \
     model/tile.h \
     model/tileset.h \
-    range.h \
     tilecache.h \
     tilecachehd.h \
     tilesgridlist.h \
@@ -98,7 +94,6 @@ FORMS += \
     fragmentcontextopen.ui \
     fragmenteditor.ui \
     fragmentpalettes.ui \
-    fragmentpreview.ui \
     fragmentreferences.ui \
     fragmenttilepreview.ui \
     fragmenttiles.ui \

@@ -111,7 +111,7 @@ void DialogEditScenes::onBtNewClicked()
 {
     qDebug() << "btNew";
     auto scene = new Scene();
-    scene->id = ++App::getState()->project()->lastPaletteID;
+    scene->id = ++App::getState()->project()->lastSceneID;
     scene->name = "Noname";
 
     int const position = ui->listScenes->currentRow() < 0 ? 0 : ui->listScenes->currentRow()+1;

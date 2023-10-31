@@ -9,7 +9,28 @@
 #include <QJsonDocument>
 #include <QJsonArray>
 #include <QJsonObject>
+#include <QPainter>
+#include <QImage>
 
+
+#define FAIL(msg) {\
+    qWarning() << (msg);\
+    if (report != nullptr)\
+        report->fail(msg);\
+}
+
+#define ABORT(msg) {\
+    qWarning() << (msg);\
+    if (report != nullptr)\
+        report->fail(msg);\
+    return;\
+}
+
+#define SUCCESS(msg) {\
+    qInfo() << (msg);\
+    if (report != nullptr)\
+        report->success(msg);\
+}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /// PUBLIC INTERFACE
@@ -24,6 +45,7 @@ IOService::IOService()
 void IOService::create(const QString & folderpath, IOReport * report)
 {
     qInfo() << "Creating project";
+
     Project* project = new Project();
     QList<Tile*>* tiles = new QList<Tile*>();
     QList<Tileset*>* tilesets = new QList<Tileset*>();
@@ -63,12 +85,7 @@ void IOService::close(IOReport * report)
     auto project = App::getState()->project();
 
     if (project == nullptr)
-    {
-        qWarning() << "Project is already closed";
-        if (report != nullptr)
-            report->fail("Project is already closed");
-        return;
-    }
+        ABORT("Project is already closed");
 
     QString path = project->path;
     QList<qsizetype> emptyTiles;
@@ -84,15 +101,14 @@ void IOService::close(IOReport * report)
     App::getState()->setAllScenes(nullptr);
     App::getOriginalTileCache()->clear();
 
-    if (report != nullptr)
-        report->success(QString("Project %1 closed successfully").arg(path));
+    SUCCESS(QString("Project %1 closed successfully").arg(path));
 }
 
 void IOService::load(const QString & folderpath, IOReport * report)
 {
     qInfo() << "Loading project";
 
-    Project* context = new Project();
+    Project* project = new Project();
     QList<Tile*>* tiles = new QList<Tile*>();
     QList<Tileset*>* tilesets = new QList<Tileset*>();
     QList<Palette*>* palettes = new QList<Palette*>();
@@ -102,7 +118,7 @@ void IOService::load(const QString & folderpath, IOReport * report)
 
     QDir baseDir(folderpath);
 
-    if (loadContext(baseDir, context) &&
+    if (loadProject(baseDir, project) &&
         loadTiles(baseDir, tiles) &&
         loadTilesets(baseDir, tilesets) &&
         loadPalettes(baseDir, palettes) &&
@@ -119,20 +135,16 @@ void IOService::load(const QString & folderpath, IOReport * report)
         App::getState()->setAllScreenshots(screenshots);
         App::getState()->setAllScenes(scenes);
         App::getState()->setProjectHasChanges(false);
-        App::getState()->setProject(context);
+        App::getState()->setProject(project);
 
         App::getState()->updateFilteredPalettes();
         App::getState()->updateFilteredTiles();
         App::getState()->updateFilteredTilesets();
 
-        if (report != nullptr)
-            report->success(QString("Project loaded successfully: %1").arg(folderpath));
+        SUCCESS(QString("Project loaded successfully: %1").arg(folderpath));
     }
     else
     {
-        if (report != nullptr)
-            report->fail(QString("Failed to load project: %1").arg(folderpath));
-
         for (auto item : *tiles)
             delete item;
 
@@ -151,13 +163,15 @@ void IOService::load(const QString & folderpath, IOReport * report)
         for (auto item : *scenes)
             delete item;
 
-        delete context;
+        delete project;
         delete tiles;
         delete tilesets;
         delete palettes;
         delete references;
         delete screenshots;
         delete scenes;
+
+        FAIL(QString("Failed to load project: %1").arg(folderpath));
     }
 }
 
@@ -166,30 +180,27 @@ void IOService::save(IOReport * report)
     qInfo() << "Saving project";
     // TODO: Prevent partial save on errors
 
-    QDir contextDir(App::getState()->project()->path);
+    QDir projectDir(App::getState()->project()->path);
 
-    if (!contextDir.exists())
-        contextDir.mkpath(".");
+    if (!projectDir.exists())
+        projectDir.mkpath(".");
 
-    if (saveContext(contextDir, App::getState()->project()) &&
-        saveTiles(contextDir, App::getState()->allTiles()) &&
-        savePalettes(contextDir, App::getState()->allPalettes()) &&
-        saveReferences(contextDir, App::getState()->allReferences()) &&
-        saveTilesets(contextDir, App::getState()->allTilesets()) &&
-        saveScreenshots(contextDir, App::getState()->allScreenshots()) &&
-        saveScenes(contextDir, App::getState()->allScenes()) )
+    if (saveContext(projectDir, App::getState()->project()) &&
+        saveTiles(projectDir, App::getState()->allTiles()) &&
+        savePalettes(projectDir, App::getState()->allPalettes()) &&
+        saveReferences(projectDir, App::getState()->allReferences()) &&
+        saveTilesets(projectDir, App::getState()->allTilesets()) &&
+        saveScreenshots(projectDir, App::getState()->allScreenshots()) &&
+        saveScenes(projectDir, App::getState()->allScenes()) )
     {
         App::getState()->setProjectHasChanges(false);
 
         qInfo("Context saved successfully.");
-        if (report != nullptr)
-            report->success(QString("Project saved at %1").arg(contextDir.absolutePath()));
+        SUCCESS(QString("Project saved at %1").arg(projectDir.absolutePath()));
     }
     else
     {
-        qWarning("Context failed to save");
-        if (report != nullptr)
-            report->fail("Failed to save context.");
+        FAIL("Failed to save project.");
     }
 }
 
@@ -202,12 +213,7 @@ void IOService::importDump(QString const & folderpath, IOReport * report)
     QDir screenshotsDir(folderpath);
 
     if (!screenshotsDir.cd("screenshots"))
-    {
-        qWarning() << "Can't access the screenshot folder";
-        if (report != nullptr)
-            report->fail("This is not a valid dump directory, missing screenshots folder.");
-        return;
-    }
+        ABORT("This is not a valid dump directory, missing screenshots folder.");
 
     int tilesImported = 0;
     int palettesImported = 0;
@@ -223,12 +229,7 @@ void IOService::importDump(QString const & folderpath, IOReport * report)
         !loadTiles(dumpDir, &dumpedTiles) ||
         !loadReferences(dumpDir, &dumpedReferences) ||
         !loadScreenshots(screenshotsDir, &dumpedScreenshots) )
-    {
-        qWarning() << "Can't load dumped files";
-        if (report != nullptr)
-            report->fail("This is not a valid dump directory, can't load dumped elements.");
-        return;
-    }
+        ABORT("This is not a valid dump directory, can't load dumped elements.");
 
     qInfo() << "Dumped folder has" << dumpedTiles.size() << "tiles,"
             << dumpedPalettes.size() << "palettes,"
@@ -394,21 +395,74 @@ void IOService::importDump(QString const & folderpath, IOReport * report)
         ++screenshotsImported;
     }
 
-    auto project = App::getState()->project();
-
     App::getState()->updateFilteredTiles();
-
-    App::getState()->setProject(project);
+    App::getState()->setProject(App::getState()->project());
     App::getState()->setProjectHasChanges(true);
 
-    if (report != nullptr)
-        report->success(QString("Dump imported, new items: tiles=%1, palettes=%2, references=%3, screenshots=%4.")
-                        .arg(tilesImported).arg(palettesImported).arg(referencesImported).arg(screenshotsImported));
+    SUCCESS(QString("Dump imported, new items: tiles=%1, palettes=%2, references=%3, screenshots=%4.")
+            .arg(tilesImported)
+            .arg(palettesImported)
+            .arg(referencesImported)
+            .arg(screenshotsImported))
 }
 
-void IOService::buildTilesets()
+void IOService::buildTilesets(IOReport * report)
 {
+    QDir tilesetsDir(App::getState()->project()->path);
+    char const * foldername = "tilesets.low";
 
+    if (tilesetsDir.exists(foldername))
+    {
+        QDir tmp = tilesetsDir;
+        if (!tmp.cd(foldername) || !tmp.removeRecursively())
+            ABORT("Could not remove previous tilesets output folder");
+    }
+
+    if (!tilesetsDir.mkdir(foldername))
+        ABORT("Could not create new tilesets output folder");
+
+    if (!tilesetsDir.cd(foldername))
+        ABORT("Could not access tilesets output folder");
+
+    QBrush brushBackground;
+    brushBackground.setStyle(Qt::SolidPattern);
+
+    for (auto tileset : *App::getState()->allTilesets())
+    {
+        auto state = App::getState();
+        auto tileCache = App::getOriginalTileCache();
+
+        QString filename = QString("%1_%2.png").arg(tileset->sceneId).arg(tileset->id);
+        QString filepath = tilesetsDir.filePath(filename);
+        QFile file(filepath);
+
+        if (file.exists() && !file.remove())
+            ABORT(QString("Failed to remove previous tileset file: %1").arg(filename));
+
+        QImage img(tileset->gridW*8, tileset->gridH*8, QImage::Format_ARGB32);
+        QPainter painter(&img);
+
+        brushBackground.setColor(tileset->bgColor);
+        painter.fillRect(img.rect(), brushBackground);
+
+        for (auto pair : tileset->cells.asKeyValueRange())
+        {
+            auto cell = pair.second;
+            auto tile = state->getTileById(cell->tileID);
+            auto palette = state->getPaletteById(cell->paletteID);
+
+            QPixmap * pixmap = tileCache->getTilePixmap(tile, palette, cell->hFlip, cell->vFlip);
+
+            if (pixmap == nullptr)
+                continue;
+
+            painter.drawPixmap(QRect(cell->x*8, cell->y*8, 8, 8), *pixmap);
+        }
+
+        img.save(filepath);
+    }
+
+    SUCCESS("Tilesets generated successfully");
 }
 
 
@@ -419,23 +473,23 @@ void IOService::buildTilesets()
 
 // METHODS TO LOAD THE DATA FROM JSON FILES
 
-bool IOService::loadContext(QDir contextDir, Project * context)
+bool IOService::loadProject(QDir projectDir, Project * project)
 {
-    context->path = contextDir.absolutePath();
+    project->path = projectDir.absolutePath();
 
-    QString filename = "context.json";
+    QString filename = "project.json";
 
-    if (!contextDir.exists(filename))
+    if (!projectDir.exists(filename))
     {
         qInfo() << filename << " does not exist";
         return false;
     }
 
-    QFile file = contextDir.filePath(filename);
+    QFile file = projectDir.filePath(filename);
 
     if (!file.open(QIODevice::ReadOnly|QIODevice::Text))
     {
-        qWarning() << "Failed to open context file: " << file.fileName();
+        qWarning() << "Failed to open project file: " << file.fileName();
         return false;
     }
 
@@ -445,23 +499,23 @@ bool IOService::loadContext(QDir contextDir, Project * context)
 
     if (doc.isNull())
     {
-        qWarning() << "Failed to parse context file: " << file.fileName();
+        qWarning() << "Failed to parse project file: " << file.fileName();
         return false;
     }
 
     if (!doc.isObject())
     {
-        qWarning() << "Context file does not start with an object: " << file.fileName();
+        qWarning() << "Project file does not start with an object: " << file.fileName();
         return false;
     }
 
     try {
-        if (!context->initFromJson(doc.object()))
+        if (!project->initFromJson(doc.object()))
         {
-            qWarning() << "Context is not valid: " << file.fileName();
+            qWarning() << "Project is not valid: " << file.fileName();
             return false;
         }
-    } catch (ContextError & e) {
+    } catch (ProjectError & e) {
         qWarning() << e.msg();
         return false;
     }
@@ -523,7 +577,7 @@ bool loadItems(QDir baseDir, QString name, QList<ITEM*> * items)
             items->append(new ITEM(jItem));
         }
     }
-    catch (ContextError & e)
+    catch (ProjectError & e)
     {
         qWarning() << "ContextError during loadItems: " << e.msg();
         return false;
@@ -579,18 +633,18 @@ bool IOService::loadScreenshots(QDir baseDir, QList<Screenshot*> * screenshots)
 
 // METHODS TO SAVE THE DATA BACK AS JSON
 
-bool IOService::saveContext(QDir contextFolder, Project * context)
+bool IOService::saveContext(QDir projectDir, Project * project)
 {
-    QString const filename = "context.json";
-    QFile file = contextFolder.filePath(filename);
+    QString const filename = "project.json";
+    QFile file = projectDir.filePath(filename);
 
     if (!file.open(QIODevice::WriteOnly|QIODevice::Text))
     {
-        qWarning() << "Save error, could not open the output json file for context: " << file.fileName();
+        qWarning() << "Save error, could not open the output json file for project file: " << file.fileName();
         return false;
     }
 
-    QJsonDocument doc(context->exportAsJson());
+    QJsonDocument doc(project->exportAsJson());
     file.write(doc.toJson());
     file.close();
 
@@ -598,10 +652,10 @@ bool IOService::saveContext(QDir contextFolder, Project * context)
 }
 
 template <typename ITEM>
-bool saveItems(QDir contextDir, QString name, QList<ITEM*> * items)
+bool saveItems(QDir projectDir, QString name, QList<ITEM*> * items)
 {
     QString const filename = name + ".json";
-    QFile file = contextDir.filePath(filename);
+    QFile file = projectDir.filePath(filename);
 
     if (!file.open(QIODevice::WriteOnly|QIODevice::Text))
     {
@@ -620,40 +674,40 @@ bool saveItems(QDir contextDir, QString name, QList<ITEM*> * items)
     return true;
 }
 
-bool IOService::saveTiles(QDir contextDir, QList<Tile*> * tiles)
+bool IOService::saveTiles(QDir projectDir, QList<Tile*> * tiles)
 {
-    return saveItems(contextDir, "tiles", tiles);
+    return saveItems(projectDir, "tiles", tiles);
 }
 
-bool IOService::savePalettes(QDir contextDir, QList<Palette*> * palettes)
+bool IOService::savePalettes(QDir projectDir, QList<Palette*> * palettes)
 {
-    return saveItems(contextDir, "palettes", palettes);
+    return saveItems(projectDir, "palettes", palettes);
 }
 
-bool IOService::saveTilesets(QDir contextDir, QList<Tileset*> * tilesets)
+bool IOService::saveTilesets(QDir projectDir, QList<Tileset*> * tilesets)
 {
-    return saveItems(contextDir, "tilesets", tilesets);
+    return saveItems(projectDir, "tilesets", tilesets);
 }
 
-bool IOService::saveReferences(QDir contextDir, QList<Reference*> * references)
+bool IOService::saveReferences(QDir projectDir, QList<Reference*> * references)
 {
-    return saveItems(contextDir, "references", references);
+    return saveItems(projectDir, "references", references);
 }
 
-bool IOService::saveScenes(QDir contextDir, QList<Scene*> * scenes)
+bool IOService::saveScenes(QDir projectDir, QList<Scene*> * scenes)
 {
-    return saveItems(contextDir, "scenes", scenes);
+    return saveItems(projectDir, "scenes", scenes);
 }
 
-bool IOService::saveScreenshots(QDir contextDir, QList<Screenshot*> * screenshots)
+bool IOService::saveScreenshots(QDir projectDir, QList<Screenshot*> * screenshots)
 {
-    if (!contextDir.exists("screenshots") && !contextDir.mkdir("screenshots"))
+    if (!projectDir.exists("screenshots") && !projectDir.mkdir("screenshots"))
     {
         qWarning() << "Save error, could not create screenshots folder.";
         return false;
     }
 
-    if  (!contextDir.cd("screenshots"))
+    if  (!projectDir.cd("screenshots"))
     {
         qWarning() << "Save error, could not access the screenshots folder.";
         return false;
@@ -661,7 +715,7 @@ bool IOService::saveScreenshots(QDir contextDir, QList<Screenshot*> * screenshot
 
     for (auto screenshot : *screenshots)
     {
-        QFile file = contextDir.filePath(screenshot->filename);
+        QFile file = projectDir.filePath(screenshot->filename);
 
         if (!file.open(QIODevice::WriteOnly))
         {
@@ -680,6 +734,12 @@ bool IOService::saveScreenshots(QDir contextDir, QList<Screenshot*> * screenshot
 
 // CONTEXT_REPORT
 
+
+IOReport::IOReport() :
+    _success(true)
+{
+
+}
 
 void IOReport::success(QString const message)
 {

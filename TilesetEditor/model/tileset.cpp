@@ -24,14 +24,14 @@ Tileset::Tileset(QJsonObject data) :
     if (data.contains("Cells"))
     {
         if (!data["Cells"].isArray())
-            throw ContextError("Tileset expects an array in attribute 'Cells'");
+            throw ProjectError("Tileset expects an array in attribute 'Cells'");
 
         QJsonArray jCells = data["Cells"].toArray();
 
         for (qsizetype i=0;i!=jCells.size();++i)
         {
             if (!jCells[i].isObject())
-                throw ContextError(QString("Tileset expects an object in attribute 'Cells', position %1").arg(i));
+                throw ProjectError(QString("Tileset expects an object in attribute 'Cells', position %1").arg(i));
 
             auto jCell = jCells[i].toObject();
             Cell * cell = new Cell(jCell);

@@ -3,12 +3,12 @@
 
 #include <QString>
 
-class ContextError : public std::exception
+class ProjectError : public std::exception
 {
 private:
     QString const _msg;
 public:
-    ContextError(QString msg) : _msg(msg) { }
+    ProjectError(QString msg) : _msg(msg) { }
     QString const & msg() const { return _msg; }
 };
 

@@ -18,6 +18,7 @@ private:
     bool _success;
     QString _message;
 public:
+    IOReport();
     void success(QString message);
     void fail(QString message);
     bool success() const;
@@ -35,10 +36,10 @@ public:
     static void load(QString const & folderpath, IOReport * report = nullptr);
     static void save(IOReport * report = nullptr);
     static void importDump(QString const & folderpath, IOReport * report = nullptr);
-    static void buildTilesets();
+    static void buildTilesets(IOReport * report = nullptr);
 private:
 
-    static bool loadContext(QDir contextDir, Project * context);
+    static bool loadProject(QDir contextDir, Project * context);
     static bool loadTiles(QDir contextDir, QList<Tile*> * tiles);
     static bool loadPalettes(QDir contextDir, QList<Palette*> * palettes);
     static bool loadTilesets(QDir contextDir, QList<Tileset*> * tilesets);

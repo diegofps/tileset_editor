@@ -161,7 +161,12 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->action_Navigate_Viewport_Home, &QAction::triggered, this, [&](){ App::getState()->moveViewportHome(); });
 
     // Execute menu
-    connect(ui->action_Execute_BuildTilesets, &QAction::triggered, this, [&](){ IOService::buildTilesets(); });
+    connect(ui->action_Execute_BuildTilesets, &QAction::triggered, this, [&]()
+    {
+        IOReport report;
+        IOService::buildTilesets(&report);
+        ui->lbStatusBar->setText(report.message());
+    });
 
     // Help menu
 

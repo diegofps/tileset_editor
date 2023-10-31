@@ -2,7 +2,6 @@
 #define WIDGETTILES_H
 
 #include "model/tile.h"
-#include "range.h"
 #include <QWidget>
 #include <QPen>
 
@@ -23,7 +22,6 @@ class WidgetTiles : public QWidget
 public:
     explicit WidgetTiles(QWidget *parent = nullptr);
     void setTiles(QList<Tile*> const * value);
-    void setSelection(Range range);
     void repack();
     void moveTileSelection(int rx, int ry);
     void setShowLinkInfo(bool value);

@@ -104,7 +104,7 @@ FragmentTiles::FragmentTiles(QWidget *parent) :
 
     updateFilterWidgets();
     updateTilesWidget();
-    _widgetTiles->clearSelection();
+    _widgetTiles->setSelection(0);
 
 }
 

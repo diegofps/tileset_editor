@@ -1,7 +1,6 @@
 #include "fragmentcontextopen.h"
 #include "fragmenteditor.h"
 #include "fragmentpalettes.h"
-#include "fragmentpreview.h"
 #include "fragmentreferences.h"
 #include "fragmenttilepreview.h"
 #include "fragmenttiles.h"
