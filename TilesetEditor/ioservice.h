@@ -37,6 +37,8 @@ public:
     static void save(IOReport * report = nullptr);
     static void importDump(QString const & folderpath, IOReport * report = nullptr);
     static void buildTilesets(IOReport * report = nullptr);
+    static void buildHDTiles(IOReport * report = nullptr);
+
 private:
 
     static bool loadProject(QDir contextDir, Project * context);

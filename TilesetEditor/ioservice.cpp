@@ -462,7 +462,79 @@ void IOService::buildTilesets(IOReport * report)
         img.save(filepath);
     }
 
-    SUCCESS("Tilesets generated successfully");
+    SUCCESS("Build Tilesets completed successfully");
+}
+
+void IOService::buildHDTiles(IOReport *report)
+{
+    // Check the input folder exists
+    QDir tilesetsDir(App::getState()->project()->path);
+    char const * tilesetsFoldername = "tilesets.high";
+
+    if (!tilesetsDir.exists(tilesetsFoldername))
+        ABORT(QString("Could not find %1 folder").arg(tilesetsFoldername));
+
+    if (!tilesetsDir.cd(tilesetsFoldername))
+        ABORT(QString("Could not access %1 folder").arg(tilesetsFoldername));
+
+    // Check and create the output folder
+    QDir tilesDir(App::getState()->project()->path);
+    char const * tilesFoldername = "tiles.high";
+
+    if (tilesDir.exists(tilesFoldername))
+    {
+        QDir tmp = tilesDir;
+        if (!tmp.cd(tilesFoldername) || !tmp.removeRecursively())
+            ABORT(QString("Could not remove previous %1 output folder").arg(tilesFoldername));
+    }
+
+    if (!tilesDir.mkdir(tilesFoldername))
+        ABORT(QString("Could not create new %1 output folder").arg(tilesFoldername));
+
+    if (!tilesDir.cd(tilesFoldername))
+        ABORT(QString("Could not access new %1 output folder").arg(tilesFoldername));
+
+    // Iterate over all tilesets and crop their linked cells
+    for (auto tileset : *App::getState()->allTilesets())
+    {
+        QString tsFilename {QString("%1_%2.png").arg(tileset->sceneId).arg(tileset->id)};
+        QString tsFilepath {tilesetsDir.filePath(tsFilename)};
+        QImage image;
+
+        if (!image.load(tsFilepath))
+        {
+            qWarning() << QString("Could not load HD tileset from %1").arg(tsFilepath);
+            continue;
+        }
+
+        if (image.width() % tileset->gridW != 0 || image.height() % tileset->gridH != 0)
+        {
+            qWarning() << QString("HD tileset has an unexpected size. It should be divisible by %1x%2.")
+                          .arg(tileset->gridW)
+                          .arg(tileset->gridH);
+            continue;
+        }
+
+        int const hdCellWidth = image.width() / tileset->gridW;
+        int const hdCellHeight = image.height() / tileset->gridH;
+
+        for (auto pair : tileset->cells.asKeyValueRange())
+        {
+            auto cell = pair.second;
+            auto tile = App::getState()->getTileById(cell->tileID);
+
+            if (tile->linkedCellID != cell->id)
+                continue;
+
+            QString tFilename {QString("%1_%2.png").arg(tile->id).arg(cell->paletteID)};
+            QString tFilepath {tilesDir.filePath(tFilename)};
+
+            QRect rect(cell->x*hdCellWidth, cell->y*hdCellHeight, hdCellWidth, hdCellHeight);
+            image.copy(rect).save(tFilepath);
+        }
+    }
+
+    SUCCESS("Build HD Tiles completed successfully");
 }
 
 

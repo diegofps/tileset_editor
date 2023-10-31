@@ -168,6 +168,13 @@ MainWindow::MainWindow(QWidget *parent)
         ui->lbStatusBar->setText(report.message());
     });
 
+    connect(ui->action_Execute_BuildHDTiles, &QAction::triggered, this, [&]()
+    {
+        IOReport report;
+        IOService::buildHDTiles(&report);
+        ui->lbStatusBar->setText(report.message());
+    });
+
     // Help menu
 
     // Load widgets
@@ -489,7 +496,7 @@ void MainWindow::prepareUIForProject(Project * value)
     ui->action_Navigate_Viewport_Right->setEnabled(hasProject);
     ui->action_Navigate_Viewport_Home->setEnabled(hasProject);
 
-    ui->action_Execute_BreakTilesets->setEnabled(hasProject);
+    ui->action_Execute_BuildHDTiles->setEnabled(hasProject);
     ui->action_Execute_BuildTilesets->setEnabled(hasProject);
     ui->action_Execute_EncodeHDTiles->setEnabled(hasProject);
     ui->action_Execute_Pipelines->setEnabled(hasProject);

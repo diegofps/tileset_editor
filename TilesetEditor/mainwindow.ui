@@ -164,7 +164,7 @@ QMenu::item:selected {
     </property>
     <addaction name="action_Execute_BuildTilesets"/>
     <addaction name="action_Execute_Pipelines"/>
-    <addaction name="action_Execute_BreakTilesets"/>
+    <addaction name="action_Execute_BuildHDTiles"/>
     <addaction name="action_Execute_EncodeHDTiles"/>
    </widget>
    <widget class="QMenu" name="menu_Help">
@@ -345,9 +345,9 @@ QMenu::item:selected {
     <string>F1</string>
    </property>
   </action>
-  <action name="action_Execute_BreakTilesets">
+  <action name="action_Execute_BuildHDTiles">
    <property name="text">
-    <string>&amp;Break HD Tilesets</string>
+    <string>&amp;Build HD Tiles</string>
    </property>
    <property name="shortcut">
     <string>F8</string>
@@ -713,7 +713,7 @@ QMenu::item:selected {
   </action>
   <action name="action_Edit_ClearCell">
    <property name="text">
-    <string>Clear Cell</string>
+    <string>Delete Cell</string>
    </property>
    <property name="shortcut">
     <string>Del</string>
