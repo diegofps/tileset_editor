@@ -175,6 +175,13 @@ MainWindow::MainWindow(QWidget *parent)
         ui->lbStatusBar->setText(report.message());
     });
 
+    connect(ui->action_Execute_EncodeHDTiles, &QAction::triggered, this, [&]()
+    {
+        IOReport report;
+        IOService::buildEncodedHDTiles(&report);
+        ui->lbStatusBar->setText(report.message());
+    });
+
     // Help menu
 
     // Load widgets
@@ -461,6 +468,7 @@ void MainWindow::prepareUIForProject(Project * value)
     ui->action_View_NextTileUsage->setEnabled(hasProject);
     ui->action_View_FlipTileHorizontally->setEnabled(hasProject);
     ui->action_View_FlipTileVertically->setEnabled(hasProject);
+    ui->action_View_HDTiles->setEnabled(hasProject);
     ui->action_View_Reference_ZoomIn->setEnabled(hasProject);
     ui->action_View_Reference_ZoomOut->setEnabled(hasProject);
     ui->action_View_FocusEditor->setEnabled(hasProject);
@@ -499,7 +507,6 @@ void MainWindow::prepareUIForProject(Project * value)
     ui->action_Execute_BuildHDTiles->setEnabled(hasProject);
     ui->action_Execute_BuildTilesets->setEnabled(hasProject);
     ui->action_Execute_EncodeHDTiles->setEnabled(hasProject);
-    ui->action_Execute_Pipelines->setEnabled(hasProject);
 
     ui->action_Help_VerifyInconsistencies->setEnabled(hasProject);
 

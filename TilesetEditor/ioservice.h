@@ -15,21 +15,23 @@
 class IOReport
 {
 private:
+
     bool _success;
     QString _message;
+
 public:
+
     IOReport();
     void success(QString message);
     void fail(QString message);
     bool success() const;
     const QString &message() const;
+
 };
 
 class IOService
 {
 public:
-
-    IOService();
 
     static void create(QString const & folderpath, IOReport * report = nullptr);
     static void close(IOReport * report = nullptr);
@@ -38,6 +40,7 @@ public:
     static void importDump(QString const & folderpath, IOReport * report = nullptr);
     static void buildTilesets(IOReport * report = nullptr);
     static void buildHDTiles(IOReport * report = nullptr);
+    static void buildEncodedHDTiles(IOReport * report = nullptr);
 
 private:
 

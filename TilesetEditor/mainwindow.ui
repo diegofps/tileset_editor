@@ -163,7 +163,6 @@ QMenu::item:selected {
      <string>E&amp;xecute</string>
     </property>
     <addaction name="action_Execute_BuildTilesets"/>
-    <addaction name="action_Execute_Pipelines"/>
     <addaction name="action_Execute_BuildHDTiles"/>
     <addaction name="action_Execute_EncodeHDTiles"/>
    </widget>
@@ -223,6 +222,7 @@ QMenu::item:selected {
     <addaction name="action_View_ShowLinkInfo"/>
     <addaction name="action_View_FlipTileHorizontally"/>
     <addaction name="action_View_FlipTileVertically"/>
+    <addaction name="action_View_HDTiles"/>
     <addaction name="separator"/>
     <addaction name="separator"/>
     <addaction name="menu_View_ReferenceScreenshot"/>
@@ -321,20 +321,12 @@ QMenu::item:selected {
     <string>F6</string>
    </property>
   </action>
-  <action name="action_Execute_Pipelines">
-   <property name="text">
-    <string>&amp;Pipelines</string>
-   </property>
-   <property name="shortcut">
-    <string>F7</string>
-   </property>
-  </action>
   <action name="action_Execute_EncodeHDTiles">
    <property name="text">
     <string>&amp;Encode HD Tiles</string>
    </property>
    <property name="shortcut">
-    <string>F9</string>
+    <string>F8</string>
    </property>
   </action>
   <action name="action_Help_About">
@@ -350,7 +342,7 @@ QMenu::item:selected {
     <string>&amp;Build HD Tiles</string>
    </property>
    <property name="shortcut">
-    <string>F8</string>
+    <string>F7</string>
    </property>
   </action>
   <action name="action_File_CloseProject">
@@ -813,6 +805,14 @@ QMenu::item:selected {
   <action name="action_Edit_FlushCellsWithPalette">
    <property name="text">
     <string>Flush Cells With Current Palette</string>
+   </property>
+  </action>
+  <action name="action_View_HDTiles">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>HD Tiles</string>
    </property>
   </action>
  </widget>

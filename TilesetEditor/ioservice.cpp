@@ -19,6 +19,11 @@
         report->fail(msg);\
 }
 
+#define SKIP(msg) {\
+    qWarning() << (msg);\
+    continue;\
+}
+
 #define ABORT(msg) {\
     qWarning() << (msg);\
     if (report != nullptr)\
@@ -36,11 +41,6 @@
 /// PUBLIC INTERFACE
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-
-IOService::IOService()
-{
-
-}
 
 void IOService::create(const QString & folderpath, IOReport * report)
 {
@@ -408,6 +408,7 @@ void IOService::importDump(QString const & folderpath, IOReport * report)
 
 void IOService::buildTilesets(IOReport * report)
 {
+    // Check tilesets folder
     QDir tilesetsDir(App::getState()->project()->path);
     char const * foldername = "tilesets.low";
 
@@ -424,26 +425,58 @@ void IOService::buildTilesets(IOReport * report)
     if (!tilesetsDir.cd(foldername))
         ABORT("Could not access tilesets output folder");
 
+    // check masks folder
+    QDir masksDir(App::getState()->project()->path);
+    char const * masksFoldername = "masks.low";
+
+    if (masksDir.exists(masksFoldername))
+    {
+        QDir tmp = masksDir;
+        if (!tmp.cd(masksFoldername) || !tmp.removeRecursively())
+            ABORT("Could not remove previous masks output folder");
+    }
+
+    if (!masksDir.mkdir(masksFoldername))
+        ABORT("Could not create new masks output folder");
+
+    if (!masksDir.cd(masksFoldername))
+        ABORT("Could not access masks output folder");
+
+    // Brushes
     QBrush brushBackground;
     brushBackground.setStyle(Qt::SolidPattern);
+
+    QBrush brushMaskBackground;
+    brushMaskBackground.setColor(QColor(0,0,0));
+    brushMaskBackground.setStyle(Qt::SolidPattern);
 
     for (auto tileset : *App::getState()->allTilesets())
     {
         auto state = App::getState();
         auto tileCache = App::getOriginalTileCache();
 
-        QString filename = QString("%1_%2.png").arg(tileset->sceneId).arg(tileset->id);
-        QString filepath = tilesetsDir.filePath(filename);
-        QFile file(filepath);
+        QString filename1 = QString("%1_%2.png").arg(tileset->sceneId).arg(tileset->id);
+        QString filepath1 = tilesetsDir.filePath(filename1);
+        QString filename2 = QString("%1_%2.mask.png").arg(tileset->sceneId).arg(tileset->id);
+        QString filepath2 = masksDir.filePath(filename2);
+        QFile file1(filepath1);
+        QFile file2(filepath2);
 
-        if (file.exists() && !file.remove())
-            ABORT(QString("Failed to remove previous tileset file: %1").arg(filename));
+        if (file1.exists() && !file1.remove())
+            ABORT(QString("Failed to remove previous tileset file: %1").arg(filename1));
 
-        QImage img(tileset->gridW*8, tileset->gridH*8, QImage::Format_ARGB32);
-        QPainter painter(&img);
+        if (file2.exists() && !file2.remove())
+            ABORT(QString("Failed to remove previous tileset mask file: %1").arg(filename2));
+
+        QImage img1(tileset->gridW*8, tileset->gridH*8, QImage::Format_ARGB32);
+        QImage img2(tileset->gridW*8, tileset->gridH*8, QImage::Format_Grayscale8);
+
+        QPainter painter1(&img1);
+        QPainter painter2(&img2);
 
         brushBackground.setColor(tileset->bgColor);
-        painter.fillRect(img.rect(), brushBackground);
+        painter1.fillRect(img1.rect(), brushBackground);
+        painter2.fillRect(img2.rect(), brushMaskBackground);
 
         for (auto pair : tileset->cells.asKeyValueRange())
         {
@@ -451,15 +484,18 @@ void IOService::buildTilesets(IOReport * report)
             auto tile = state->getTileById(cell->tileID);
             auto palette = state->getPaletteById(cell->paletteID);
 
-            QPixmap * pixmap = tileCache->getTilePixmap(tile, palette, cell->hFlip, cell->vFlip);
+            QPixmap * pixmap1 = tileCache->getTilePixmap(tile, palette, cell->hFlip, cell->vFlip);
+            QPixmap * pixmap2 = tileCache->getMaskPixmap(tile, palette, cell->hFlip, cell->vFlip);
 
-            if (pixmap == nullptr)
+            if (pixmap1 == nullptr || pixmap2 == nullptr)
                 continue;
 
-            painter.drawPixmap(QRect(cell->x*8, cell->y*8, 8, 8), *pixmap);
+            painter1.drawPixmap(QRect(cell->x*8, cell->y*8, 8, 8), *pixmap1);
+            painter2.drawPixmap(QRect(cell->x*8, cell->y*8, 8, 8), *pixmap2);
         }
 
-        img.save(filepath);
+        img1.save(filepath1);
+        img2.save(filepath2);
     }
 
     SUCCESS("Build Tilesets completed successfully");
@@ -526,7 +562,7 @@ void IOService::buildHDTiles(IOReport *report)
             if (tile->linkedCellID != cell->id)
                 continue;
 
-            QString tFilename {QString("%1_%2.png").arg(tile->id).arg(cell->paletteID)};
+            QString tFilename {QString("%1_%2_%3_%4.png").arg(tile->id).arg(cell->paletteID).arg(cell->hFlip).arg(cell->vFlip)};
             QString tFilepath {tilesDir.filePath(tFilename)};
 
             QRect rect(cell->x*hdCellWidth, cell->y*hdCellHeight, hdCellWidth, hdCellHeight);
@@ -535,6 +571,293 @@ void IOService::buildHDTiles(IOReport *report)
     }
 
     SUCCESS("Build HD Tiles completed successfully");
+}
+
+inline void scaleUpMask(QImage const & in, QImage & out)
+{
+    if (in.width() * 2 != out.width() || in.height() * 2 != out.height())
+    {
+        qWarning() << "Wrong images size for scaleMaskUp, in=" << in.size() << ", out=" << out.size();
+        return;
+    }
+
+#define LINE_IN(i) in.scanLine((i)>>1);
+#define PIXEL_IN(j,line) line[(j)>>1]
+
+    int const j1 = out.width()-2;
+    int const j2 = out.width()-1;
+
+    int const i1 = out.height()-2;
+    int const i2 = out.height()-1;
+
+    // Top
+    {
+        auto lineD = LINE_IN(0);
+        auto lineG = LINE_IN(1);
+        auto lineOut = out.scanLine(0);
+
+        // TopLeft
+        {
+            int const E = PIXEL_IN(0, lineD);
+            int const F = PIXEL_IN(1, lineD);
+
+            int const H = PIXEL_IN(0, lineG);
+            int const I = PIXEL_IN(1, lineG);
+
+            lineOut[0] = E+F+H+I>2*255?255:0;
+        }
+
+        // TopCenter
+        for (int j=1;j!=out.width()-1;++j)
+        {
+            int const D = PIXEL_IN(j-1, lineD);
+            int const E = PIXEL_IN(j  , lineD);
+            int const F = PIXEL_IN(j+1, lineD);
+
+            int const G = PIXEL_IN(j-1, lineG);
+            int const H = PIXEL_IN(j  , lineG);
+            int const I = PIXEL_IN(j+1, lineG);
+
+            lineOut[j] = D+E+F+G+H+I>3*255?255:0;
+        }
+
+        // TopRight
+        {
+            int const D = PIXEL_IN(j1, lineD);
+            int const E = PIXEL_IN(j2, lineD);
+
+            int const G = PIXEL_IN(j1, lineG);
+            int const H = PIXEL_IN(j2, lineG);
+
+            lineOut[j2] = D+E+G+H>2*255?255:0;
+        }
+    }
+
+    // Center
+    for (int i=1;i!=out.height()-1;++i)
+    {
+        auto lineA = LINE_IN(i-1);
+        auto lineD = LINE_IN(i  );
+        auto lineG = LINE_IN(i+1);
+        auto lineOut = out.scanLine(i);
+
+        // CenterLeft
+        {
+            int const B = PIXEL_IN(0, lineA);
+            int const C = PIXEL_IN(1, lineA);
+
+            int const E = PIXEL_IN(0, lineD);
+            int const F = PIXEL_IN(1, lineD);
+
+            int const H = PIXEL_IN(0, lineG);
+            int const I = PIXEL_IN(1, lineG);
+
+            lineOut[0] = B+C+E+F+H+I>3*255?255:0;
+        }
+
+        // CenterCenter
+        for (int j=1;j!=out.width()-1;++j)
+        {
+            int const A = PIXEL_IN(j-1, lineA);
+            int const B = PIXEL_IN(j  , lineA);
+            int const C = PIXEL_IN(j+1, lineA);
+
+            int const D = PIXEL_IN(j-1, lineD);
+            int const E = PIXEL_IN(j  , lineD);
+            int const F = PIXEL_IN(j+1, lineD);
+
+            int const G = PIXEL_IN(j-1, lineG);
+            int const H = PIXEL_IN(j  , lineG);
+            int const I = PIXEL_IN(j+1, lineG);
+
+            lineOut[j] = A+B+C+D+E+F+G+H+I>=5*255?255:0;
+        }
+        // CenterRight
+        {
+            int const A = PIXEL_IN(j1, lineA);
+            int const B = PIXEL_IN(j2, lineA);
+
+            int const D = PIXEL_IN(j1, lineD);
+            int const E = PIXEL_IN(j2, lineD);
+
+            int const G = PIXEL_IN(j1, lineG);
+            int const H = PIXEL_IN(j2, lineG);
+
+            lineOut[j2] = A+B+D+E+G+H>3*255?255:0;
+        }
+    }
+
+    // Bottom
+    {
+        auto lineA = LINE_IN(i1);
+        auto lineD = LINE_IN(i2);
+        auto lineOut = out.scanLine(i2);
+
+        // BottomLeft
+        {
+            int const B = PIXEL_IN(0, lineA);
+            int const C = PIXEL_IN(1, lineA);
+
+            int const E = PIXEL_IN(0, lineD);
+            int const F = PIXEL_IN(1, lineD);
+
+            lineOut[0] = B+C+E+F>2*255?255:0;
+        }
+
+        // BottomCenter
+        for (int j=1;j!=out.width()-1;++j)
+        {
+            int const A = PIXEL_IN(j-1, lineA);
+            int const B = PIXEL_IN(j  , lineA);
+            int const C = PIXEL_IN(j+1, lineA);
+
+            int const D = PIXEL_IN(j-1, lineD);
+            int const E = PIXEL_IN(j  , lineD);
+            int const F = PIXEL_IN(j+1, lineD);
+
+            lineOut[j] = A+B+C+D+E+F>3*255?255:0;
+        }
+
+        // BottomRight
+        {
+            auto lineA = LINE_IN(i1);
+            auto lineD = LINE_IN(i2);
+            auto lineOut = out.scanLine(i2);
+
+            int const A = PIXEL_IN(j1, lineA);
+            int const B = PIXEL_IN(j2, lineA);
+
+            int const D = PIXEL_IN(j1, lineD);
+            int const E = PIXEL_IN(j2, lineD);
+
+            lineOut[j2] = A+B+D+E>2*255?255:0;
+        }
+    }
+}
+
+void IOService::buildEncodedHDTiles(IOReport *report)
+{
+    auto state = App::getState();
+
+    // Check the input folder exists
+    QDir tilesDir(state->project()->path);
+    char const * tilesFoldername = "tiles.high";
+
+    if (!tilesDir.exists(tilesFoldername))
+        ABORT(QString("Could not find %1 folder").arg(tilesFoldername));
+
+    if (!tilesDir.cd(tilesFoldername))
+        ABORT(QString("Could not access %1 folder").arg(tilesFoldername));
+
+    // Check and create the output folder
+    QDir encodedTilesDir(state->project()->path);
+    char const * encodedTilesFoldername = "tiles.encoded";
+
+    if (encodedTilesDir.exists(encodedTilesFoldername))
+    {
+        QDir tmp = encodedTilesDir;
+        if (!tmp.cd(encodedTilesFoldername) || !tmp.removeRecursively())
+            ABORT(QString("Could not remove previous %1 output folder").arg(encodedTilesFoldername));
+    }
+
+    if (!encodedTilesDir.mkdir(encodedTilesFoldername))
+        ABORT(QString("Could not create new %1 output folder").arg(encodedTilesFoldername));
+
+    if (!encodedTilesDir.cd(encodedTilesFoldername))
+        ABORT(QString("Could not access new %1 output folder").arg(encodedTilesFoldername));
+
+    // Encode all tiles
+    QByteArray data(128*128*4, '\0');
+    QImage mask01( 8*1,  8*1, QImage::Format_Grayscale8);
+    QImage mask02( 8*2,  8*2, QImage::Format_Grayscale8);
+    QImage mask04( 8*4,  8*4, QImage::Format_Grayscale8);
+    QImage mask08( 8*8,  8*8, QImage::Format_Grayscale8);
+    QImage mask16(8*16, 8*16, QImage::Format_Grayscale8);
+
+    for (auto & filename : tilesDir.entryList(QDir::Files))
+    {
+        QString tFilepath { tilesDir.filePath(filename) };
+        QFileInfo tInfo(tFilepath);
+        bool ok;
+
+        auto ids = tInfo.baseName().split('_');
+        if (ids.size() != 4) SKIP(QString("Invalid format in filename: %1.").arg(filename));
+
+        auto tileID = ids[0].toInt(&ok);
+        if (!ok) SKIP(QString("Invalid tile id format in filename: %1.").arg(filename));
+
+        auto paletteID = ids[1].toInt(&ok);
+        if (!ok) SKIP(QString("Invalid palette id format in filename: %1.").arg(filename));
+
+        bool hFlip = ids[2].toInt(&ok);
+        if (!ok) SKIP(QString("Invalid palette id format in filename: %1.").arg(filename));
+
+        bool vFlip = ids[3].toInt(&ok);
+        if (!ok) SKIP(QString("Invalid palette id format in filename: %1.").arg(filename));
+
+        auto tile = state->getTileById(tileID);
+        if (tile == nullptr) SKIP(QString("Invalid tile id=%1 in filename=").arg(tileID).arg(filename));
+
+        auto palette = state->getPaletteById(paletteID);
+        if (palette == nullptr) SKIP(QString("Invalid palette id=%1 in filename=").arg(paletteID).arg(filename));
+
+        QImage hdImg;
+        if (!hdImg.load(tFilepath)) SKIP(QString("Failed to load HD tile from filename %1.").arg(filename));
+
+        if (hdImg.width() != 128) SKIP(QString("Invalid input tile in %1. A tile width must be equal to 128.").arg(filename));
+        if (hdImg.height() != 128) SKIP(QString("Invalid input tile in %1. A tile height must be equal to 128.").arg(filename));
+
+        int const gridWidth = hdImg.width() / 8;
+        int const gridHeight = hdImg.height() / 8;
+
+        QFile eFile {encodedTilesDir.filePath(filename)};
+        if (!eFile.open(QIODevice::WriteOnly)) SKIP(QString("Encode error, could not open the output file: %1").arg(eFile.fileName()));
+
+        // TODO: Build transparency mask mapping the original tile to HD resolution. Apply a convolution to smooth it
+        App::getOriginalTileCache()->loadMask(tile, hFlip, vFlip, mask01);
+        scaleUpMask(mask01, mask02);
+        scaleUpMask(mask02, mask04);
+        scaleUpMask(mask04, mask08);
+        scaleUpMask(mask08, mask16);
+
+        mask01.save("./mask01.png");
+        mask02.save("./mask02.png");
+        mask04.save("./mask04.png");
+        mask08.save("./mask08.png");
+        mask16.save("./mask16.png");
+
+        qInfo() << "Masks exported";
+        SUCCESS("Encoded HD Tiles finished successfully");
+
+        return;
+
+        int k = 0;
+        for (int i=0;i!=hdImg.height();++i)
+        {
+            int const y = i / gridHeight;
+
+            QRgb const * lineHD = reinterpret_cast<QRgb const*>(hdImg.constScanLine(i));
+
+            for (int j=0;j!=hdImg.width();++j)
+            {
+                int const x = j / gridWidth;
+                int const pseudoPixel = y*8+x;
+
+                auto pseudoColor = tile->pixels[pseudoPixel];
+
+//                img.pixel()
+                // TODO: Use the transparency mask
+                // TODO: Check if colorIndex is within the palette size
+                // TODO: Save the original pseudoColor and the offset for the HD tile
+
+                QColor color = palette->colors[pseudoColor];
+
+                int const r = 0;
+
+                data[k] = pseudoColor; ++k;
+            }
+        }
+    }
 }
 
 
