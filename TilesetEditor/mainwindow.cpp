@@ -165,14 +165,40 @@ MainWindow::MainWindow(QWidget *parent)
     {
         IOReport report;
         IOService::buildTilesets(&report);
-        ui->lbStatusBar->setText(report.message());
+        if (report.success())
+        {
+            IOReport report2;
+            IOService::buildMasksets(&report2);
+
+            if (report2.success())
+                ui->lbStatusBar->setText(report.message());
+            else
+                ui->lbStatusBar->setText(report2.message());
+        }
+        else
+        {
+            ui->lbStatusBar->setText(report.message());
+        }
     });
 
     connect(ui->action_Execute_BuildHDTiles, &QAction::triggered, this, [&]()
     {
         IOReport report;
         IOService::buildHDTiles(&report);
-        ui->lbStatusBar->setText(report.message());
+        if (report.success())
+        {
+            IOReport report2;
+            IOService::buildHDMasks(&report2);
+
+            if (report2.success())
+                ui->lbStatusBar->setText(report.message());
+            else
+                ui->lbStatusBar->setText(report2.message());
+        }
+        else
+        {
+            ui->lbStatusBar->setText(report.message());
+        }
     });
 
     connect(ui->action_Execute_EncodeHDTiles, &QAction::triggered, this, [&]()

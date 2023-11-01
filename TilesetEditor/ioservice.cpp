@@ -425,9 +425,53 @@ void IOService::buildTilesets(IOReport * report)
     if (!tilesetsDir.cd(foldername))
         ABORT("Could not access tilesets output folder");
 
+    // Brushes
+    QBrush brush;
+    brush.setStyle(Qt::SolidPattern);
+
+    for (auto tileset : *App::getState()->allTilesets())
+    {
+        auto state = App::getState();
+        auto tileCache = App::getOriginalTileCache();
+
+        QString filename = QString("%1_%2.png").arg(tileset->sceneId).arg(tileset->id);
+        QString filepath = tilesetsDir.filePath(filename);
+        QFile file(filepath);
+
+        if (file.exists() && !file.remove())
+            ABORT(QString("Failed to remove previous tileset file: %1").arg(filename));
+
+        QImage img(tileset->gridW*8, tileset->gridH*8, QImage::Format_ARGB32);
+        QPainter painter(&img);
+
+        brush.setColor(tileset->bgColor);
+        painter.fillRect(img.rect(), brush);
+
+        for (auto pair : tileset->cells.asKeyValueRange())
+        {
+            auto cell = pair.second;
+            auto tile = state->getTileById(cell->tileID);
+            auto palette = state->getPaletteById(cell->paletteID);
+
+            QPixmap * pixmap = tileCache->getTilePixmap(tile, palette, cell->hFlip, cell->vFlip);
+
+            if (pixmap == nullptr)
+                continue;
+
+            painter.drawPixmap(QRect(cell->x*8, cell->y*8, 8, 8), *pixmap);
+        }
+
+        img.save(filepath);
+    }
+
+    SUCCESS("Build Tilesets completed successfully");
+}
+
+void IOService::buildMasksets(IOReport * report)
+{
     // check masks folder
     QDir masksDir(App::getState()->project()->path);
-    char const * masksFoldername = "masks.low";
+    char const * masksFoldername = "masksets.low";
 
     if (masksDir.exists(masksFoldername))
     {
@@ -443,40 +487,26 @@ void IOService::buildTilesets(IOReport * report)
         ABORT("Could not access masks output folder");
 
     // Brushes
-    QBrush brushBackground;
-    brushBackground.setStyle(Qt::SolidPattern);
-
-    QBrush brushMaskBackground;
-    brushMaskBackground.setColor(QColor(0,0,0));
-    brushMaskBackground.setStyle(Qt::SolidPattern);
+    QBrush brush;
+    brush.setColor(QColor(0,0,0));
+    brush.setStyle(Qt::SolidPattern);
 
     for (auto tileset : *App::getState()->allTilesets())
     {
         auto state = App::getState();
         auto tileCache = App::getOriginalTileCache();
 
-        QString filename1 = QString("%1_%2.png").arg(tileset->sceneId).arg(tileset->id);
-        QString filepath1 = tilesetsDir.filePath(filename1);
-        QString filename2 = QString("%1_%2.mask.png").arg(tileset->sceneId).arg(tileset->id);
-        QString filepath2 = masksDir.filePath(filename2);
-        QFile file1(filepath1);
-        QFile file2(filepath2);
+        QString filename = QString("%1_%2.png").arg(tileset->sceneId).arg(tileset->id);
+        QString filepath = masksDir.filePath(filename);
+        QFile file(filepath);
 
-        if (file1.exists() && !file1.remove())
-            ABORT(QString("Failed to remove previous tileset file: %1").arg(filename1));
+        if (file.exists() && !file.remove())
+            ABORT(QString("Failed to remove previous mask file: %1").arg(filename));
 
-        if (file2.exists() && !file2.remove())
-            ABORT(QString("Failed to remove previous tileset mask file: %1").arg(filename2));
+        QImage img(tileset->gridW*8, tileset->gridH*8, QImage::Format_Grayscale8);
+        QPainter painter(&img);
 
-        QImage img1(tileset->gridW*8, tileset->gridH*8, QImage::Format_ARGB32);
-        QImage img2(tileset->gridW*8, tileset->gridH*8, QImage::Format_Grayscale8);
-
-        QPainter painter1(&img1);
-        QPainter painter2(&img2);
-
-        brushBackground.setColor(tileset->bgColor);
-        painter1.fillRect(img1.rect(), brushBackground);
-        painter2.fillRect(img2.rect(), brushMaskBackground);
+        painter.fillRect(img.rect(), brush);
 
         for (auto pair : tileset->cells.asKeyValueRange())
         {
@@ -484,21 +514,18 @@ void IOService::buildTilesets(IOReport * report)
             auto tile = state->getTileById(cell->tileID);
             auto palette = state->getPaletteById(cell->paletteID);
 
-            QPixmap * pixmap1 = tileCache->getTilePixmap(tile, palette, cell->hFlip, cell->vFlip);
-            QPixmap * pixmap2 = tileCache->getMaskPixmap(tile, palette, cell->hFlip, cell->vFlip);
+            QPixmap * pixmap = tileCache->getMaskPixmap(tile, palette, cell->hFlip, cell->vFlip);
 
-            if (pixmap1 == nullptr || pixmap2 == nullptr)
+            if (pixmap == nullptr)
                 continue;
 
-            painter1.drawPixmap(QRect(cell->x*8, cell->y*8, 8, 8), *pixmap1);
-            painter2.drawPixmap(QRect(cell->x*8, cell->y*8, 8, 8), *pixmap2);
+            painter.drawPixmap(QRect(cell->x*8, cell->y*8, 8, 8), *pixmap);
         }
 
-        img1.save(filepath1);
-        img2.save(filepath2);
+        img.save(filepath);
     }
 
-    SUCCESS("Build Tilesets completed successfully");
+    SUCCESS("Build Masksets completed successfully");
 }
 
 void IOService::buildHDTiles(IOReport *report)
@@ -571,6 +598,78 @@ void IOService::buildHDTiles(IOReport *report)
     }
 
     SUCCESS("Build HD Tiles completed successfully");
+}
+
+void IOService::buildHDMasks(IOReport *report)
+{
+    // Check the input folder exists
+    QDir inDir(App::getState()->project()->path);
+    char const * inFoldername = "masksets.high";
+
+    if (!inDir.exists(inFoldername))
+        ABORT(QString("Could not find %1 folder").arg(inFoldername));
+
+    if (!inDir.cd(inFoldername))
+        ABORT(QString("Could not access %1 folder").arg(inFoldername));
+
+    // Check and create the output folder
+    QDir outDir(App::getState()->project()->path);
+    char const * outFoldername = "masks.high";
+
+    if (outDir.exists(outFoldername))
+    {
+        QDir tmp = outDir;
+        if (!tmp.cd(outFoldername) || !tmp.removeRecursively())
+            ABORT(QString("Could not remove previous %1 output folder").arg(outFoldername));
+    }
+
+    if (!outDir.mkdir(outFoldername))
+        ABORT(QString("Could not create new %1 output folder").arg(outFoldername));
+
+    if (!outDir.cd(outFoldername))
+        ABORT(QString("Could not access new %1 output folder").arg(outFoldername));
+
+    // Iterate over all masksets and crop their linked cells
+    for (auto tileset : *App::getState()->allTilesets())
+    {
+        QString tsFilename {QString("%1_%2.png").arg(tileset->sceneId).arg(tileset->id)};
+        QString tsFilepath {inDir.filePath(tsFilename)};
+        QImage image;
+
+        if (!image.load(tsFilepath))
+        {
+            qWarning() << QString("Could not load HD maskset from %1").arg(tsFilepath);
+            continue;
+        }
+
+        if (image.width() % tileset->gridW != 0 || image.height() % tileset->gridH != 0)
+        {
+            qWarning() << QString("HD maskset has an unexpected size. It should be divisible by %1x%2.")
+                          .arg(tileset->gridW)
+                          .arg(tileset->gridH);
+            continue;
+        }
+
+        int const hdCellWidth = image.width() / tileset->gridW;
+        int const hdCellHeight = image.height() / tileset->gridH;
+
+        for (auto pair : tileset->cells.asKeyValueRange())
+        {
+            auto cell = pair.second;
+            auto tile = App::getState()->getTileById(cell->tileID);
+
+            if (tile->linkedCellID != cell->id)
+                continue;
+
+            QString tFilename {QString("%1_%2_%3_%4.png").arg(tile->id).arg(cell->paletteID).arg(cell->hFlip).arg(cell->vFlip)};
+            QString tFilepath {outDir.filePath(tFilename)};
+
+            QRect rect(cell->x*hdCellWidth, cell->y*hdCellHeight, hdCellWidth, hdCellHeight);
+            image.copy(rect).save(tFilepath);
+        }
+    }
+
+    SUCCESS("Build HD Masks completed successfully");
 }
 
 inline void scaleUpMask(QImage const & in, QImage & out)
@@ -739,7 +838,7 @@ void IOService::buildEncodedHDTiles(IOReport *report)
 {
     auto state = App::getState();
 
-    // Check the input folder exists
+    // Check the tiles folder exists
     QDir tilesDir(state->project()->path);
     char const * tilesFoldername = "tiles.high";
 
@@ -749,37 +848,51 @@ void IOService::buildEncodedHDTiles(IOReport *report)
     if (!tilesDir.cd(tilesFoldername))
         ABORT(QString("Could not access %1 folder").arg(tilesFoldername));
 
-    // Check and create the output folder
-    QDir encodedTilesDir(state->project()->path);
-    char const * encodedTilesFoldername = "tiles.encoded";
+    // Check the tiles folder exists
+    QDir masksDir(state->project()->path);
+    char const * masksFoldername = "masks.high";
 
-    if (encodedTilesDir.exists(encodedTilesFoldername))
+    if (!masksDir.exists(masksFoldername))
+        ABORT(QString("Could not find %1 folder").arg(masksFoldername));
+
+    if (!masksDir.cd(masksFoldername))
+        ABORT(QString("Could not access %1 folder").arg(masksFoldername));
+
+    // Check and create the output folder
+    QDir encodedDir(state->project()->path);
+    char const * encodedFoldername = "encoded.high";
+
+    if (encodedDir.exists(encodedFoldername))
     {
-        QDir tmp = encodedTilesDir;
-        if (!tmp.cd(encodedTilesFoldername) || !tmp.removeRecursively())
-            ABORT(QString("Could not remove previous %1 output folder").arg(encodedTilesFoldername));
+        QDir tmp = encodedDir;
+        if (!tmp.cd(encodedFoldername) || !tmp.removeRecursively())
+            ABORT(QString("Could not remove previous %1 output folder").arg(encodedFoldername));
     }
 
-    if (!encodedTilesDir.mkdir(encodedTilesFoldername))
-        ABORT(QString("Could not create new %1 output folder").arg(encodedTilesFoldername));
+    if (!encodedDir.mkdir(encodedFoldername))
+        ABORT(QString("Could not create new %1 output folder").arg(encodedFoldername));
 
-    if (!encodedTilesDir.cd(encodedTilesFoldername))
-        ABORT(QString("Could not access new %1 output folder").arg(encodedTilesFoldername));
+    if (!encodedDir.cd(encodedFoldername))
+        ABORT(QString("Could not access new %1 output folder").arg(encodedFoldername));
 
     // Encode all tiles
     QByteArray data(128*128*4, '\0');
-    QImage mask01( 8*1,  8*1, QImage::Format_Grayscale8);
-    QImage mask02( 8*2,  8*2, QImage::Format_Grayscale8);
-    QImage mask04( 8*4,  8*4, QImage::Format_Grayscale8);
-    QImage mask08( 8*8,  8*8, QImage::Format_Grayscale8);
-    QImage mask16(8*16, 8*16, QImage::Format_Grayscale8);
+//    QImage mask01( 8*1,  8*1, QImage::Format_Grayscale8);
+//    QImage mask02( 8*2,  8*2, QImage::Format_Grayscale8);
+//    QImage mask04( 8*4,  8*4, QImage::Format_Grayscale8);
+//    QImage mask08( 8*8,  8*8, QImage::Format_Grayscale8);
+//    QImage mask16(8*16, 8*16, QImage::Format_Grayscale8);
 
     for (auto & filename : tilesDir.entryList(QDir::Files))
     {
         QString tFilepath { tilesDir.filePath(filename) };
-        QFileInfo tInfo(tFilepath);
+        QString mFilepath { masksDir.filePath(filename) };
         bool ok;
 
+        QFileInfo mInfo(mFilepath);
+        if (!mInfo.exists()) SKIP(QString("Missing mask image for %1.").arg(filename));
+
+        QFileInfo tInfo(tFilepath);
         auto ids = tInfo.baseName().split('_');
         if (ids.size() != 4) SKIP(QString("Invalid format in filename: %1.").arg(filename));
 
@@ -803,58 +916,64 @@ void IOService::buildEncodedHDTiles(IOReport *report)
 
         QImage hdImg;
         if (!hdImg.load(tFilepath)) SKIP(QString("Failed to load HD tile from filename %1.").arg(filename));
-
         if (hdImg.width() != 128) SKIP(QString("Invalid input tile in %1. A tile width must be equal to 128.").arg(filename));
         if (hdImg.height() != 128) SKIP(QString("Invalid input tile in %1. A tile height must be equal to 128.").arg(filename));
 
         int const gridWidth = hdImg.width() / 8;
         int const gridHeight = hdImg.height() / 8;
 
-        QFile eFile {encodedTilesDir.filePath(filename)};
+        QImage hdMask;
+        if (!hdMask.load(mFilepath)) SKIP(QString("Failed to load HD mask from filename %1.").arg(filename));
+        if (hdMask.width() != 128) SKIP(QString("Invalid input mask in %1. A mask width must be equal to 128.").arg(filename));
+        if (hdMask.height() != 128) SKIP(QString("Invalid input mask in %1. A mask height must be equal to 128.").arg(filename));
+
+        QFile eFile {encodedDir.filePath(filename)};
         if (!eFile.open(QIODevice::WriteOnly)) SKIP(QString("Encode error, could not open the output file: %1").arg(eFile.fileName()));
 
-        // TODO: Build transparency mask mapping the original tile to HD resolution. Apply a convolution to smooth it
-        App::getOriginalTileCache()->loadMask(tile, hFlip, vFlip, mask01);
-        scaleUpMask(mask01, mask02);
-        scaleUpMask(mask02, mask04);
-        scaleUpMask(mask04, mask08);
-        scaleUpMask(mask08, mask16);
+        QImage * img = App::getOriginalTileCache()->getTileImage(tile, palette, hFlip, vFlip);
+        if (img == nullptr) SKIP(QString("Could not load tile image for tileID=%1, paletteID=%2, hFlip=%3, vFlip=%4").arg(tile->id).arg(palette->id).arg(hFlip).arg(vFlip));
 
-        mask01.save("./mask01.png");
-        mask02.save("./mask02.png");
-        mask04.save("./mask04.png");
-        mask08.save("./mask08.png");
-        mask16.save("./mask16.png");
+        // TODO: Use the transparency mask
+        // TODO: Check if colorIndex is within the palette size
+        // TODO: Save the original pseudoColor and the offset for the HD tile
 
-        qInfo() << "Masks exported";
-        SUCCESS("Encoded HD Tiles finished successfully");
-
-        return;
+#define ENCODE_OFFSET(c1,c2) (c1>c2 ? (c1-c2)*128/(255-c2) : c2==0?0:-(c1*128/c2))
 
         int k = 0;
         for (int i=0;i!=hdImg.height();++i)
         {
             int const y = i / gridHeight;
 
-            QRgb const * lineHD = reinterpret_cast<QRgb const*>(hdImg.constScanLine(i));
-
             for (int j=0;j!=hdImg.width();++j)
             {
                 int const x = j / gridWidth;
-                int const pseudoPixel = y*8+x;
 
-                auto pseudoColor = tile->pixels[pseudoPixel];
+                QRgb imgColor     = img->pixel(x,y);
+                QRgb hdImgColor   = hdImg.pixel(x,y);
+                uchar hdMaskColor = hdMask.scanLine(i)[j];
 
-//                img.pixel()
-                // TODO: Use the transparency mask
-                // TODO: Check if colorIndex is within the palette size
-                // TODO: Save the original pseudoColor and the offset for the HD tile
+                if (hdMaskColor == 0)
+                {
+                    data[k] = 0; ++k;
+                    data[k] = 0; ++k;
+                    data[k] = 0; ++k;
+                    data[k] = 0; ++k;
+                }
+                else if (qAlpha(imgColor) == 0)
+                {
+                    data[k] = 0; ++k;
+                    data[k] = 1; ++k;
+                    data[k] = 1; ++k;
+                    data[k] = 1; ++k;
+                }
+                else
+                {
+                    data[k] = tile->pixels[y*8+x]; ++k;
+                    data[k] = ENCODE_OFFSET(qRed(hdImgColor), qRed(imgColor)); ++k;
+                    data[k] = ENCODE_OFFSET(qGreen(hdImgColor), qGreen(imgColor)); ++k;
+                    data[k] = ENCODE_OFFSET(qBlue(hdImgColor), qBlue(imgColor)); ++k;
+                }
 
-                QColor color = palette->colors[pseudoColor];
-
-                int const r = 0;
-
-                data[k] = pseudoColor; ++k;
             }
         }
     }
