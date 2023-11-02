@@ -672,168 +672,6 @@ void IOService::buildHDMasks(IOReport *report)
     SUCCESS("Build HD Masks completed successfully");
 }
 
-inline void scaleUpMask(QImage const & in, QImage & out)
-{
-    if (in.width() * 2 != out.width() || in.height() * 2 != out.height())
-    {
-        qWarning() << "Wrong images size for scaleMaskUp, in=" << in.size() << ", out=" << out.size();
-        return;
-    }
-
-#define LINE_IN(i) in.scanLine((i)>>1);
-#define PIXEL_IN(j,line) line[(j)>>1]
-
-    int const j1 = out.width()-2;
-    int const j2 = out.width()-1;
-
-    int const i1 = out.height()-2;
-    int const i2 = out.height()-1;
-
-    // Top
-    {
-        auto lineD = LINE_IN(0);
-        auto lineG = LINE_IN(1);
-        auto lineOut = out.scanLine(0);
-
-        // TopLeft
-        {
-            int const E = PIXEL_IN(0, lineD);
-            int const F = PIXEL_IN(1, lineD);
-
-            int const H = PIXEL_IN(0, lineG);
-            int const I = PIXEL_IN(1, lineG);
-
-            lineOut[0] = E+F+H+I>2*255?255:0;
-        }
-
-        // TopCenter
-        for (int j=1;j!=out.width()-1;++j)
-        {
-            int const D = PIXEL_IN(j-1, lineD);
-            int const E = PIXEL_IN(j  , lineD);
-            int const F = PIXEL_IN(j+1, lineD);
-
-            int const G = PIXEL_IN(j-1, lineG);
-            int const H = PIXEL_IN(j  , lineG);
-            int const I = PIXEL_IN(j+1, lineG);
-
-            lineOut[j] = D+E+F+G+H+I>3*255?255:0;
-        }
-
-        // TopRight
-        {
-            int const D = PIXEL_IN(j1, lineD);
-            int const E = PIXEL_IN(j2, lineD);
-
-            int const G = PIXEL_IN(j1, lineG);
-            int const H = PIXEL_IN(j2, lineG);
-
-            lineOut[j2] = D+E+G+H>2*255?255:0;
-        }
-    }
-
-    // Center
-    for (int i=1;i!=out.height()-1;++i)
-    {
-        auto lineA = LINE_IN(i-1);
-        auto lineD = LINE_IN(i  );
-        auto lineG = LINE_IN(i+1);
-        auto lineOut = out.scanLine(i);
-
-        // CenterLeft
-        {
-            int const B = PIXEL_IN(0, lineA);
-            int const C = PIXEL_IN(1, lineA);
-
-            int const E = PIXEL_IN(0, lineD);
-            int const F = PIXEL_IN(1, lineD);
-
-            int const H = PIXEL_IN(0, lineG);
-            int const I = PIXEL_IN(1, lineG);
-
-            lineOut[0] = B+C+E+F+H+I>3*255?255:0;
-        }
-
-        // CenterCenter
-        for (int j=1;j!=out.width()-1;++j)
-        {
-            int const A = PIXEL_IN(j-1, lineA);
-            int const B = PIXEL_IN(j  , lineA);
-            int const C = PIXEL_IN(j+1, lineA);
-
-            int const D = PIXEL_IN(j-1, lineD);
-            int const E = PIXEL_IN(j  , lineD);
-            int const F = PIXEL_IN(j+1, lineD);
-
-            int const G = PIXEL_IN(j-1, lineG);
-            int const H = PIXEL_IN(j  , lineG);
-            int const I = PIXEL_IN(j+1, lineG);
-
-            lineOut[j] = A+B+C+D+E+F+G+H+I>=5*255?255:0;
-        }
-        // CenterRight
-        {
-            int const A = PIXEL_IN(j1, lineA);
-            int const B = PIXEL_IN(j2, lineA);
-
-            int const D = PIXEL_IN(j1, lineD);
-            int const E = PIXEL_IN(j2, lineD);
-
-            int const G = PIXEL_IN(j1, lineG);
-            int const H = PIXEL_IN(j2, lineG);
-
-            lineOut[j2] = A+B+D+E+G+H>3*255?255:0;
-        }
-    }
-
-    // Bottom
-    {
-        auto lineA = LINE_IN(i1);
-        auto lineD = LINE_IN(i2);
-        auto lineOut = out.scanLine(i2);
-
-        // BottomLeft
-        {
-            int const B = PIXEL_IN(0, lineA);
-            int const C = PIXEL_IN(1, lineA);
-
-            int const E = PIXEL_IN(0, lineD);
-            int const F = PIXEL_IN(1, lineD);
-
-            lineOut[0] = B+C+E+F>2*255?255:0;
-        }
-
-        // BottomCenter
-        for (int j=1;j!=out.width()-1;++j)
-        {
-            int const A = PIXEL_IN(j-1, lineA);
-            int const B = PIXEL_IN(j  , lineA);
-            int const C = PIXEL_IN(j+1, lineA);
-
-            int const D = PIXEL_IN(j-1, lineD);
-            int const E = PIXEL_IN(j  , lineD);
-            int const F = PIXEL_IN(j+1, lineD);
-
-            lineOut[j] = A+B+C+D+E+F>3*255?255:0;
-        }
-
-        // BottomRight
-        {
-            auto lineA = LINE_IN(i1);
-            auto lineD = LINE_IN(i2);
-            auto lineOut = out.scanLine(i2);
-
-            int const A = PIXEL_IN(j1, lineA);
-            int const B = PIXEL_IN(j2, lineA);
-
-            int const D = PIXEL_IN(j1, lineD);
-            int const E = PIXEL_IN(j2, lineD);
-
-            lineOut[j2] = A+B+D+E>2*255?255:0;
-        }
-    }
-}
-
 void IOService::buildEncodedHDTiles(IOReport *report)
 {
     auto state = App::getState();
@@ -877,11 +715,6 @@ void IOService::buildEncodedHDTiles(IOReport *report)
 
     // Encode all tiles
     QByteArray data(128*128*4, '\0');
-//    QImage mask01( 8*1,  8*1, QImage::Format_Grayscale8);
-//    QImage mask02( 8*2,  8*2, QImage::Format_Grayscale8);
-//    QImage mask04( 8*4,  8*4, QImage::Format_Grayscale8);
-//    QImage mask08( 8*8,  8*8, QImage::Format_Grayscale8);
-//    QImage mask16(8*16, 8*16, QImage::Format_Grayscale8);
 
     for (auto & filename : tilesDir.entryList(QDir::Files))
     {
@@ -927,7 +760,7 @@ void IOService::buildEncodedHDTiles(IOReport *report)
         if (hdMask.width() != 128) SKIP(QString("Invalid input mask in %1. A mask width must be equal to 128.").arg(filename));
         if (hdMask.height() != 128) SKIP(QString("Invalid input mask in %1. A mask height must be equal to 128.").arg(filename));
 
-        QFile eFile {encodedDir.filePath(filename)};
+        QFile eFile {encodedDir.filePath(QString("%1.bin").arg(tInfo.baseName()))};
         if (!eFile.open(QIODevice::WriteOnly)) SKIP(QString("Encode error, could not open the output file: %1").arg(eFile.fileName()));
 
         QImage * img = App::getOriginalTileCache()->getTileImage(tile, palette, hFlip, vFlip);
@@ -948,8 +781,8 @@ void IOService::buildEncodedHDTiles(IOReport *report)
             {
                 int const x = j / gridWidth;
 
-                QRgb imgColor     = img->pixel(x,y);
-                QRgb hdImgColor   = hdImg.pixel(x,y);
+                QRgb  imgColor    = img->pixel(x,y);
+                QRgb  hdImgColor  = hdImg.pixel(x,y);
                 uchar hdMaskColor = hdMask.scanLine(i)[j];
 
                 if (hdMaskColor == 0)
@@ -973,9 +806,10 @@ void IOService::buildEncodedHDTiles(IOReport *report)
                     data[k] = ENCODE_OFFSET(qGreen(hdImgColor), qGreen(imgColor)); ++k;
                     data[k] = ENCODE_OFFSET(qBlue(hdImgColor), qBlue(imgColor)); ++k;
                 }
-
             }
         }
+
+        eFile.write(data);
     }
 }
 
