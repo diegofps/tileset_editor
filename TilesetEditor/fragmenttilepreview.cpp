@@ -51,6 +51,11 @@ FragmentTilePreview::FragmentTilePreview(QWidget * parent) :
         updateTileWidget();
     });
 
+    connect(App::getState(), &AppState::onShowHDTilesChanged, this, [&](bool)
+    {
+        updateTileWidget();
+    });
+
     updateTileWidget();
     updatePaletteWidget();
 }
@@ -66,11 +71,11 @@ void FragmentTilePreview::updateTileWidget()
     if (selectedTile == nullptr || palette == nullptr)
         return;
 
-//    QPixmap * img = mode == "original"
-//            ? App::getOriginalTileCache()->getTilePixmap(tile, palette, mode.hFlip, mode.vFlip)
-//            : App::getHDTileCache()->getTilePixmap(tile, palette);
+    QPixmap * img = App::getState()->showHDTiles()
+            ? App::getHDTileCache()->getTilePixmap(selectedTile, palette, mode.hFlip, mode.vFlip)
+            : App::getOriginalTileCache()->getTilePixmap(selectedTile, palette, mode.hFlip, mode.vFlip);
 
-    QPixmap * img = App::getOriginalTileCache()->getTilePixmap(selectedTile, palette, mode.hFlip, mode.vFlip);
+//    QPixmap * img = App::getOriginalTileCache()->getTilePixmap(selectedTile, palette, mode.hFlip, mode.vFlip);
 
     ui->picture->setPixmap(img);
 }

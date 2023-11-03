@@ -133,6 +133,11 @@ MainWindow::MainWindow(QWidget *parent)
         App::getState()->setShowLinkInfo(ui->action_View_ShowLinkInfo->isChecked());
     });
 
+    connect(ui->action_View_HDTiles, &QAction::triggered, this, [&]()
+    {
+        App::getState()->setShowHDTiles(ui->action_View_HDTiles->isChecked());
+    });
+
     connect(ui->action_View_FocusEditor, &QAction::triggered, this, [&]() { ui->contentFrame->setFocus(); });
 
     //Navigate menu
@@ -231,6 +236,9 @@ void MainWindow::loadFlags()
 
     if (ui->action_View_ShowLinkInfo->isChecked() != App::getState()->showLinkInfo())
         ui->action_View_ShowLinkInfo->setChecked(App::getState()->showLinkInfo());
+
+    if (ui->action_View_HDTiles->isChecked() != App::getState()->showHDTiles())
+        ui->action_View_HDTiles->setChecked(App::getState()->showHDTiles());
 }
 
 void MainWindow::loadScenes(QList<Scene*> const * value)

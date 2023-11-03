@@ -7,6 +7,7 @@ AppState::AppState()
 {
     _selectedTileset = nullptr;
     _showLinkInfo = true;
+    _showHDTiles = false;
     _palettesMode = USED_BY_TILE;
     _selectedPalette = nullptr;
     _referenceMode = REF_25;
@@ -463,6 +464,20 @@ void AppState::setLastMoveToSceneResult(int const value)
 int AppState::lastMoveToSceneResult()
 {
     return _lastMoveToSceneResult;
+}
+
+bool AppState::showHDTiles()
+{
+    return _showHDTiles;
+}
+
+void AppState::setShowHDTiles(bool value)
+{
+    if (value != _showHDTiles)
+    {
+        _showHDTiles = value;
+        emit onShowHDTilesChanged(value);
+    }
 }
 
 int AppState::selectedSceneID()

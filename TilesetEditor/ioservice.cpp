@@ -729,7 +729,7 @@ void IOService::buildEncodedHDTiles(IOReport *report)
         auto ids = tInfo.baseName().split('_');
         if (ids.size() != 4) SKIP(QString("Invalid format in filename: %1.").arg(filename));
 
-        auto tileID = ids[0].toInt(&ok);
+        int32_t tileID = ids[0].toInt(&ok);
         if (!ok) SKIP(QString("Invalid tile id format in filename: %1.").arg(filename));
 
         auto paletteID = ids[1].toInt(&ok);
@@ -760,7 +760,7 @@ void IOService::buildEncodedHDTiles(IOReport *report)
         if (hdMask.width() != 128) SKIP(QString("Invalid input mask in %1. A mask width must be equal to 128.").arg(filename));
         if (hdMask.height() != 128) SKIP(QString("Invalid input mask in %1. A mask height must be equal to 128.").arg(filename));
 
-        QFile eFile {encodedDir.filePath(QString("%1.bin").arg(tInfo.baseName()))};
+        QFile eFile {encodedDir.filePath(QString("%1_%2_%3.bin").arg(tile->id).arg(hFlip).arg(vFlip))};
         if (!eFile.open(QIODevice::WriteOnly)) SKIP(QString("Encode error, could not open the output file: %1").arg(eFile.fileName()));
 
         QImage * img = App::getOriginalTileCache()->getTileImage(tile, palette, hFlip, vFlip);
@@ -770,9 +770,13 @@ void IOService::buildEncodedHDTiles(IOReport *report)
         // TODO: Check if colorIndex is within the palette size
         // TODO: Save the original pseudoColor and the offset for the HD tile
 
-#define ENCODE_OFFSET(c1,c2) (c1>c2 ? (c1-c2)*128/(255-c2) : c2==0?0:-(c1*128/c2))
-
         int k = 0;
+
+        if (tileID == 235)
+        {
+            qWarning() << "Found it";
+        }
+
         for (int i=0;i!=hdImg.height();++i)
         {
             int const y = i / gridHeight;
@@ -782,7 +786,7 @@ void IOService::buildEncodedHDTiles(IOReport *report)
                 int const x = j / gridWidth;
 
                 QRgb  imgColor    = img->pixel(x,y);
-                QRgb  hdImgColor  = hdImg.pixel(x,y);
+                QRgb  hdImgColor  = hdImg.pixel(j,i);
                 uchar hdMaskColor = hdMask.scanLine(i)[j];
 
                 if (hdMaskColor == 0)
@@ -802,15 +806,17 @@ void IOService::buildEncodedHDTiles(IOReport *report)
                 else
                 {
                     data[k] = tile->pixels[y*8+x]; ++k;
-                    data[k] = ENCODE_OFFSET(qRed(hdImgColor), qRed(imgColor)); ++k;
-                    data[k] = ENCODE_OFFSET(qGreen(hdImgColor), qGreen(imgColor)); ++k;
-                    data[k] = ENCODE_OFFSET(qBlue(hdImgColor), qBlue(imgColor)); ++k;
+                    data[k] = encodeHDPixel(qRed(hdImgColor), qRed(imgColor)); ++k;
+                    data[k] = encodeHDPixel(qGreen(hdImgColor), qGreen(imgColor)); ++k;
+                    data[k] = encodeHDPixel(qBlue(hdImgColor), qBlue(imgColor)); ++k;
                 }
             }
         }
 
         eFile.write(data);
     }
+
+    SUCCESS("Encode HD Tiles finished successfully");
 }
 
 

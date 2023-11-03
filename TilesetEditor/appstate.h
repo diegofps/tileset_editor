@@ -114,6 +114,7 @@ private:
     int                  _selectedSceneID;
     int                  _lastMoveToSceneResult;
     bool                 _showLinkInfo;
+    bool                 _showHDTiles;
 
     QList<Tile*>    _filteredTiles;
     QList<Palette*> _filteredPalettes;
@@ -212,6 +213,9 @@ public:
 
     void setLastMoveToSceneResult(int const value);
     int  lastMoveToSceneResult();
+
+    bool showHDTiles();
+    void setShowHDTiles(bool value);
 
     // Scene
     int selectedSceneID();
@@ -338,6 +342,7 @@ signals:
     void onFilteredTilesetsChanged(QList<Tileset *> const * value);
 
     void onShowLinkInfoChanged(bool value);
+    void onShowHDTilesChanged(bool value);
 
     // Scene
     void onSelectedSceneIDChanged(int sceneID);
