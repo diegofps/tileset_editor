@@ -589,7 +589,7 @@ void IOService::buildHDTiles(IOReport *report)
             if (tile->linkedCellID != cell->id)
                 continue;
 
-            QString tFilename {QString("%1_%2_%3_%4.png").arg(tile->id).arg(cell->paletteID).arg(cell->hFlip).arg(cell->vFlip)};
+            QString tFilename {QString("%1_%2_%3_%4_%5.png").arg(tile->id).arg(cell->paletteID).arg(cell->hFlip).arg(cell->vFlip).arg(tileset->id)};
             QString tFilepath {tilesDir.filePath(tFilename)};
 
             QRect rect(cell->x*hdCellWidth, cell->y*hdCellHeight, hdCellWidth, hdCellHeight);
@@ -661,7 +661,7 @@ void IOService::buildHDMasks(IOReport *report)
             if (tile->linkedCellID != cell->id)
                 continue;
 
-            QString tFilename {QString("%1_%2_%3_%4.png").arg(tile->id).arg(cell->paletteID).arg(cell->hFlip).arg(cell->vFlip)};
+            QString tFilename {QString("%1_%2_%3_%4_%5.png").arg(tile->id).arg(cell->paletteID).arg(cell->hFlip).arg(cell->vFlip).arg(tileset->id)};
             QString tFilepath {outDir.filePath(tFilename)};
 
             QRect rect(cell->x*hdCellWidth, cell->y*hdCellHeight, hdCellWidth, hdCellHeight);
@@ -714,7 +714,7 @@ void IOService::buildEncodedHDTiles(IOReport *report)
         ABORT(QString("Could not access new %1 output folder").arg(encodedFoldername));
 
     // Encode all tiles
-    QByteArray data(128*128*4, '\0');
+    QByteArray data;
 
     for (auto & filename : tilesDir.entryList(QDir::Files))
     {
@@ -727,19 +727,22 @@ void IOService::buildEncodedHDTiles(IOReport *report)
 
         QFileInfo tInfo(tFilepath);
         auto ids = tInfo.baseName().split('_');
-        if (ids.size() != 4) SKIP(QString("Invalid format in filename: %1.").arg(filename));
+        if (ids.size() != 5) SKIP(QString("Invalid values quantity in filename: %1.").arg(filename));
 
         int32_t tileID = ids[0].toInt(&ok);
-        if (!ok) SKIP(QString("Invalid tile id format in filename: %1.").arg(filename));
+        if (!ok) SKIP(QString("Invalid tileID value in filename: %1.").arg(filename));
 
         auto paletteID = ids[1].toInt(&ok);
-        if (!ok) SKIP(QString("Invalid palette id format in filename: %1.").arg(filename));
+        if (!ok) SKIP(QString("Invalid paletteID value in filename: %1.").arg(filename));
 
         bool hFlip = ids[2].toInt(&ok);
-        if (!ok) SKIP(QString("Invalid palette id format in filename: %1.").arg(filename));
+        if (!ok) SKIP(QString("Invalid hFlip value in filename: %1.").arg(filename));
 
         bool vFlip = ids[3].toInt(&ok);
-        if (!ok) SKIP(QString("Invalid palette id format in filename: %1.").arg(filename));
+        if (!ok) SKIP(QString("Invalid vFlip value in filename: %1.").arg(filename));
+
+        bool tilesetID = ids[4].toInt(&ok);
+        if (!ok) SKIP(QString("Invalid tilesetID value in filename: %1.").arg(filename));
 
         auto tile = state->getTileById(tileID);
         if (tile == nullptr) SKIP(QString("Invalid tile id=%1 in filename=").arg(tileID).arg(filename));
@@ -747,46 +750,59 @@ void IOService::buildEncodedHDTiles(IOReport *report)
         auto palette = state->getPaletteById(paletteID);
         if (palette == nullptr) SKIP(QString("Invalid palette id=%1 in filename=").arg(paletteID).arg(filename));
 
-        QImage hdImg;
-        if (!hdImg.load(tFilepath)) SKIP(QString("Failed to load HD tile from filename %1.").arg(filename));
-        if (hdImg.width() != 128) SKIP(QString("Invalid input tile in %1. A tile width must be equal to 128.").arg(filename));
-        if (hdImg.height() != 128) SKIP(QString("Invalid input tile in %1. A tile height must be equal to 128.").arg(filename));
+        auto tileset = state->getTilesetById(tilesetID);
+        if (tileset == nullptr) SKIP(QString("Invalid tileset id=%1 in filename=").arg(tilesetID).arg(filename));
 
-        int const gridWidth = hdImg.width() / 8;
-        int const gridHeight = hdImg.height() / 8;
+        QImage bigImg;
+        if (!bigImg.load(tFilepath)) SKIP(QString("Failed to load HD tile from filename %1.").arg(filename));
+        if (bigImg.width() % 8 != 0) SKIP(QString("Invalid input tile in %1. A tile width must be divisible by 8.").arg(filename));
+        if (bigImg.height() % 8 != 0) SKIP(QString("Invalid input tile in %1. A tile height must be divisible by 8.").arg(filename));
+
+        int const gridWidth = bigImg.width() / 8;
+        int const gridHeight = bigImg.height() / 8;
 
         QImage hdMask;
         if (!hdMask.load(mFilepath)) SKIP(QString("Failed to load HD mask from filename %1.").arg(filename));
-        if (hdMask.width() != 128) SKIP(QString("Invalid input mask in %1. A mask width must be equal to 128.").arg(filename));
-        if (hdMask.height() != 128) SKIP(QString("Invalid input mask in %1. A mask height must be equal to 128.").arg(filename));
+        if (hdMask.width() % 8 != 0) SKIP(QString("Invalid input mask in %1. A mask width must be divisible by 8.").arg(filename));
+        if (hdMask.height() % 8 != 0) SKIP(QString("Invalid input mask in %1. A mask height must be divisible by 8.").arg(filename));
 
         QFile eFile {encodedDir.filePath(QString("%1_%2_%3.bin").arg(tile->id).arg(hFlip).arg(vFlip))};
         if (!eFile.open(QIODevice::WriteOnly)) SKIP(QString("Encode error, could not open the output file: %1").arg(eFile.fileName()));
 
-        QImage * img = App::getOriginalTileCache()->getTileImage(tile, palette, hFlip, vFlip);
-        if (img == nullptr) SKIP(QString("Could not load tile image for tileID=%1, paletteID=%2, hFlip=%3, vFlip=%4").arg(tile->id).arg(palette->id).arg(hFlip).arg(vFlip));
+        QImage * tinyImg = App::getOriginalTileCache()->getTileImage(tile, palette, hFlip, vFlip);
+        if (tinyImg == nullptr) SKIP(QString("Could not load tile image for tileID=%1, paletteID=%2, hFlip=%3, vFlip=%4").arg(tile->id).arg(palette->id).arg(hFlip).arg(vFlip));
 
         // TODO: Use the transparency mask
         // TODO: Check if colorIndex is within the palette size
         // TODO: Save the original pseudoColor and the offset for the HD tile
 
-        int k = 0;
+        data.resize(3 * sizeof(int) + bigImg.width() * bigImg.height() * 4, '\0');
+        QRgb const bgColor = tileset->bgColor.rgba();
 
-        if (tileID == 235)
+        ((int*)data.data())[0] = bigImg.width();
+        ((int*)data.data())[1] = bigImg.height();
+        ((int*)data.data())[2] = bgColor;
+        int k = 3 * sizeof(int);
+
+//        if (tileID == 235)
+//        {
+//            qWarning() << "Found it";
+//        }
+
+        for (int i=0;i!=bigImg.height();++i)
         {
-            qWarning() << "Found it";
-        }
+            float const y = float(i) / float(gridHeight);
+            int const y1 = y;
+            int const y2 = std::ceil(y);
+            float const yf = y - y1;
 
-        for (int i=0;i!=hdImg.height();++i)
-        {
-            int const y = i / gridHeight;
-
-            for (int j=0;j!=hdImg.width();++j)
+            for (int j=0;j!=bigImg.width();++j)
             {
-                int const x = j / gridWidth;
+                float const x = float(j) / float(gridWidth);
+                int const x1 = x;
+                int const x2 = std::ceil(x);
+                float const xf = x - x1;
 
-                QRgb  imgColor    = img->pixel(x,y);
-                QRgb  hdImgColor  = hdImg.pixel(j,i);
                 uchar hdMaskColor = hdMask.scanLine(i)[j];
 
                 if (hdMaskColor == 0)
@@ -795,21 +811,60 @@ void IOService::buildEncodedHDTiles(IOReport *report)
                     data[k] = 0; ++k;
                     data[k] = 0; ++k;
                     data[k] = 0; ++k;
+                    continue;
                 }
-                else if (qAlpha(imgColor) == 0)
+
+                QRgb A=tinyImg->pixel(x1,y1);
+                QRgb B;
+                QRgb C;
+                QRgb D;
+
+                if (x2==tinyImg->width())
                 {
-                    data[k] = 0; ++k;
-                    data[k] = 1; ++k;
-                    data[k] = 1; ++k;
-                    data[k] = 1; ++k;
+                    if (y2==tinyImg->height())
+                    {
+                        B = tinyImg->pixel(x2-1,y1  );
+                        C = tinyImg->pixel(x1  ,y2-1);
+                        D = tinyImg->pixel(x2-1,y2-1);
+                    }
+                    else
+                    {
+                        B = tinyImg->pixel(x2-1,y1);
+                        C = tinyImg->pixel(x1  ,y2);
+                        D = tinyImg->pixel(x2-1,y2);
+                    }
                 }
                 else
                 {
-                    data[k] = tile->pixels[y*8+x]; ++k;
-                    data[k] = encodeHDPixel(qRed(hdImgColor), qRed(imgColor)); ++k;
-                    data[k] = encodeHDPixel(qGreen(hdImgColor), qGreen(imgColor)); ++k;
-                    data[k] = encodeHDPixel(qBlue(hdImgColor), qBlue(imgColor)); ++k;
+                    if (y2==tinyImg->height())
+                    {
+                        B = tinyImg->pixel(x2,y1  );
+                        C = tinyImg->pixel(x1,y2-1);
+                        D = tinyImg->pixel(x2,y2-1);
+                    }
+                    else
+                    {
+                        B = tinyImg->pixel(x2,y1);
+                        C = tinyImg->pixel(x1,y2);
+                        D = tinyImg->pixel(x2,y2);
+                    }
                 }
+
+                if (qAlpha(A) == 0) A = bgColor;
+                if (qAlpha(B) == 0) B = bgColor;
+                if (qAlpha(C) == 0) C = bgColor;
+                if (qAlpha(D) == 0) D = bgColor;
+
+                QRgb  color      = MERGE_COLORS(MERGE_COLORS(A,B,xf),MERGE_COLORS(C,D,xf),yf);
+                QRgb  hdImgColor = bigImg.pixel(j,i);
+
+                encodeHDColor(&data[k], hdImgColor, color);
+                k += 4;
+
+//                data[k] = 255; ++k;
+//                data[k] = encodeHDChannel(qRed(hdImgColor), qRed(color)); ++k;
+//                data[k] = encodeHDChannel(qGreen(hdImgColor), qGreen(color)); ++k;
+//                data[k] = encodeHDChannel(qBlue(hdImgColor), qBlue(color)); ++k;
             }
         }
 
