@@ -23,15 +23,43 @@ inline int decodeHDChannel(int const encodedValue, int const original)
         return original+1+(encodedValue-1)*(255-original-1)/127;
 }
 
-void encodeHDColor(char * data, QRgb hdImgColor, QRgb refColor)
+inline void encodeHDColor(uchar * const data, QRgb const hdImgColor, QRgb const refColor)
 {
-    // TODO
+    int refH, refS, refL, refA;
+    int hdH, hdS, hdL, hdA;
+
+    QColor::fromRgba(refColor).getHsl(&refH, &refS, &refL, &refA);
+    QColor::fromRgba(hdImgColor).getHsl(&hdH, &hdS, &hdL, &hdA);
+
+    int offH;
+
+    if (hdH < refH)
+        offH = 360 + hdH - refH;
+    else
+        offH = hdH - refH;
+
+    data[0] = (char) 255;
+    data[1] = offH * 255 / 360;
+    data[2] = encodeHDChannel(hdS, refS);
+    data[3] = encodeHDChannel(hdL, refL);
 }
 
-QRgb decodeHDColor(int const ri, int const gi, int const bi, QRgb const refColor)
+inline QRgb decodeHDColor(uchar * const data, QRgb const refColor)
 {
-    // TODO
-    return QRgb()
+    int refH, refS, refL;
+    QColor::fromRgba(refColor).getHsl(&refH, &refS, &refL);
+
+    int const offH = data[1];
+    int const offS = (char)data[2];
+    int const offL = (char)data[3];
+
+    int hdH = refH + offH * 360 / 255;
+    int hdS = decodeHDChannel(offS, refS);
+    int hdL = decodeHDChannel(offL, refL);
+
+    if (hdH >= 360) hdH -= 360;
+
+    return QColor::fromHsl(hdH, hdS, hdL).rgb();
 }
 
 #define MERGE_COLORS(c1,c2,f) qRgba(\

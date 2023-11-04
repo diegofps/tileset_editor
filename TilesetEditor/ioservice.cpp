@@ -766,7 +766,7 @@ void IOService::buildEncodedHDTiles(IOReport *report)
         if (hdMask.width() % 8 != 0) SKIP(QString("Invalid input mask in %1. A mask width must be divisible by 8.").arg(filename));
         if (hdMask.height() % 8 != 0) SKIP(QString("Invalid input mask in %1. A mask height must be divisible by 8.").arg(filename));
 
-        QFile eFile {encodedDir.filePath(QString("%1_%2_%3.bin").arg(tile->id).arg(hFlip).arg(vFlip))};
+        QFile eFile {encodedDir.filePath(QString("%1.bin").arg(tile->id))};
         if (!eFile.open(QIODevice::WriteOnly)) SKIP(QString("Encode error, could not open the output file: %1").arg(eFile.fileName()));
 
         QImage * tinyImg = App::getOriginalTileCache()->getTileImage(tile, palette, hFlip, vFlip);
@@ -784,23 +784,28 @@ void IOService::buildEncodedHDTiles(IOReport *report)
         ((int*)data.data())[2] = bgColor;
         int k = 3 * sizeof(int);
 
-//        if (tileID == 235)
-//        {
-//            qWarning() << "Found it";
-//        }
+        // We must flip it again to make it turn back to the original position
+        int i0,i1,iStep;
+        int j0,j1,jStep;
 
-        for (int i=0;i!=bigImg.height();++i)
+        if (vFlip) { i0 = bigImg.height()-1; i1 = -1             ; iStep = -1; }
+        else       { i0 = 0                ; i1 = bigImg.height(); iStep = +1; }
+
+        if (hFlip) { j0 = bigImg.width()-1; j1 = -1            ; jStep = -1; }
+        else       { j0 = 0               ; j1 = bigImg.width(); jStep = +1; }
+
+        for (int i=i0;i!=i1;i+=iStep)
         {
             float const y = float(i) / float(gridHeight);
             int const y1 = y;
-            int const y2 = std::ceil(y);
+            int const y2 = tinyImg->height()-1==y1?y1:y1+1;
             float const yf = y - y1;
 
-            for (int j=0;j!=bigImg.width();++j)
+            for (int j=j0;j!=j1;j+=jStep)
             {
                 float const x = float(j) / float(gridWidth);
                 int const x1 = x;
-                int const x2 = std::ceil(x);
+                int const x2 = tinyImg->width()-1==x1 ? x1 : x1+1;
                 float const xf = x - x1;
 
                 uchar hdMaskColor = hdMask.scanLine(i)[j];
@@ -811,44 +816,19 @@ void IOService::buildEncodedHDTiles(IOReport *report)
                     data[k] = 0; ++k;
                     data[k] = 0; ++k;
                     data[k] = 0; ++k;
+
+//                    if (tile->id == 240)
+//                    {
+//                        qDebug() << j << i << " - " << x << y << " - transparent";
+//                    }
+
                     continue;
                 }
 
-                QRgb A=tinyImg->pixel(x1,y1);
-                QRgb B;
-                QRgb C;
-                QRgb D;
-
-                if (x2==tinyImg->width())
-                {
-                    if (y2==tinyImg->height())
-                    {
-                        B = tinyImg->pixel(x2-1,y1  );
-                        C = tinyImg->pixel(x1  ,y2-1);
-                        D = tinyImg->pixel(x2-1,y2-1);
-                    }
-                    else
-                    {
-                        B = tinyImg->pixel(x2-1,y1);
-                        C = tinyImg->pixel(x1  ,y2);
-                        D = tinyImg->pixel(x2-1,y2);
-                    }
-                }
-                else
-                {
-                    if (y2==tinyImg->height())
-                    {
-                        B = tinyImg->pixel(x2,y1  );
-                        C = tinyImg->pixel(x1,y2-1);
-                        D = tinyImg->pixel(x2,y2-1);
-                    }
-                    else
-                    {
-                        B = tinyImg->pixel(x2,y1);
-                        C = tinyImg->pixel(x1,y2);
-                        D = tinyImg->pixel(x2,y2);
-                    }
-                }
+                QRgb A = tinyImg->pixel(x1,y1);
+                QRgb B = tinyImg->pixel(x2,y1);
+                QRgb C = tinyImg->pixel(x1,y2);
+                QRgb D = tinyImg->pixel(x2,y2);
 
                 if (qAlpha(A) == 0) A = bgColor;
                 if (qAlpha(B) == 0) B = bgColor;
@@ -858,13 +838,25 @@ void IOService::buildEncodedHDTiles(IOReport *report)
                 QRgb  color      = MERGE_COLORS(MERGE_COLORS(A,B,xf),MERGE_COLORS(C,D,xf),yf);
                 QRgb  hdImgColor = bigImg.pixel(j,i);
 
-                encodeHDColor(&data[k], hdImgColor, color);
-                k += 4;
+                encodeHDColor((uchar*)&data[k], hdImgColor, color);
 
-//                data[k] = 255; ++k;
-//                data[k] = encodeHDChannel(qRed(hdImgColor), qRed(color)); ++k;
-//                data[k] = encodeHDChannel(qGreen(hdImgColor), qGreen(color)); ++k;
-//                data[k] = encodeHDChannel(qBlue(hdImgColor), qBlue(color)); ++k;
+                if (tile->id == 240 && i==64 && j==64)
+                {
+                    qDebug() << "k:" << k;
+                    qDebug() << "j i:" << j << i;
+                    qDebug() << "x y:" << x << y;
+                    qDebug() << "xf yf:" << xf << yf;
+                    qDebug() << "x1 x2:" << x1 << x2;
+                    qDebug() << "y1 y2:" << y1 << y2;
+                    qDebug() << "A B C D:" << A << B << C << D;
+                    qDebug() << "refColor:" << color;
+                    qDebug() << "hdImgColor:" << hdImgColor;
+
+                    qWarning() << "w h hFlip vFlip" << bigImg.width() << bigImg.height() << vFlip << hFlip;
+                    qWarning() << "iRange" << i0 << i1 << iStep;
+                    qWarning() << "jRange" << j0 << j1 << jStep;
+                }
+                k += 4;
             }
         }
 

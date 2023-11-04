@@ -43,7 +43,7 @@ QImage * TileCacheHD::loadImage(Tile * tile, Palette * palette, bool hFlip, bool
     if (!encodedDir.exists(encodedFoldername)) ABORT("Encoded folder does not exists");
     if (!encodedDir.cd(encodedFoldername)) ABORT("Could not cd to encoded folder");
 
-    QString filename {QString("%1_%3_%4.bin").arg(tile->id).arg(hFlip).arg(vFlip)};
+    QString filename {QString("%1.bin").arg(tile->id)};
     QFile file(encodedDir.filePath(filename));
     if (!file.open(QIODevice::ReadOnly)) ABORT(QString("File %1 could not be open.").arg(filename));
 
@@ -61,7 +61,7 @@ QImage * TileCacheHD::loadImage(Tile * tile, Palette * palette, bool hFlip, bool
     int const gridWidth = width / 8;
     int const gridHeight = height / 8;
 
-    if (data.size() != 3*sizeof(int)+width*height*4) ABORT(QString("File %1 has an invalid size.").arg(filename));
+    if (data.size() != static_cast<qsizetype>(3*sizeof(int)+width*height*4)) ABORT(QString("File %1 has an invalid size.").arg(filename));
 
     QImage * img = new QImage(width, height, QImage::Format_ARGB32);
     int k = 3*sizeof(int);
@@ -80,80 +80,57 @@ QImage * TileCacheHD::loadImage(Tile * tile, Palette * palette, bool hFlip, bool
     {
         float const y = float(i) / float(gridHeight);
         int const y1 = y;
-        int const y2 = std::ceil(y);
+        int const y2 = tinyImg->height()-1==y1?y1:y1+1;
         float const yf = y - y1;
 
         for (int j=j0;j!=j1;j+=jStep)
         {
             float const x = float(j) / float(gridWidth);
             int const x1 = x;
-            int const x2 = std::ceil(x);
+            int const x2 = tinyImg->width()-1==x1 ? x1 : x1+1;
             float const xf = x - x1;
 
-            int const mask = data[k]; ++k;
-            int const ri = data[k]; ++k;
-            int const gi = data[k]; ++k;
-            int const bi = data[k]; ++k;
-
-            if (mask == 0)
+            if (data[k] == 0)
             {
                 newColor = qRgba(0,0,0,0);
             }
             else
             {
-                QRgb A=tinyImg->pixel(x1,y1);
-                QRgb B;
-                QRgb C;
-                QRgb D;
-
-                if (x2==tinyImg->width())
-                {
-                    if (y2==tinyImg->height())
-                    {
-                        B = tinyImg->pixel(x2-1,y1  );
-                        C = tinyImg->pixel(x1  ,y2-1);
-                        D = tinyImg->pixel(x2-1,y2-1);
-                    }
-                    else
-                    {
-                        B = tinyImg->pixel(x2-1,y1);
-                        C = tinyImg->pixel(x1  ,y2);
-                        D = tinyImg->pixel(x2-1,y2);
-                    }
-                }
-                else
-                {
-                    if (y2==tinyImg->height())
-                    {
-                        B = tinyImg->pixel(x2,y1  );
-                        C = tinyImg->pixel(x1,y2-1);
-                        D = tinyImg->pixel(x2,y2-1);
-                    }
-                    else
-                    {
-                        B = tinyImg->pixel(x2,y1);
-                        C = tinyImg->pixel(x1,y2);
-                        D = tinyImg->pixel(x2,y2);
-                    }
-                }
+                QRgb A = tinyImg->pixel(x1,y1);
+                QRgb B = tinyImg->pixel(x2,y1);
+                QRgb C = tinyImg->pixel(x1,y2);
+                QRgb D = tinyImg->pixel(x2,y2);
 
                 if (qAlpha(A) == 0) A = bgColor;
                 if (qAlpha(B) == 0) B = bgColor;
                 if (qAlpha(C) == 0) C = bgColor;
                 if (qAlpha(D) == 0) D = bgColor;
 
-                QRgb  refColor = MERGE_COLORS(MERGE_COLORS(A,B,xf),MERGE_COLORS(C,D,xf),yf);
+                QRgb refColor = MERGE_COLORS(MERGE_COLORS(A,B,xf),MERGE_COLORS(C,D,xf),yf);
 
-                newColor = decodeHDColor(ri, gi, bi, refColor);
-//                newColor = qRgba(
-//                            decodeHDChannel(ri, qRed(refColor)),
-//                            decodeHDChannel(gi, qGreen(refColor)),
-//                            decodeHDChannel(bi, qBlue(refColor)),
-//                            255);
+                newColor = decodeHDColor((uchar*)&data[k], refColor);
+
+                if (tile->id == 240 && i==64 && j==64)
+                {
+                    qDebug() << "k:" << k;
+                    qDebug() << "j i:" << j << i;
+                    qDebug() << "x y:" << x << y;
+                    qDebug() << "xf yf:" << xf << yf;
+                    qDebug() << "x1 x2:" << x1 << x2;
+                    qDebug() << "y1 y2:" << y1 << y2;
+                    qDebug() << "A B C D:" << A << B << C << D;
+                    qDebug() << "refColor:" << refColor;
+                    qDebug() << "hdImgColor:" << newColor;
+
+                    qWarning() << "w h hFlip vFlip" << width << height << vFlip << hFlip;
+                    qWarning() << "iRange" << i0 << i1 << iStep;
+                    qWarning() << "jRange" << j0 << j1 << jStep;
+                }
             }
 
 //            qWarning() << qRed(newColor) << qGreen(newColor) << qBlue(newColor) << qAlpha(newColor);
             img->setPixel(j, i, newColor);
+            k += 4;
         }
     }
 

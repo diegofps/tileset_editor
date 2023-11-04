@@ -814,6 +814,9 @@ QMenu::item:selected {
    <property name="text">
     <string>HD Tiles</string>
    </property>
+   <property name="shortcut">
+    <string>X</string>
+   </property>
   </action>
  </widget>
  <resources/>
