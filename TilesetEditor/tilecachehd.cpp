@@ -28,9 +28,6 @@ QImage * TileCacheHD::loadImage(Tile * tile, Palette * palette, bool hFlip, bool
         return nullptr;\
     }
 
-//    if (img.width() != 128 || img.height() != 128 || img.format() != QImage::Format_ARGB32)
-//        ABORT("Invalid image format or size for TileCacheHD::loadImage. Expected 128x128 Format_ARGB32.");
-
     auto project = App::getState()->project();
     if (project == nullptr) ABORT("Project is nullptr");
 
@@ -47,13 +44,14 @@ QImage * TileCacheHD::loadImage(Tile * tile, Palette * palette, bool hFlip, bool
     QFile file(encodedDir.filePath(filename));
     if (!file.open(QIODevice::ReadOnly)) ABORT(QString("File %1 could not be open.").arg(filename));
 
-    QByteArray data = file.readAll();
+    QByteArray dataArray = file.readAll();
+    uchar * data = (uchar*) dataArray.data();
 
-    if (data.size() < (qsizetype)(3*sizeof(int))) ABORT(QString("File %1 has an invalid size.").arg(filename));
+    if (dataArray.size() < (qsizetype)(3*sizeof(int))) ABORT(QString("File %1 has an invalid size.").arg(filename));
 
-    int const width = ((int*)data.data())[0];
-    int const height = ((int*)data.data())[1];
-    int const bgColor = ((int*)data.data())[2];
+    int const width = ((int*)data)[0];
+    int const height = ((int*)data)[1];
+    int const bgColor = ((int*)data)[2];
 
     if (width % 8 != 0) ABORT(QString("Invalid hd tile in %1. A tile width must be divisible by 8.").arg(filename));
     if (height % 8 != 0) ABORT(QString("Invalid hd tile in %1. A tile height must be divisible by 8.").arg(filename));
@@ -61,7 +59,7 @@ QImage * TileCacheHD::loadImage(Tile * tile, Palette * palette, bool hFlip, bool
     int const gridWidth = width / 8;
     int const gridHeight = height / 8;
 
-    if (data.size() != static_cast<qsizetype>(3*sizeof(int)+width*height*4)) ABORT(QString("File %1 has an invalid size.").arg(filename));
+    if (dataArray.size() != static_cast<qsizetype>(3*sizeof(int)+width*height*4)) ABORT(QString("File %1 has an invalid size.").arg(filename));
 
     QImage * img = new QImage(width, height, QImage::Format_ARGB32);
     int k = 3*sizeof(int);
@@ -74,7 +72,7 @@ QImage * TileCacheHD::loadImage(Tile * tile, Palette * palette, bool hFlip, bool
     if (hFlip) { j0 = width-1; j1 = -1   ; jStep = -1; }
     else       { j0 = 0      ; j1 = width; jStep = +1; }
 
-    QRgb newColor;
+    QRgb hdImgColor;
 
     for (int i=i0;i!=i1;i+=iStep)
     {
@@ -92,7 +90,7 @@ QImage * TileCacheHD::loadImage(Tile * tile, Palette * palette, bool hFlip, bool
 
             if (data[k] == 0)
             {
-                newColor = qRgba(0,0,0,0);
+                hdImgColor = qRgba(0,0,0,0);
             }
             else
             {
@@ -108,9 +106,20 @@ QImage * TileCacheHD::loadImage(Tile * tile, Palette * palette, bool hFlip, bool
 
                 QRgb refColor = MERGE_COLORS(MERGE_COLORS(A,B,xf),MERGE_COLORS(C,D,xf),yf);
 
-                newColor = decodeHDColor((uchar*)&data[k], refColor);
+                hdImgColor = decodeHDColor(&data[k], refColor);
 
-                if (tile->id == 240 && i==64 && j==64)
+                auto fHSL = [](QRgb c) {
+                    int h,s,l,a;
+                    auto qc = QColor::fromRgb(c);
+                    qc.getHsl(&h,&s,&l,&a);
+                    return QString("[%1,%2,%3,%4]").arg(h).arg(s).arg(l).arg(a);
+                };
+
+                auto fRGB = [](QRgb c) {
+                    return QString("[%1,%2,%3,%4]").arg(qRed(c)).arg(qGreen(c)).arg(qBlue(c)).arg(qAlpha(c));
+                };
+
+                if (tile->id == 240 && i==35 && j==63)
                 {
                     qDebug() << "k:" << k;
                     qDebug() << "j i:" << j << i;
@@ -118,9 +127,11 @@ QImage * TileCacheHD::loadImage(Tile * tile, Palette * palette, bool hFlip, bool
                     qDebug() << "xf yf:" << xf << yf;
                     qDebug() << "x1 x2:" << x1 << x2;
                     qDebug() << "y1 y2:" << y1 << y2;
-                    qDebug() << "A B C D:" << A << B << C << D;
-                    qDebug() << "refColor:" << refColor;
-                    qDebug() << "hdImgColor:" << newColor;
+                    qDebug() << "A B C D:" << fHSL(A) << fHSL(B) << fHSL(C) << fHSL(D);
+                    qDebug() << "A B C D:" << fRGB(A) << fRGB(B) << fRGB(C) << fRGB(D);
+                    qDebug() << "refColor:" << fHSL(refColor) << "/" << fRGB(refColor);
+                    qDebug() << "hdImgColor:" << fHSL(hdImgColor) << "/" << fRGB(hdImgColor);
+                    qDebug() << "data:" << data[k] << data[k+1] << (int)((char*)data)[k+2] << (int)((char*)data)[k+3];
 
                     qWarning() << "w h hFlip vFlip" << width << height << vFlip << hFlip;
                     qWarning() << "iRange" << i0 << i1 << iStep;
@@ -129,7 +140,7 @@ QImage * TileCacheHD::loadImage(Tile * tile, Palette * palette, bool hFlip, bool
             }
 
 //            qWarning() << qRed(newColor) << qGreen(newColor) << qBlue(newColor) << qAlpha(newColor);
-            img->setPixel(j, i, newColor);
+            img->setPixel(j, i, hdImgColor);
             k += 4;
         }
     }
@@ -142,8 +153,8 @@ void TileCacheHD::createCache(QPair<QPair<int,int>,QPair<bool,bool>> & key,
 {
     QImage * img = loadImage(tile, palette, hFlip, vFlip);
 
-    _cachedImages[key] = new QImage(*img);
-    _cachedPixmaps[key] = new QPixmap(QPixmap::fromImage(*img));
+    _cachedImages[key] = img == nullptr ? nullptr : new QImage(*img);
+    _cachedPixmaps[key] = img == nullptr ? nullptr : new QPixmap(QPixmap::fromImage(*img));
 }
 
 QPixmap * TileCacheHD::getTilePixmap(Tile * tile, Palette * palette, bool hFlip, bool vFlip)

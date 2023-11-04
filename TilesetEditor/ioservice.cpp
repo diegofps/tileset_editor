@@ -100,6 +100,7 @@ void IOService::close(IOReport * report)
     App::getState()->setAllScreenshots(nullptr);
     App::getState()->setAllScenes(nullptr);
     App::getOriginalTileCache()->clear();
+    App::getHDTileCache()->clear();
 
     SUCCESS(QString("Project %1 closed successfully").arg(path));
 }
@@ -714,7 +715,7 @@ void IOService::buildEncodedHDTiles(IOReport *report)
         ABORT(QString("Could not access new %1 output folder").arg(encodedFoldername));
 
     // Encode all tiles
-    QByteArray data;
+    QByteArray dataArray;
 
     for (auto & filename : tilesDir.entryList(QDir::Files))
     {
@@ -776,12 +777,14 @@ void IOService::buildEncodedHDTiles(IOReport *report)
         // TODO: Check if colorIndex is within the palette size
         // TODO: Save the original pseudoColor and the offset for the HD tile
 
-        data.resize(3 * sizeof(int) + bigImg.width() * bigImg.height() * 4, '\0');
+        dataArray.resize(3 * sizeof(int) + bigImg.width() * bigImg.height() * 4, '\0');
+        uchar * data = (uchar*) dataArray.data();
+
         QRgb const bgColor = tileset->bgColor.rgba();
 
-        ((int*)data.data())[0] = bigImg.width();
-        ((int*)data.data())[1] = bigImg.height();
-        ((int*)data.data())[2] = bgColor;
+        ((int*)data)[0] = bigImg.width();
+        ((int*)data)[1] = bigImg.height();
+        ((int*)data)[2] = bgColor;
         int k = 3 * sizeof(int);
 
         // We must flip it again to make it turn back to the original position
@@ -835,12 +838,23 @@ void IOService::buildEncodedHDTiles(IOReport *report)
                 if (qAlpha(C) == 0) C = bgColor;
                 if (qAlpha(D) == 0) D = bgColor;
 
-                QRgb  color      = MERGE_COLORS(MERGE_COLORS(A,B,xf),MERGE_COLORS(C,D,xf),yf);
+                QRgb  refColor      = MERGE_COLORS(MERGE_COLORS(A,B,xf),MERGE_COLORS(C,D,xf),yf);
                 QRgb  hdImgColor = bigImg.pixel(j,i);
 
-                encodeHDColor((uchar*)&data[k], hdImgColor, color);
+                encodeHDColor(&data[k], hdImgColor, refColor);
 
-                if (tile->id == 240 && i==64 && j==64)
+                auto fHSV = [](QRgb c) {
+                    int h,s,v,a;
+                    auto qc = QColor::fromRgb(c);
+                    qc.getHsv(&h,&s,&v,&a);
+                    return QString("[%1,%2,%3,%4]").arg(h).arg(s).arg(v).arg(a);
+                };
+
+                auto fRGB = [](QRgb c) {
+                    return QString("[%1,%2,%3,%4]").arg(qRed(c)).arg(qGreen(c)).arg(qBlue(c)).arg(qAlpha(c));
+                };
+
+                if (tile->id == 240 && i==35 && j==63)
                 {
                     qDebug() << "k:" << k;
                     qDebug() << "j i:" << j << i;
@@ -848,9 +862,11 @@ void IOService::buildEncodedHDTiles(IOReport *report)
                     qDebug() << "xf yf:" << xf << yf;
                     qDebug() << "x1 x2:" << x1 << x2;
                     qDebug() << "y1 y2:" << y1 << y2;
-                    qDebug() << "A B C D:" << A << B << C << D;
-                    qDebug() << "refColor:" << color;
-                    qDebug() << "hdImgColor:" << hdImgColor;
+                    qDebug() << "A B C D:" << fHSV(A) << fHSV(B) << fHSV(C) << fHSV(D);
+                    qDebug() << "A B C D:" << fRGB(A) << fRGB(B) << fRGB(C) << fRGB(D);
+                    qDebug() << "refColor:" << fHSV(refColor) << "/" << fRGB(refColor);
+                    qDebug() << "hdImgColor:" << fHSV(hdImgColor) << "/" << fRGB(hdImgColor);
+                    qDebug() << "data:" << data[k] << data[k+1] << (int)((char*)data)[k+2] << (int)((char*)data)[k+3];
 
                     qWarning() << "w h hFlip vFlip" << bigImg.width() << bigImg.height() << vFlip << hFlip;
                     qWarning() << "iRange" << i0 << i1 << iStep;
@@ -860,7 +876,7 @@ void IOService::buildEncodedHDTiles(IOReport *report)
             }
         }
 
-        eFile.write(data);
+        eFile.write(dataArray);
     }
 
     SUCCESS("Encode HD Tiles finished successfully");

@@ -59,6 +59,11 @@ FragmentEditor::FragmentEditor(QWidget *parent) :
             App::getState()->zoomOutEditor();
     });
 
+    connect(App::getState(), &AppState::onShowHDTilesChanged, this, [&](bool)
+    {
+        updateWidgetEditor();
+    });
+
     updateWidgetEditor();
     ui->widgetEditor->setZoom(App::getState()->editorZoom());
 }

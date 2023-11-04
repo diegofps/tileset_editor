@@ -12,6 +12,7 @@ public:
     void resizeEvent(QResizeEvent *event);
     void paintEvent(QPaintEvent *event);
     void setPixmap(QPixmap * pixmap);
+    void mouseMoveEvent(QMouseEvent *event);
 
 private:
     void repack();

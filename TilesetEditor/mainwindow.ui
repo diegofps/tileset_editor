@@ -806,6 +806,9 @@ QMenu::item:selected {
    <property name="text">
     <string>Flush Cells With Current Palette</string>
    </property>
+   <property name="shortcut">
+    <string>F</string>
+   </property>
   </action>
   <action name="action_View_HDTiles">
    <property name="checkable">

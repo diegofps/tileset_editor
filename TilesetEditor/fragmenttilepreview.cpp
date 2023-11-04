@@ -43,7 +43,7 @@ FragmentTilePreview::FragmentTilePreview(QWidget * parent) :
     connect(App::getState(), &AppState::onSelectedPaletteChanged, this, [&](Palette *)
     {
         updateTileWidget();
-        updatePaletteWidget();
+        updateExtraInfo();
     });
 
     connect(App::getState(), &AppState::onSelectedTilesChanged, this, [&](QList<qsizetype> const *)
@@ -57,7 +57,7 @@ FragmentTilePreview::FragmentTilePreview(QWidget * parent) :
     });
 
     updateTileWidget();
-    updatePaletteWidget();
+    updateExtraInfo();
 }
 
 void FragmentTilePreview::updateTileWidget()
@@ -80,7 +80,7 @@ void FragmentTilePreview::updateTileWidget()
     ui->picture->setPixmap(img);
 }
 
-void FragmentTilePreview::updatePaletteWidget()
+void FragmentTilePreview::updateExtraInfo()
 {
     auto palette = App::getState()->selectedPalette();
     auto selectedTile = App::getState()->selectedTile();

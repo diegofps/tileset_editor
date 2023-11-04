@@ -22,7 +22,7 @@ public:
 private:
     void styleButton(QPushButton *btn, bool value);
     void updateTileWidget();
-    void updatePaletteWidget();
+    void updateExtraInfo();
 
 private:
     Ui::FragmentTilePreview *ui;
