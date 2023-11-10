@@ -602,9 +602,14 @@ public:
         return tmp;
     }
 
-    void setPixel(size_t i, size_t j, Vector3F const & color) const
+    int getAlpha(size_t const i, size_t const j) const
     {
-        auto const values = qRgba(CLIP255(color[0]), CLIP255(color[1]), CLIP255(color[2]), 255);
+        return qRed(_img.pixel(j,i));
+    }
+
+    void setPixel(size_t i, size_t j, Vector3F const & color, int const alpha) const
+    {
+        auto const values = qRgba(CLIP255(color[0]), CLIP255(color[1]), CLIP255(color[2]), alpha);
         if (_vFlip) i = _img.height()-i-1;
         if (_hFlip) j = _img.width()-j-1;
         _img.setPixel(j,i,values);
@@ -632,6 +637,7 @@ template <typename IMAGE_WRAPPER>
 inline void colorTransform12(std::vector<Vector3F> const & colors1,
                              std::vector<Vector3F> const & colors2,
                              IMAGE_WRAPPER const & imgIn,
+                             IMAGE_WRAPPER const & maskIn,
                              IMAGE_WRAPPER & imgOut)
 {
     size_t const k = std::min(colors1.size(), colors2.size());
@@ -711,7 +717,7 @@ inline void colorTransform12(std::vector<Vector3F> const & colors1,
             }
 
             Vector3F rgbOut = lab2rgb(labOut);
-            imgOut.setPixel(i, j, clipRGB(rgbOut));
+            imgOut.setPixel(i, j, clipRGB(rgbOut), maskIn.getAlpha(i,j));
         }
     }
 }
@@ -804,8 +810,6 @@ QImage * TileCacheHD::loadImage(Tile * tile, Palette * palette, bool hFlip, bool
         return nullptr;\
     }
 
-    // TODO: Load mask and add transparency
-
     auto project = App::getState()->project();
     if (project == nullptr) ABORT("Project is nullptr");
 
@@ -815,20 +819,29 @@ QImage * TileCacheHD::loadImage(Tile * tile, Palette * palette, bool hFlip, bool
     if (!tilesDir.exists(tilesFoldername)) ABORT("Tiles folder does not exists");
     if (!tilesDir.cd(tilesFoldername)) ABORT("Could not cd to tiles folder");
 
+    QDir masksDir(project->path);
+    char const * masksFoldername = "masks.high";
+
+    if (!masksDir.exists(masksFoldername)) ABORT("Masks folder does not exists");
+    if (!masksDir.cd(masksFoldername)) ABORT("Could not cd to masks folder");
+
     auto it = _tileID2tileFile.constFind(tile->id);
-    if (it == _tileID2tileFile.constEnd()) ABORT(QString("Could not find original tile file for id %1").arg(tile->id));
+    if (it == _tileID2tileFile.constEnd()) ABORT(QString("Could not find tileFile for tileID=%1").arg(tile->id));
 
     auto tileFile = it.value();
     auto paletteOld = App::getState()->getPaletteById(tileFile->paletteID);
     if (paletteOld == nullptr) ABORT("Could not find the original palette");
 
     QImage imgIn;
+    if (!imgIn.load(tilesDir.filePath(tileFile->filename))) ABORT(QString("Could not find tile file for tileID=%1").arg(tile->id));
 
-    if (!imgIn.load(tilesDir.filePath(tileFile->filename))) ABORT("Could not load original tile file");
+    QImage maskIn;
+    if (!maskIn.load(masksDir.filePath(tileFile->filename))) ABORT(QString("Could not find mask file for tileID=%1").arg(tile->id));
 
     QImage * imgOut = new QImage(imgIn.width(), imgIn.height(), QImage::Format_ARGB32);
 
     QImageWrapper inputWrapper(imgIn, false, false);
+    QImageWrapper maskWrapper(maskIn, false, false);
     QImageWrapper outputWrapper(*imgOut, hFlip ^ tileFile->hFlip, vFlip ^ tileFile->vFlip);
 
     std::vector<Vector3F> colors1;
@@ -849,7 +862,7 @@ QImage * TileCacheHD::loadImage(Tile * tile, Palette * palette, bool hFlip, bool
     if (tile->id == 386)
         qWarning() << "Found it!";
 
-    colorTransform12(colors1, colors2, inputWrapper, outputWrapper);
+    colorTransform12(colors1, colors2, inputWrapper, maskWrapper, outputWrapper);
 
     qWarning() << "Loaded tile for tileID=" << tile->id << " paletteID=" << palette->id << " hFlip=" << hFlip << " vFlip=" << vFlip;
 
