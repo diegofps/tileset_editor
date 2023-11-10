@@ -22,7 +22,7 @@ void WidgetPicture::paintEvent(QPaintEvent *event)
 {
     (void) event;
 
-    if (_pixmap == nullptr)
+    if (_pixmap == nullptr || _rect.width() == 0 || _rect.height() == 0)
         return;
 
     QPainter painter(this);

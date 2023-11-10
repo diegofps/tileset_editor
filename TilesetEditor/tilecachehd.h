@@ -5,6 +5,16 @@
 #include "model/tile.h"
 #include <QPixmap>
 
+struct TileFile
+{
+    QString filename;
+    int tileID;
+    int paletteID;
+    int tilesetID;
+    bool hFlip;
+    bool vFlip;
+};
+
 inline int encodeHDChannel(int const hdValue, int const original)
 {
     int result;
@@ -99,15 +109,13 @@ public:
     QPixmap * getTilePixmap(Tile *tile, Palette *palette, bool hFlip, bool vFlip);
     void createCache(QPair<QPair<int, int>, QPair<bool, bool> > &key, Tile *tile, Palette *palette, bool hFlip, bool vFlip);
     QImage * loadImage(Tile *tile, Palette *palette, bool hFlip, bool vFlip);
-
-private:
-
-    void parseTiles();
+    void updateKnownTiles(QString const & projectPath);
 
 private:
 
     QHash<QPair<QPair<int,int>,QPair<bool,bool>>,QPixmap*> _cachedPixmaps;
     QHash<QPair<QPair<int,int>,QPair<bool,bool>>,QImage*> _cachedImages;
+    QHash<int,TileFile*> _tileID2tileFile;
 
 };
 

@@ -102,16 +102,16 @@ void TileCache::loadImage(Tile * tile, Palette * palette, bool hFlip, bool vFlip
 void TileCache::createCache(QPair<QPair<int,int>,QPair<bool,bool>> & key,
                             Tile * tile, Palette * palette, bool hFlip, bool vFlip)
 {
-    QImage img(8,8, QImage::Format_ARGB32);
-    QImage mask(8,8, QImage::Format_Grayscale8);
+    QImage *img = new QImage(8,8, QImage::Format_ARGB32);
+    QImage *mask = new QImage(8,8, QImage::Format_Grayscale8);
 
-    loadImage(tile, palette, hFlip, vFlip, img);
-    loadMask(tile, hFlip, vFlip, mask);
+    loadImage(tile, palette, hFlip, vFlip, *img);
+    loadMask(tile, hFlip, vFlip, *mask);
 
-    _cachedImages[key] = new QImage(img);
-    _cachedPixmaps[key] = new QPixmap(QPixmap::fromImage(img));
-    _cachedMaskImages[key] = new QImage(mask);
-    _cachedMaskPixmaps[key] = new QPixmap(QPixmap::fromImage(mask));
+    _cachedImages[key] = img;
+    _cachedPixmaps[key] = new QPixmap(QPixmap::fromImage(*img));
+    _cachedMaskImages[key] = mask;
+    _cachedMaskPixmaps[key] = new QPixmap(QPixmap::fromImage(*mask));
 }
 
 QImage * TileCache::getTileImage(Tile * tile, Palette * palette, bool const hFlip, bool const vFlip)

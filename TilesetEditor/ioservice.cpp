@@ -65,6 +65,11 @@ void IOService::create(const QString & folderpath, IOReport * report)
     ts->bgColor = QColor::fromRgb(0,0,0);
     tilesets->append(ts);
 
+    App::getHDTileCache()->clear();
+    App::getOriginalTileCache()->clear();
+
+    App::getHDTileCache()->updateKnownTiles(project->path);
+
     App::getState()->setAllTiles(tiles);
     App::getState()->setAllTilesets(tilesets);
     App::getState()->setAllPalettes(palettes);
@@ -73,7 +78,6 @@ void IOService::create(const QString & folderpath, IOReport * report)
     App::getState()->setAllScenes(scenes);
     App::getState()->setProjectHasChanges(false);
     App::getState()->setProject(project);
-    App::getOriginalTileCache()->clear();
 
     save(report);
 }
@@ -99,8 +103,6 @@ void IOService::close(IOReport * report)
     App::getState()->setAllReferences(nullptr);
     App::getState()->setAllScreenshots(nullptr);
     App::getState()->setAllScenes(nullptr);
-    App::getOriginalTileCache()->clear();
-    App::getHDTileCache()->clear();
 
     SUCCESS(QString("Project %1 closed successfully").arg(path));
 }
@@ -128,6 +130,11 @@ void IOService::load(const QString & folderpath, IOReport * report)
     )
     {
         close();
+
+        App::getHDTileCache()->clear();
+        App::getOriginalTileCache()->clear();
+
+        App::getHDTileCache()->updateKnownTiles(project->path);
 
         App::getState()->setAllTiles(tiles);
         App::getState()->setAllTilesets(tilesets);
