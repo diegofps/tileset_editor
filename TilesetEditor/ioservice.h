@@ -40,7 +40,9 @@ public:
     static void importDump(QString const & folderpath, IOReport * report = nullptr);
     static void buildTilesets(IOReport * report = nullptr);
     static void buildMasksets(IOReport *report = nullptr);
+    static void buildTiles(IOReport * report = nullptr);
     static void buildHDTiles(IOReport * report = nullptr);
+    static void buildMasks(IOReport * report = nullptr);
     static void buildHDMasks(IOReport * report = nullptr);
     static void buildEncodedHDTiles(IOReport * report = nullptr);
 

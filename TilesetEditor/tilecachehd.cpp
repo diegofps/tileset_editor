@@ -6,7 +6,7 @@
 
 TileCacheHD::TileCacheHD()
 {
-
+    parseTiles();
 }
 
 void TileCacheHD::clear()
@@ -19,6 +19,12 @@ void TileCacheHD::clear()
 
     _cachedImages.clear();
     _cachedPixmaps.clear();
+    parseTiles();
+}
+
+void TileCacheHD::parseTiles()
+{
+
 }
 
 QImage * TileCacheHD::loadImage(Tile * tile, Palette * palette, bool hFlip, bool vFlip)

@@ -102,6 +102,10 @@ public:
 
 private:
 
+    void parseTiles();
+
+private:
+
     QHash<QPair<QPair<int,int>,QPair<bool,bool>>,QPixmap*> _cachedPixmaps;
     QHash<QPair<QPair<int,int>,QPair<bool,bool>>,QImage*> _cachedImages;
 

@@ -163,6 +163,7 @@ QMenu::item:selected {
      <string>E&amp;xecute</string>
     </property>
     <addaction name="action_Execute_BuildTilesets"/>
+    <addaction name="action_Execute_BuildTiles"/>
     <addaction name="action_Execute_BuildHDTiles"/>
     <addaction name="action_Execute_EncodeHDTiles"/>
    </widget>
@@ -819,6 +820,11 @@ QMenu::item:selected {
    </property>
    <property name="shortcut">
     <string>X</string>
+   </property>
+  </action>
+  <action name="action_Execute_BuildTiles">
+   <property name="text">
+    <string>Build Tiles</string>
    </property>
   </action>
  </widget>

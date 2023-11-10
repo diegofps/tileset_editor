@@ -186,6 +186,26 @@ MainWindow::MainWindow(QWidget *parent)
         }
     });
 
+    connect(ui->action_Execute_BuildTiles, &QAction::triggered, this, [&]()
+    {
+        IOReport report;
+        IOService::buildTiles(&report);
+        if (report.success())
+        {
+            IOReport report2;
+            IOService::buildMasks(&report2);
+
+            if (report2.success())
+                ui->lbStatusBar->setText(report.message());
+            else
+                ui->lbStatusBar->setText(report2.message());
+        }
+        else
+        {
+            ui->lbStatusBar->setText(report.message());
+        }
+    });
+
     connect(ui->action_Execute_BuildHDTiles, &QAction::triggered, this, [&]()
     {
         IOReport report;

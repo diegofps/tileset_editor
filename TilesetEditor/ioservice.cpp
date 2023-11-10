@@ -529,11 +529,12 @@ void IOService::buildMasksets(IOReport * report)
     SUCCESS("Build Masksets completed successfully");
 }
 
-void IOService::buildHDTiles(IOReport *report)
+inline void _buildTiles(IOReport *report,
+                 char const * tilesetsFoldername,
+                 char const * tilesFoldername)
 {
     // Check the input folder exists
     QDir tilesetsDir(App::getState()->project()->path);
-    char const * tilesetsFoldername = "tilesets.high";
 
     if (!tilesetsDir.exists(tilesetsFoldername))
         ABORT(QString("Could not find %1 folder").arg(tilesetsFoldername));
@@ -543,7 +544,6 @@ void IOService::buildHDTiles(IOReport *report)
 
     // Check and create the output folder
     QDir tilesDir(App::getState()->project()->path);
-    char const * tilesFoldername = "tiles.high";
 
     if (tilesDir.exists(tilesFoldername))
     {
@@ -567,13 +567,13 @@ void IOService::buildHDTiles(IOReport *report)
 
         if (!image.load(tsFilepath))
         {
-            qWarning() << QString("Could not load HD tileset from %1").arg(tsFilepath);
+            qWarning() << QString("Could not load tileset from %1").arg(tsFilepath);
             continue;
         }
 
         if (image.width() % tileset->gridW != 0 || image.height() % tileset->gridH != 0)
         {
-            qWarning() << QString("HD tileset has an unexpected size. It should be divisible by %1x%2.")
+            qWarning() << QString("Tileset has an unexpected size. It should be divisible by %1x%2.")
                           .arg(tileset->gridW)
                           .arg(tileset->gridH);
             continue;
@@ -598,14 +598,25 @@ void IOService::buildHDTiles(IOReport *report)
         }
     }
 
-    SUCCESS("Build HD Tiles completed successfully");
+    SUCCESS("Build Tiles completed successfully");
 }
 
-void IOService::buildHDMasks(IOReport *report)
+void IOService::buildTiles(IOReport *report)
+{
+    _buildTiles(report, "tilesets.low", "tiles.low");
+}
+
+void IOService::buildHDTiles(IOReport *report)
+{
+    _buildTiles(report, "tilesets.high", "tiles.high");
+}
+
+inline void _buildMasks(IOReport *report,
+                       char const * inFoldername,
+                       char const * outFoldername)
 {
     // Check the input folder exists
     QDir inDir(App::getState()->project()->path);
-    char const * inFoldername = "masksets.high";
 
     if (!inDir.exists(inFoldername))
         ABORT(QString("Could not find %1 folder").arg(inFoldername));
@@ -615,7 +626,6 @@ void IOService::buildHDMasks(IOReport *report)
 
     // Check and create the output folder
     QDir outDir(App::getState()->project()->path);
-    char const * outFoldername = "masks.high";
 
     if (outDir.exists(outFoldername))
     {
@@ -639,13 +649,13 @@ void IOService::buildHDMasks(IOReport *report)
 
         if (!image.load(tsFilepath))
         {
-            qWarning() << QString("Could not load HD maskset from %1").arg(tsFilepath);
+            qWarning() << QString("Could not load maskset from %1").arg(tsFilepath);
             continue;
         }
 
         if (image.width() % tileset->gridW != 0 || image.height() % tileset->gridH != 0)
         {
-            qWarning() << QString("HD maskset has an unexpected size. It should be divisible by %1x%2.")
+            qWarning() << QString("Maskset has an unexpected size. It should be divisible by %1x%2.")
                           .arg(tileset->gridW)
                           .arg(tileset->gridH);
             continue;
@@ -670,7 +680,17 @@ void IOService::buildHDMasks(IOReport *report)
         }
     }
 
-    SUCCESS("Build HD Masks completed successfully");
+    SUCCESS("Build Masks completed successfully");
+}
+
+void IOService::buildMasks(IOReport *report)
+{
+    _buildMasks(report, "masksets.low", "masks.low");
+}
+
+void IOService::buildHDMasks(IOReport *report)
+{
+    _buildMasks(report, "masksets.high", "masks.high");
 }
 
 void IOService::buildEncodedHDTiles(IOReport *report)
@@ -799,16 +819,16 @@ void IOService::buildEncodedHDTiles(IOReport *report)
 
         for (int i=i0;i!=i1;i+=iStep)
         {
-            float const y = float(i) / float(gridHeight);
-            int const y1 = y;
-            int const y2 = tinyImg->height()-1==y1?y1:y1+1;
+            float const  y = float(i) / float(gridHeight);
+            int   const y1 = y;
+            int   const y2 = tinyImg->height()-1==y1?y1:y1+1;
             float const yf = y - y1;
 
             for (int j=j0;j!=j1;j+=jStep)
             {
-                float const x = float(j) / float(gridWidth);
-                int const x1 = x;
-                int const x2 = tinyImg->width()-1==x1 ? x1 : x1+1;
+                float const  x = float(j) / float(gridWidth);
+                int   const x1 = x;
+                int   const x2 = tinyImg->width()-1==x1 ? x1 : x1+1;
                 float const xf = x - x1;
 
                 uchar hdMaskColor = hdMask.scanLine(i)[j];
@@ -819,11 +839,6 @@ void IOService::buildEncodedHDTiles(IOReport *report)
                     data[k] = 0; ++k;
                     data[k] = 0; ++k;
                     data[k] = 0; ++k;
-
-//                    if (tile->id == 240)
-//                    {
-//                        qDebug() << j << i << " - " << x << y << " - transparent";
-//                    }
 
                     continue;
                 }
@@ -838,8 +853,8 @@ void IOService::buildEncodedHDTiles(IOReport *report)
                 if (qAlpha(C) == 0) C = bgColor;
                 if (qAlpha(D) == 0) D = bgColor;
 
-                QRgb  refColor      = MERGE_COLORS(MERGE_COLORS(A,B,xf),MERGE_COLORS(C,D,xf),yf);
-                QRgb  hdImgColor = bigImg.pixel(j,i);
+                QRgb refColor   = MERGE_COLORS(MERGE_COLORS(A,B,xf),MERGE_COLORS(C,D,xf),yf);
+                QRgb hdImgColor = bigImg.pixel(j,i);
 
                 encodeHDColor(&data[k], hdImgColor, refColor);
 
