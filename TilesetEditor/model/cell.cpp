@@ -1,5 +1,5 @@
 #include "cell.h"
-#include "jsonhelpers.h"
+#include "helpers/json.h"
 
 Cell::Cell() :
     id(0),

@@ -1,7 +1,6 @@
 #include "project.h"
 
-#include "jsonhelpers.h"
-
+#include "helpers/json.h"
 Project::Project()
 {
     clear();

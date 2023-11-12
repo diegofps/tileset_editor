@@ -3,6 +3,7 @@
 #include "errors.h"
 #include "model/reference.h"
 #include "model/screenshot.h"
+#include "helpers/colors.h"
 
 #include <QFile>
 #include <QJsonParseError>
@@ -860,7 +861,7 @@ void IOService::buildEncodedHDTiles(IOReport *report)
                 if (qAlpha(C) == 0) C = bgColor;
                 if (qAlpha(D) == 0) D = bgColor;
 
-                QRgb refColor   = MERGE_COLORS(MERGE_COLORS(A,B,xf),MERGE_COLORS(C,D,xf),yf);
+                QRgb refColor   = BLEND_COLORS(BLEND_COLORS(A,B,xf),BLEND_COLORS(C,D,xf),yf);
                 QRgb hdImgColor = bigImg.pixel(j,i);
 
                 encodeHDColor(&data[k], hdImgColor, refColor);

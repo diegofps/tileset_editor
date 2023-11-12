@@ -1,6 +1,5 @@
 #include "palette.h"
-#include "jsonhelpers.h"
-
+#include "helpers/json.h"
 #include <QJsonArray>
 
 Palette::Palette(QJsonObject & data)

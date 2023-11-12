@@ -64,11 +64,12 @@ HEADERS += \
     fragmenttiles.h \
     fragmenttilesetproperties.h \
     fragmenttilesets.h \
+    helpers/colors.h \
+    helpers/recolor.h \
     ioservice.h \
     layoutabsolute.h \
     mainwindow.h \
     model/cell.h \
-    model/jsonhelpers.h \
     model/palette.h \
     model/project.h \
     model/reference.h \
@@ -76,6 +77,8 @@ HEADERS += \
     model/screenshot.h \
     model/tile.h \
     model/tileset.h \
+    helpers/json.h \
+    helpers/vectors.h \
     tilecache.h \
     tilecachehd.h \
     tilesgridlist.h \

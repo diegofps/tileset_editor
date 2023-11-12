@@ -288,6 +288,9 @@ void MainWindow::restoreSelectedScene()
 
     auto scenes = App::getState()->allScenes();
 
+    if (scenes == nullptr)
+        return;
+
     for (qsizetype i=0;i!=scenes->size();++i)
     {
         if (scenes->at(i)->id == _lastSceneID)

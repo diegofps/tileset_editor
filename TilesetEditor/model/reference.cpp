@@ -1,6 +1,5 @@
 #include "reference.h"
-#include "jsonhelpers.h"
-
+#include "helpers/json.h"
 
 Reference::Reference(QJsonObject & data)
 {

@@ -1,6 +1,6 @@
 #include "tileset.h"
 #include "errors.h"
-#include "jsonhelpers.h"
+#include "helpers/json.h"
 #include "editorcommand.h"
 
 #include <QJsonArray>

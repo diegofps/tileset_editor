@@ -1,5 +1,5 @@
 #include "scene.h"
-#include "jsonhelpers.h"
+#include "helpers/json.h"
 
 Scene::Scene() : id(0)
 {

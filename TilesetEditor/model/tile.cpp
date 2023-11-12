@@ -1,5 +1,5 @@
 #include "tile.h"
-#include "model/jsonhelpers.h"
+#include "helpers/json.h"
 
 Tile::Tile(QJsonObject & data)
 {
