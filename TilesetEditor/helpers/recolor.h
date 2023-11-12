@@ -69,7 +69,6 @@ inline void recolor12(std::vector<Vector3F> const & colors1,
     size_t const k = std::min(colors1.size(), colors2.size());
 
     std::vector<Vector3F> labs1(k);
-    std::vector<Vector3F> labs2(k);
     std::vector<Matrix2F> transformations(k);
     std::vector<FLOAT> lights(k);
 
@@ -78,20 +77,17 @@ inline void recolor12(std::vector<Vector3F> const & colors1,
         auto const v1 = rgb2lab(colors1[i]);
         auto const v2 = rgb2lab(colors2[i]);
 
-        labs1 [i] = v1;
-        labs2 [i] = v2;
-
         auto const sub1 = v1.sub1();
         auto const sub2 = v2.sub1();
 
         auto const m1 = sub1.module();
         auto const m2 = sub2.module();
 
-//        auto const n1 = sub1 / m1;
-//        auto const n2 = sub2 / m2;
+        auto const n1 = sub1 / m1;
+        auto const n2 = sub2 / m2;
 
         auto const scaMatrix1 = scaleMatrix(m1 < 1.0f ? 1.0f : 1.0f / m1);
-        auto const rotMatrix1 = rotationMatrix(sub1, sub2);
+        auto const rotMatrix1 = rotationMatrix(n1, n2);
         auto const scaMatrix2 = scaleMatrix(m2);
 
         auto transformation = scaMatrix1 * rotMatrix1 * scaMatrix2;
@@ -115,13 +111,14 @@ inline void recolor12(std::vector<Vector3F> const & colors1,
 
         transformations[i] = transformation;
         lights[i] = light;
+        labs1 [i] = v1;
     }
 
     for (size_t i = 0; i != imgIn.rows(); ++i)
     {
         for (size_t j = 0; j != imgIn.cols(); ++j)
         {
-            if (i == 30 && j == 77)
+            if (j == 13 && i == 27)
                 qWarning() << "found it 2";
 
             Vector3F rgbIn = imgIn.getPixel(i, j);
@@ -129,62 +126,65 @@ inline void recolor12(std::vector<Vector3F> const & colors1,
 
             FLOAT  bestDistance1;
             FLOAT  bestDistance2;
-            FLOAT  bestDistance3;
+//            FLOAT  bestDistance3;
 
             size_t bestP1 = k;
             size_t bestP2 = k;
-            size_t bestP3 = k;
+//            size_t bestP3 = k;
 
             for (size_t p = 0; p != k; ++p)
             {
-                FLOAT const d = (labIn-labs1[p]).module();
+                FLOAT const d = (labIn-labs1[p]).module2();
 
                 if (bestP1 == k || d < bestDistance1)
                 {
-                    bestDistance3 = bestDistance2;
+//                    bestDistance3 = bestDistance2;
                     bestDistance2 = bestDistance1;
                     bestDistance1 = d;
 
-                    bestP3 = bestP2;
+//                    bestP3 = bestP2;
                     bestP2 = bestP1;
                     bestP1 = p;
                 }
                 else if (bestP2 == k || d < bestDistance2)
                 {
-                    bestDistance3 = bestDistance2;
+//                    bestDistance3 = bestDistance2;
                     bestDistance2 = d;
 
-                    bestP3 = bestP2;
+//                    bestP3 = bestP2;
                     bestP2 = p;
                 }
-                else if (bestP3 == k || d < bestDistance3)
-                {
-                    bestDistance3 = d;
+//                else if (bestP3 == k || d < bestDistance3)
+//                {
+//                    bestDistance3 = d;
 
-                    bestP3 = p;
-                }
+//                    bestP3 = p;
+//                }
             }
 
             auto const labInSub = labIn.sub1();
             Vector2F color {0,0};
             FLOAT light;
-            FLOAT w1, w2, w3;
+            FLOAT w1;
+            FLOAT w2;
+//            FLOAT w3;
 
-            if (bestP1 != k && bestP2 != k && bestP3 != k)
-            {
-                w1 = 1/(bestDistance1+1);
-                w2 = 1/(bestDistance2+1);
-                w3 = 1/(bestDistance3+1);
+//            if (bestP1 != k && bestP2 != k && bestP3 != k)
+//            {
+//                w1 = 1/(bestDistance1+1);
+//                w2 = 1/(bestDistance2+1);
+//                w3 = 1/(bestDistance3+1);
 
-                color = (transformations[bestP1] * labInSub * w1 +
-                         transformations[bestP2] * labInSub * w2 +
-                         transformations[bestP3] * labInSub * w3) / (w1 + w2 + w3);
+//                color = (transformations[bestP1] * labInSub * w1 +
+//                         transformations[bestP2] * labInSub * w2 +
+//                         transformations[bestP3] * labInSub * w3) / (w1 + w2 + w3);
 
-                light = (lights[bestP1] * labIn[0] * w1 +
-                         lights[bestP2] * labIn[0] * w2 +
-                         lights[bestP3] * labIn[0] * w3) / (w1 + w2 + w3);
-            }
-            else if (bestP1 != k && bestP2 != k)
+//                light = (lights[bestP1] * labIn[0] * w1 +
+//                         lights[bestP2] * labIn[0] * w2 +
+//                         lights[bestP3] * labIn[0] * w3) / (w1 + w2 + w3);
+//            }
+//            else
+            if (bestP1 != k && bestP2 != k)
             {
                 w1 = 1/(bestDistance1+1);
                 w2 = 1/(bestDistance2+1);

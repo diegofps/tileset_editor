@@ -5,59 +5,60 @@
 #include <initializer_list>
 #include <iostream>
 
-typedef float FLOAT;
+typedef double FLOAT;
 
-class Vector2F
+template <typename T>
+class Vector2
 {
 public:
 
-    Vector2F()
+    Vector2()
     {
 
     }
 
-    Vector2F(FLOAT const r, FLOAT const g)
+    Vector2(T const x, T const y)
     {
-        _data[0] = r;
-        _data[1] = g;
+        _data[0] = x;
+        _data[1] = y;
     }
 
-    Vector2F(std::initializer_list<FLOAT> l)
+    Vector2(std::initializer_list<T> l)
     {
         *this = l;
     }
 
-    FLOAT & operator[](int const i)
+    T & operator[](int const i)
     {
         return _data[i];
     }
 
-    FLOAT const & operator[](int const i) const
+    T const & operator[](int const i) const
     {
         return _data[i];
     }
 
-    FLOAT & x()
+    T & x()
     {
         return _data[0];
     }
 
-    FLOAT & y()
+    T & y()
     {
         return _data[1];
     }
 
-    FLOAT x() const
+    T x() const
     {
         return _data[0];
     }
 
-    FLOAT y() const
+    T y() const
     {
         return _data[1];
     }
 
-    void operator=(std::initializer_list<FLOAT> l)
+    void operator=(std::initializer_list<T> l)
     {
         if (l.size() != 2)
         {
@@ -69,7 +70,7 @@ public:
         _data[1] = l.begin()[1];
     }
 
-    bool operator==(Vector2F const & other)
+    bool operator==(Vector2<T> const & other)
     {
         for (int i = 0; i != 2; ++i)
             if (_data[i] != other._data[i])
@@ -77,199 +78,201 @@ public:
         return true;
     }
 
-    Vector2F & operator+=(Vector2F const & other)
+    Vector2<T> & operator+=(Vector2<T> const & other)
     {
         _data[0] += other._data[0];
         _data[1] += other._data[1];
         return *this;
     }
 
-    Vector2F & operator-=(Vector2F const & other)
+    Vector2<T> & operator-=(Vector2<T> const & other)
     {
         _data[0] -= other._data[0];
         _data[1] -= other._data[1];
         return *this;
     }
 
-    Vector2F & operator*=(FLOAT const value)
+    Vector2<T> & operator*=(T const value)
     {
         _data[0] *= value;
         _data[1] *= value;
         return *this;
     }
 
-    Vector2F & operator/=(FLOAT const value)
+    Vector2<T> & operator/=(T const value)
     {
         _data[0] /= value;
         _data[1] /= value;
         return *this;
     }
 
-    Vector2F operator+(FLOAT const value) const
+    Vector2<T> operator+(T const value) const
     {
-        Vector2F tmp;
+        Vector2<T> tmp;
         tmp._data[0] = _data[0] + value;
         tmp._data[1] = _data[1] + value;
         return tmp;
     }
 
-    Vector2F operator-(FLOAT const value) const
+    Vector2<T> operator-(T const value) const
     {
-        Vector2F tmp;
+        Vector2<T> tmp;
         tmp._data[0] = _data[0] - value;
         tmp._data[1] = _data[1] - value;
         return tmp;
     }
 
-    Vector2F operator*(FLOAT const value) const
+    Vector2<T> operator*(T const value) const
     {
-        Vector2F tmp;
+        Vector2<T> tmp;
         tmp._data[0] = _data[0] * value;
         tmp._data[1] = _data[1] * value;
         return tmp;
     }
 
-    Vector2F operator/(FLOAT const value) const
+    Vector2<T> operator/(T const value) const
     {
-        Vector2F tmp;
+        Vector2<T> tmp;
         tmp._data[0] = _data[0] / value;
         tmp._data[1] = _data[1] / value;
         return tmp;
     }
 
-    Vector2F operator+(Vector2F const & other) const
+    Vector2<T> operator+(Vector2<T> const & other) const
     {
-        Vector2F tmp;
+        Vector2<T> tmp;
         tmp._data[0] = _data[0] + other._data[0];
         tmp._data[1] = _data[1] + other._data[1];
         return tmp;
     }
 
-    Vector2F operator-(Vector2F const & other) const
+    Vector2<T> operator-(Vector2<T> const & other) const
     {
-        Vector2F tmp;
+        Vector2<T> tmp;
         tmp._data[0] = _data[0] - other._data[0];
         tmp._data[1] = _data[1] - other._data[1];
         return tmp;
     }
 
-    Vector2F operator*(Vector2F const & value) const
+    Vector2<T> operator*(Vector2<T> const & value) const
     {
-        Vector2F tmp;
+        Vector2<T> tmp;
         tmp._data[0] = _data[0] * value[0];
         tmp._data[1] = _data[1] * value[1];
         return tmp;
     }
 
-    Vector2F operator/(Vector2F const & value) const
+    Vector2<T> operator/(Vector2<T> const & value) const
     {
-        Vector2F tmp;
+        Vector2<T> tmp;
         tmp._data[0] = _data[0] / value[0];
         tmp._data[1] = _data[1] / value[1];
         return tmp;
     }
 
-    FLOAT module2() const
+    T module2() const
     {
-        FLOAT res = 0.0;
+        T res = 0;
         res += _data[0] * _data[0];
         res += _data[1] * _data[1];
         return res;
     }
 
-    FLOAT module() const
+    T module() const
     {
         return std::sqrt(module2());
     }
 
-    Vector2F normalize() const
+    Vector2<T> normalize() const
     {
-        Vector2F out;
-        FLOAT const d = module();
+        Vector2<T> out;
+        T const d = module();
         out[0] = _data[0] / d;
         out[1] = _data[1] / d;
         return out;
     }
 
-    Vector2F flip() const
+    Vector2<T> flip() const
     {
-        return Vector2F(_data[1], _data[0]);
+        return Vector2<T>(_data[1], _data[0]);
     }
 
 private:
 
-    FLOAT _data[2];
+    T _data[2];
 
 };
 
-inline std::ostream & operator<<(std::ostream & o, Vector2F const & c)
+template <typename T>
+std::ostream & operator<<(std::ostream & o, Vector2<T> const & c)
 {
     o << "(" << c[0] << "," << c[1] << ")";
     return o;
 }
 
-class Vector3F
+template <typename T>
+class Vector3
 {
 public:
 
-    Vector3F()
+    Vector3()
     {
 
     }
 
-    Vector3F(FLOAT const r, FLOAT const g, FLOAT const b)
+    Vector3(T const x, T const y, T const z)
     {
-        _data[0] = r;
-        _data[1] = g;
-        _data[2] = b;
+        _data[0] = x;
+        _data[1] = y;
+        _data[2] = z;
     }
 
-    Vector3F(std::initializer_list<FLOAT> l)
+    Vector3(std::initializer_list<T> l)
     {
         *this = l;
     }
 
-    FLOAT & operator[](int const i)
+    T & operator[](int const i)
     {
         return _data[i];
     }
 
-    FLOAT const & operator[](int const i) const
+    T const & operator[](int const i) const
     {
         return _data[i];
     }
 
-    FLOAT & x()
+    T & x()
     {
         return _data[0];
     }
 
-    FLOAT & y()
+    T & y()
     {
         return _data[1];
     }
 
-    FLOAT & z()
+    T & z()
     {
         return _data[2];
     }
 
-    FLOAT x() const
+    T x() const
     {
         return _data[0];
     }
 
-    FLOAT y() const
+    T y() const
     {
         return _data[1];
     }
 
-    FLOAT z() const
+    T z() const
     {
         return _data[2];
     }
 
-    void operator=(std::initializer_list<FLOAT> l)
+    void operator=(std::initializer_list<T> l)
     {
         if (l.size() != 3)
         {
@@ -282,7 +285,7 @@ public:
         _data[2] = l.begin()[2];
     }
 
-    bool operator==(Vector3F const & other)
+    bool operator==(Vector3<T> const & other)
     {
         for (int i = 0; i != 3; ++i)
             if (_data[i] != other._data[i])
@@ -290,7 +293,7 @@ public:
         return true;
     }
 
-    Vector3F & operator+=(Vector3F const & other)
+    Vector3<T> & operator+=(Vector3<T> const & other)
     {
         _data[0] += other._data[0];
         _data[1] += other._data[1];
@@ -298,7 +301,7 @@ public:
         return *this;
     }
 
-    Vector3F & operator-=(Vector3F const & other)
+    Vector3<T> & operator-=(Vector3<T> const & other)
     {
         _data[0] -= other._data[0];
         _data[1] -= other._data[1];
@@ -306,7 +309,7 @@ public:
         return *this;
     }
 
-    Vector3F & operator*=(FLOAT const value)
+    Vector3<T> & operator*=(T const value)
     {
         _data[0] *= value;
         _data[1] *= value;
@@ -314,7 +317,7 @@ public:
         return *this;
     }
 
-    Vector3F & operator/=(FLOAT const value)
+    Vector3<T> & operator/=(T const value)
     {
         _data[0] /= value;
         _data[1] /= value;
@@ -322,153 +325,155 @@ public:
         return *this;
     }
 
-    Vector3F operator+(FLOAT const value) const
+    Vector3<T> operator+(T const value) const
     {
-        Vector3F tmp;
+        Vector3<T> tmp;
         tmp._data[0] = _data[0] + value;
         tmp._data[1] = _data[1] + value;
         tmp._data[2] = _data[2] + value;
         return tmp;
     }
 
-    Vector3F operator-(FLOAT const value) const
+    Vector3<T> operator-(T const value) const
     {
-        Vector3F tmp;
+        Vector3<T> tmp;
         tmp._data[0] = _data[0] - value;
         tmp._data[1] = _data[1] - value;
         tmp._data[2] = _data[2] - value;
         return tmp;
     }
 
-    Vector3F operator*(FLOAT const value) const
+    Vector3<T> operator*(T const value) const
     {
-        Vector3F tmp;
+        Vector3<T> tmp;
         tmp._data[0] = _data[0] * value;
         tmp._data[1] = _data[1] * value;
         tmp._data[2] = _data[2] * value;
         return tmp;
     }
 
-    Vector3F operator/(FLOAT const value) const
+    Vector3<T> operator/(T const value) const
     {
-        Vector3F tmp;
+        Vector3<T> tmp;
         tmp._data[0] = _data[0] / value;
         tmp._data[1] = _data[1] / value;
         tmp._data[2] = _data[2] / value;
         return tmp;
     }
 
-    Vector3F operator+(Vector3F const & other) const
+    Vector3<T> operator+(Vector3<T> const & other) const
     {
-        Vector3F tmp;
+        Vector3<T> tmp;
         tmp._data[0] = _data[0] + other._data[0];
         tmp._data[1] = _data[1] + other._data[1];
         tmp._data[2] = _data[2] + other._data[2];
         return tmp;
     }
 
-    Vector3F operator-(Vector3F const & other) const
+    Vector3<T> operator-(Vector3<T> const & other) const
     {
-        Vector3F tmp;
+        Vector3<T> tmp;
         tmp._data[0] = _data[0] - other._data[0];
         tmp._data[1] = _data[1] - other._data[1];
         tmp._data[2] = _data[2] - other._data[2];
         return tmp;
     }
 
-    Vector3F operator*(Vector3F const & value) const
+    Vector3<T> operator*(Vector3<T> const & value) const
     {
-        Vector3F tmp;
+        Vector3<T> tmp;
         tmp._data[0] = _data[0] * value[0];
         tmp._data[1] = _data[1] * value[1];
         tmp._data[2] = _data[2] * value[2];
         return tmp;
     }
 
-    Vector3F operator/(Vector3F const & value) const
+    Vector3<T> operator/(Vector3<T> const & value) const
     {
-        Vector3F tmp;
+        Vector3<T> tmp;
         tmp._data[0] = _data[0] / value[0];
         tmp._data[1] = _data[1] / value[1];
         tmp._data[2] = _data[2] / value[2];
         return tmp;
     }
 
-    Vector3F sign() const
+    Vector3<T> sign() const
     {
-        Vector3F res;
-        res[0] = _data[0] >= -1.0f ? +1.0f : -1.0f;
-        res[1] = _data[1] >= -1.0f ? +1.0f : -1.0f;
-        res[2] = _data[2] >= -1.0f ? +1.0f : -1.0f;
+        Vector3<T> res;
+        res[0] = _data[0] >= -1 ? +1 : -1;
+        res[1] = _data[1] >= -1 ? +1 : -1;
+        res[2] = _data[2] >= -1 ? +1 : -1;
         return res;
     }
 
-    FLOAT module2() const
+    T module2() const
     {
-        FLOAT res = 0.0;
+        T res = 0;
         res += _data[0] * _data[0];
         res += _data[1] * _data[1];
         res += _data[2] * _data[2];
         return res;
     }
 
-    FLOAT module() const
+    T module() const
     {
         return std::sqrt(module2());
     }
 
-    Vector3F normalize() const
+    Vector3<T> normalize() const
     {
-        Vector3F out;
-        FLOAT const d = module();
+        Vector3<T> out;
+        T const d = module();
         out[0] = _data[0] / d;
         out[1] = _data[1] / d;
         out[2] = _data[2] / d;
         return out;
     }
 
-    Vector3F flip() const
+    Vector3<T> flip() const
     {
-        return Vector3F(_data[2], _data[1], _data[0]);
+        return Vector3<T>(_data[2], _data[1], _data[0]);
     }
 
-    Vector2F sub0() const
+    Vector2<T> sub0() const
     {
-        return Vector2F(_data[0], _data[1]);
+        return Vector2<T>(_data[0], _data[1]);
     }
 
-    Vector2F sub1() const
+    Vector2<T> sub1() const
     {
-        return Vector2F(_data[1], _data[2]);
+        return Vector2<T>(_data[1], _data[2]);
     }
 
-    Vector2F sub2() const
+    Vector2<T> sub2() const
     {
-        return Vector2F(_data[2], _data[0]);
+        return Vector2<T>(_data[2], _data[0]);
     }
 
 private:
 
-    FLOAT _data[3];
+    T _data[3];
 
 };
 
-inline std::ostream & operator<<(std::ostream & o, Vector3F const & c)
+template <typename T>
+std::ostream & operator<<(std::ostream & o, Vector3<T> const & c)
 {
     o << "(" << c[0] << "," << c[1] << "," << c[2] << ")";
     return o;
 }
 
-class Matrix2F
+template <typename T>
+class Matrix2
 {
 public:
 
-    Matrix2F()
+    Matrix2()
     {
 
     }
 
-    Matrix2F(FLOAT const v00, FLOAT const v01, FLOAT const v10, FLOAT const v11)
+    Matrix2(T const v00, T const v01, T const v10, T const v11)
     {
         _data[0] = v00;
         _data[1] = v01;
@@ -476,17 +481,17 @@ public:
         _data[3] = v11;
     }
 
-    Vector2F operator*(Vector2F const & v) const
+    Vector2<T> operator*(Vector2<T> const & v) const
     {
-        Vector2F out;
+        Vector2<T> out;
         out[0] = _data[0] * v[0] + _data[1] * v[1];
         out[1] = _data[2] * v[0] + _data[3] * v[1];
         return out;
     }
 
-    Matrix2F operator*(Matrix2F const & in) const
+    Matrix2<T> operator*(Matrix2<T> const & in) const
     {
-        Matrix2F out;
+        Matrix2<T> out;
         out(0,0) = (*this)(0,0) * in(0,0) + (*this)(0,1) * in(1,0);
         out(0,1) = (*this)(0,0) * in(0,1) + (*this)(0,1) * in(1,1);
         out(1,0) = (*this)(1,0) * in(0,0) + (*this)(1,1) * in(1,0);
@@ -494,33 +499,32 @@ public:
         return out;
     }
 
-    FLOAT & operator()(int const i, int const j)
+    T & operator()(int const i, int const j)
     {
         return _data[i*2+j];
     }
 
-    FLOAT operator()(int const i, int const j) const
+    T operator()(int const i, int const j) const
     {
         return _data[i*2+j];
     }
 
 private:
 
-    FLOAT _data[2*2];
+    T _data[2*2];
 };
 
-inline std::ostream & operator<<(std::ostream & o, Matrix2F const & m)
+template <typename T>
+std::ostream & operator<<(std::ostream & o, Matrix2<T> const & m)
 {
     o << "((" << m(0,0) << "," << m(0,1) << "),(" << m(1,0) << "," << m(1,1) <<  "))";
     return o;
 }
 
-inline Matrix2F rotationMatrix(Vector2F const & a, Vector2F const & b)
+template <typename T>
+Matrix2<T> rotationMatrix(Vector2<T> const & m1, Vector2<T> const & m2)
 {
-    auto const m1 = a / a.module();
-    auto const m2 = b / b.module();
-
-    Matrix2F out;
+    Matrix2<T> out;
     out(0,0) = m1.x() * m2.x() + m1.y() * m2.y();
     out(0,1) = m2.x() * m1.y() - m1.x() * m2.y();
     out(1,0) = m1.x() * m2.y() - m2.x() * m1.y();
@@ -529,15 +533,25 @@ inline Matrix2F rotationMatrix(Vector2F const & a, Vector2F const & b)
     return out;
 }
 
-inline Matrix2F scaleMatrix(FLOAT const v)
+template <typename T>
+Matrix2<T> scaleMatrix(T const v)
 {
-    Matrix2F out;
+    Matrix2<T> out;
     out(0,0) = v;
-    out(0,1) = 0.0f;
-    out(1,0) = 0.0f;
+    out(0,1) = 0;
+    out(1,0) = 0;
     out(1,1) = v;
     return out;
 }
+
+typedef Vector2<int> Vector2I;
+typedef Vector2<FLOAT> Vector2F;
+
+typedef Vector3<int> Vector3I;
+typedef Vector3<FLOAT> Vector3F;
+
+typedef Matrix2<int> Matrix2I;
+typedef Matrix2<FLOAT> Matrix2F;
 
 #endif // HELPERS__VECTORS_H
 

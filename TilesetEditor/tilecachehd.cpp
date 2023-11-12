@@ -3,6 +3,7 @@
 #include <QFile>
 #include <QDir>
 #include <QPainter>
+#include <wup/wup.hpp>
 
 #include "helpers/vectors.h"
 #include "helpers/recolor.h"
@@ -144,10 +145,13 @@ QImage * TileCacheHD::loadImage(Tile * tile, Palette * palette, bool hFlip, bool
         colors2.push_back(Vector3F(c.red(), c.green(), c.blue()));
     }
 
-    if (tile->id == 4070)
+    if (tile->id == 386)
         qWarning() << "Found it!";
 
+//    wup::Clock c;
     recolor12(colors1, colors2, inputWrapper, maskWrapper, outputWrapper);
+//    auto ellapsed = c.lap_milli();
+//    qWarning() << "ellapsed:" << ellapsed;
 
 //    qWarning() << "Loaded tile for tileID=" << tile->id << " paletteID=" << palette->id << " hFlip=" << hFlip << " vFlip=" << vFlip;
 
