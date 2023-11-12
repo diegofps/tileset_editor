@@ -69,6 +69,7 @@ inline void recolor12(std::vector<Vector3F> const & colors1,
     size_t const k = std::min(colors1.size(), colors2.size());
 
     std::vector<Vector3F> labs1(k);
+    std::vector<Vector3F> labs2(k);
     std::vector<Matrix2F> transformations(k);
     std::vector<FLOAT> lights(k);
 
@@ -83,6 +84,17 @@ inline void recolor12(std::vector<Vector3F> const & colors1,
         auto const m1 = sub1.module();
         auto const m2 = sub2.module();
 
+        auto light = v2.x() / std::max(v1.x(), FLOAT(0.1));
+
+        if (m1 == FLOAT(0) || m2 == FLOAT(0))
+        {
+            transformations[i] = zeroMatrix<double>();
+            lights[i] = light;
+            labs1 [i] = v1;
+            labs2 [i] = v2;
+            continue;
+        }
+
         auto const n1 = sub1 / m1;
         auto const n2 = sub2 / m2;
 
@@ -91,7 +103,7 @@ inline void recolor12(std::vector<Vector3F> const & colors1,
         auto const scaMatrix2 = scaleMatrix(m2);
 
         auto transformation = scaMatrix1 * rotMatrix1 * scaMatrix2;
-        auto light = v1.x() < 1.0f ? 1.0f : v2.x() / v1.x();
+//        auto light = std::max(v2.x(), FLOAT(1)) / std::max(v1.x(), FLOAT(0.1));
 
 //        std::cout << "v1:" << v1 << std::endl;
 //        std::cout << "v2:" << v2 << std::endl;
@@ -112,13 +124,14 @@ inline void recolor12(std::vector<Vector3F> const & colors1,
         transformations[i] = transformation;
         lights[i] = light;
         labs1 [i] = v1;
+        labs2 [i] = v2;
     }
 
     for (size_t i = 0; i != imgIn.rows(); ++i)
     {
         for (size_t j = 0; j != imgIn.cols(); ++j)
         {
-            if (j == 13 && i == 27)
+            if (j == 70 && i == 68)
                 qWarning() << "found it 2";
 
             Vector3F rgbIn = imgIn.getPixel(i, j);
@@ -134,7 +147,7 @@ inline void recolor12(std::vector<Vector3F> const & colors1,
 
             for (size_t p = 0; p != k; ++p)
             {
-                FLOAT const d = (labIn-labs1[p]).module2();
+                FLOAT const d = (labIn-labs1[p]).module();
 
                 if (bestP1 == k || d < bestDistance1)
                 {

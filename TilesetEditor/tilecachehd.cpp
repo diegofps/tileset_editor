@@ -145,7 +145,7 @@ QImage * TileCacheHD::loadImage(Tile * tile, Palette * palette, bool hFlip, bool
         colors2.push_back(Vector3F(c.red(), c.green(), c.blue()));
     }
 
-    if (tile->id == 386)
+    if (tile->id == 1578)
         qWarning() << "Found it!";
 
 //    wup::Clock c;

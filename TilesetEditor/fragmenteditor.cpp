@@ -91,4 +91,5 @@ void FragmentEditor::updateWidgetEditor()
     ui->widgetEditor->setRoot(root.x(), root.y());
     ui->widgetEditor->setOffset(offset.x(), offset.y());
     ui->widgetEditor->setCells(&tileset->cells);
+    ui->widgetEditor->setBackgroundColor(tileset->bgColor);
 }

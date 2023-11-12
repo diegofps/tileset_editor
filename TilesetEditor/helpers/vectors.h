@@ -544,6 +544,28 @@ Matrix2<T> scaleMatrix(T const v)
     return out;
 }
 
+template <typename T>
+Matrix2<T> zeroMatrix()
+{
+    Matrix2<T> out;
+    out(0,0) = 0;
+    out(0,1) = 0;
+    out(1,0) = 0;
+    out(1,1) = 0;
+    return out;
+}
+
+template <typename T>
+Matrix2<T> identityMatrix()
+{
+    Matrix2<T> out;
+    out(0,0) = 1;
+    out(0,1) = 0;
+    out(1,0) = 0;
+    out(1,1) = 1;
+    return out;
+}
+
 typedef Vector2<int> Vector2I;
 typedef Vector2<FLOAT> Vector2F;
 
