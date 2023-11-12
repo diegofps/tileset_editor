@@ -37,6 +37,26 @@ public:
         return _data[i];
     }
 
+    FLOAT & x()
+    {
+        return _data[0];
+    }
+
+    FLOAT & y()
+    {
+        return _data[1];
+    }
+
+    FLOAT x() const
+    {
+        return _data[0];
+    }
+
+    FLOAT y() const
+    {
+        return _data[1];
+    }
+
     void operator=(std::initializer_list<FLOAT> l)
     {
         if (l.size() != 2)
@@ -217,6 +237,36 @@ public:
     FLOAT const & operator[](int const i) const
     {
         return _data[i];
+    }
+
+    FLOAT & x()
+    {
+        return _data[0];
+    }
+
+    FLOAT & y()
+    {
+        return _data[1];
+    }
+
+    FLOAT & z()
+    {
+        return _data[2];
+    }
+
+    FLOAT x() const
+    {
+        return _data[0];
+    }
+
+    FLOAT y() const
+    {
+        return _data[1];
+    }
+
+    FLOAT z() const
+    {
+        return _data[2];
     }
 
     void operator=(std::initializer_list<FLOAT> l)
@@ -434,6 +484,16 @@ public:
         return out;
     }
 
+    Matrix2F operator*(Matrix2F const & in) const
+    {
+        Matrix2F out;
+        out(0,0) = (*this)(0,0) * in(0,0) + (*this)(0,1) * in(1,0);
+        out(0,1) = (*this)(0,0) * in(0,1) + (*this)(0,1) * in(1,1);
+        out(1,0) = (*this)(1,0) * in(0,0) + (*this)(1,1) * in(1,0);
+        out(1,1) = (*this)(1,0) * in(0,1) + (*this)(1,1) * in(1,1);
+        return out;
+    }
+
     FLOAT & operator()(int const i, int const j)
     {
         return _data[i*2+j];
@@ -453,6 +513,30 @@ inline std::ostream & operator<<(std::ostream & o, Matrix2F const & m)
 {
     o << "((" << m(0,0) << "," << m(0,1) << "),(" << m(1,0) << "," << m(1,1) <<  "))";
     return o;
+}
+
+inline Matrix2F rotationMatrix(Vector2F const & a, Vector2F const & b)
+{
+    auto const m1 = a / a.module();
+    auto const m2 = b / b.module();
+
+    Matrix2F out;
+    out(0,0) = m1.x() * m2.x() + m1.y() * m2.y();
+    out(0,1) = m2.x() * m1.y() - m1.x() * m2.y();
+    out(1,0) = m1.x() * m2.y() - m2.x() * m1.y();
+    out(1,1) = m1.x() * m2.x() + m1.y() * m2.y();
+
+    return out;
+}
+
+inline Matrix2F scaleMatrix(FLOAT const v)
+{
+    Matrix2F out;
+    out(0,0) = v;
+    out(0,1) = 0.0f;
+    out(1,0) = 0.0f;
+    out(1,1) = v;
+    return out;
 }
 
 #endif // HELPERS__VECTORS_H

@@ -70,16 +70,51 @@ inline void recolor12(std::vector<Vector3F> const & colors1,
 
     std::vector<Vector3F> labs1(k);
     std::vector<Vector3F> labs2(k);
-    std::vector<Vector3F> deltas(k);
+    std::vector<Matrix2F> transformations(k);
+    std::vector<FLOAT> lights(k);
 
     for (size_t i=0;i!=k;++i)
     {
-        auto const v1 = rgb2leg(colors1[i]);
-        auto const v2 = rgb2leg(colors2[i]);
+        auto const v1 = rgb2lab(colors1[i]);
+        auto const v2 = rgb2lab(colors2[i]);
 
         labs1 [i] = v1;
         labs2 [i] = v2;
-        deltas[i] = v2/v1;
+
+        auto const sub1 = v1.sub1();
+        auto const sub2 = v2.sub1();
+
+        auto const m1 = sub1.module();
+        auto const m2 = sub2.module();
+
+//        auto const n1 = sub1 / m1;
+//        auto const n2 = sub2 / m2;
+
+        auto const scaMatrix1 = scaleMatrix(m1 < 1.0f ? 1.0f : 1.0f / m1);
+        auto const rotMatrix1 = rotationMatrix(sub1, sub2);
+        auto const scaMatrix2 = scaleMatrix(m2);
+
+        auto transformation = scaMatrix1 * rotMatrix1 * scaMatrix2;
+        auto light = v1.x() < 1.0f ? 1.0f : v2.x() / v1.x();
+
+//        std::cout << "v1:" << v1 << std::endl;
+//        std::cout << "v2:" << v2 << std::endl;
+//        std::cout << "sub1:" << sub1 << std::endl;
+//        std::cout << "sub2:" << sub2 << std::endl;
+//        std::cout << "n1:" << n1 << std::endl;
+//        std::cout << "n2:" << n2 << std::endl;
+//        std::cout << "rotMatrix:" << rotMatrix1 << std::endl;
+//        std::cout << "scaMatrix:" << scaMatrix2 << std::endl;
+//        std::cout << "res:" << res << std::endl;
+//        std::cout << "light: " << light << std::endl;
+
+//        std::cout << "scaMatrix1: " << scaMatrix1 * sub1 << std::endl;
+//        std::cout << "scaMatrix2: " << scaMatrix2 * n2 << std::endl;
+//        std::cout << "rotating2: " << rotMatrix1 * n1 << std::endl;
+//        std::cout << "full: " << res * sub1 << std::endl;
+
+        transformations[i] = transformation;
+        lights[i] = light;
     }
 
     for (size_t i = 0; i != imgIn.rows(); ++i)
@@ -90,7 +125,7 @@ inline void recolor12(std::vector<Vector3F> const & colors1,
                 qWarning() << "found it 2";
 
             Vector3F rgbIn = imgIn.getPixel(i, j);
-            Vector3F labIn = rgb2leg(rgbIn);
+            Vector3F labIn = rgb2lab(rgbIn);
 
             FLOAT  bestDistance1;
             FLOAT  bestDistance2;
@@ -130,7 +165,9 @@ inline void recolor12(std::vector<Vector3F> const & colors1,
                 }
             }
 
-            Vector3F delta {0,0,0};
+            auto const labInSub = labIn.sub1();
+            Vector2F color {0,0};
+            FLOAT light;
             FLOAT w1, w2, w3;
 
             if (bestP1 != k && bestP2 != k && bestP3 != k)
@@ -139,21 +176,30 @@ inline void recolor12(std::vector<Vector3F> const & colors1,
                 w2 = 1/(bestDistance2+1);
                 w3 = 1/(bestDistance3+1);
 
-                delta = (deltas[bestP1] * w1 +
-                         deltas[bestP2] * w2 +
-                         deltas[bestP3] * w3) / (w1 + w2 + w3);
+                color = (transformations[bestP1] * labInSub * w1 +
+                         transformations[bestP2] * labInSub * w2 +
+                         transformations[bestP3] * labInSub * w3) / (w1 + w2 + w3);
+
+                light = (lights[bestP1] * labIn[0] * w1 +
+                         lights[bestP2] * labIn[0] * w2 +
+                         lights[bestP3] * labIn[0] * w3) / (w1 + w2 + w3);
             }
             else if (bestP1 != k && bestP2 != k)
             {
                 w1 = 1/(bestDistance1+1);
                 w2 = 1/(bestDistance2+1);
 
-                delta = (deltas[bestP1] * w1 +
-                         deltas[bestP2] * w2) / (w1 + w2);
+                color = (transformations[bestP1] * labInSub * w1 +
+                         transformations[bestP2] * labInSub * w2) / (w1 + w2);
+
+                light = (lights[bestP1] * labIn[0] * w1 +
+                         lights[bestP2] * labIn[0] * w2) / (w1 + w2);
             }
 
-            Vector3F rgbOut = leg2rgb(labIn * delta);
-            imgOut.setPixel(i, j, clipRGB(rgbOut), maskIn.getAlpha(i,j));
+            Vector3F const labOut(light, color.x(), color.y());
+            auto const rgbOut = lab2rgb(labOut);
+            auto const clipped = clipRGB(rgbOut);
+            imgOut.setPixel(i, j, clipped, maskIn.getAlpha(i,j));
         }
     }
 }
