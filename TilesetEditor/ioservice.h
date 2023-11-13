@@ -44,7 +44,7 @@ public:
     static void buildHDTiles(IOReport * report = nullptr);
     static void buildMasks(IOReport * report = nullptr);
     static void buildHDMasks(IOReport * report = nullptr);
-    static void buildEncodedHDTiles(IOReport * report = nullptr);
+//    static void buildEncodedHDTiles(IOReport * report = nullptr);
 
 
 private:

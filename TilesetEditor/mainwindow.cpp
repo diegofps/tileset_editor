@@ -1,12 +1,14 @@
 #include "app.h"
 #include "dialogeditscenes.h"
 #include "mainwindow.h"
-#include "qlayout.h"
+//#include "qlayout.h"
 #include "ioservice.h"
 #include "ui_mainwindow.h"
 #include "dialogoptions.h"
 
 #include <QFileDialog>
+
+#define TITLE "HD Tileset Composer"
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -26,7 +28,7 @@ MainWindow::MainWindow(QWidget *parent)
 
         if (project == nullptr)
         {
-            setWindowTitle("TilesetEditor");
+            setWindowTitle(TITLE);
             return;
         }
 
@@ -226,12 +228,12 @@ MainWindow::MainWindow(QWidget *parent)
         }
     });
 
-    connect(ui->action_Execute_EncodeHDTiles, &QAction::triggered, this, [&]()
-    {
-        IOReport report;
-        IOService::buildEncodedHDTiles(&report);
-        ui->lbStatusBar->setText(report.message());
-    });
+//    connect(ui->action_Execute_EncodeHDTiles, &QAction::triggered, this, [&]()
+//    {
+//        IOReport report;
+//        IOService::buildEncodedHDTiles(&report);
+//        ui->lbStatusBar->setText(report.message());
+//    });
 
     // Help menu
 
@@ -476,7 +478,7 @@ void MainWindow::prepareUIForProject(Project * value)
     bool const hasProject = value != nullptr;
     auto layout = ui->contentFrame->layout();
 
-    setWindowTitle(hasProject?value->path:"TilesetEditor");
+    setWindowTitle(hasProject?value->path:TITLE);
 
     if (layout == nullptr)
     {
@@ -563,7 +565,6 @@ void MainWindow::prepareUIForProject(Project * value)
 
     ui->action_Execute_BuildHDTiles->setEnabled(hasProject);
     ui->action_Execute_BuildTilesets->setEnabled(hasProject);
-    ui->action_Execute_EncodeHDTiles->setEnabled(hasProject);
 
     ui->action_Help_VerifyInconsistencies->setEnabled(hasProject);
 

@@ -257,6 +257,10 @@ void AppState::updateFilteredTilesets()
         _filteredTilesets.append(ts);
     }
 
+    std::sort(_filteredTilesets.begin(), _filteredTilesets.end(), [](Tileset * t1, Tileset * t2) {
+        return t1->name < t2->name;
+    });
+
     updateFilteredTiles();
 
     emit onFilteredTilesetsChanged(&_filteredTilesets);
@@ -430,31 +434,31 @@ void AppState::removeTileset(int const position)
     delete ts;
 }
 
-void AppState::moveUpTileset(int const position)
-{
-    if (position < 0 || position >= _projectTilesets->size()-1)
-        return;
+//void AppState::moveUpTileset(int const position)
+//{
+//    if (position < 0 || position >= _projectTilesets->size()-1)
+//        return;
 
-    auto ts = _projectTilesets->takeAt(position);
-    _projectTilesets->insert(position+1, ts);
-    _projectHasChanges = true;
-    updateFilteredTilesets();
+//    auto ts = _projectTilesets->takeAt(position);
+//    _projectTilesets->insert(position+1, ts);
+//    _projectHasChanges = true;
+//    updateFilteredTilesets();
 
-    emit onTilesetMoved(_projectTilesets, position, position+1);
-}
+//    emit onTilesetMoved(_projectTilesets, position, position+1);
+//}
 
-void AppState::moveDownTileset(int const position)
-{
-    if (position <= 0 || position >= _projectTilesets->size())
-        return;
+//void AppState::moveDownTileset(int const position)
+//{
+//    if (position <= 0 || position >= _projectTilesets->size())
+//        return;
 
-    auto ts = _projectTilesets->takeAt(position);
-    _projectTilesets->insert(position-1, ts);
-    _projectHasChanges = true;
-    updateFilteredTilesets();
+//    auto ts = _projectTilesets->takeAt(position);
+//    _projectTilesets->insert(position-1, ts);
+//    _projectHasChanges = true;
+//    updateFilteredTilesets();
 
-    emit onTilesetMoved(_projectTilesets, position, position-1);
-}
+//    emit onTilesetMoved(_projectTilesets, position, position-1);
+//}
 
 void AppState::setLastMoveToSceneResult(int const value)
 {

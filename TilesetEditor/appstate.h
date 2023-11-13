@@ -208,8 +208,8 @@ public:
 
     void insertTileset(int const position, Tileset * value);
     void removeTileset(int const position);
-    void moveUpTileset(int const position);
-    void moveDownTileset(int const position);
+//    void moveUpTileset(int const position);
+//    void moveDownTileset(int const position);
 
     void setLastMoveToSceneResult(int const value);
     int  lastMoveToSceneResult();
@@ -330,7 +330,7 @@ signals:
 
     void onTilesetInserted(QList<Tileset *> const * value, int const position);
     void onTilesetRemoved(QList<Tileset *> const * value, int const position);
-    void onTilesetMoved(QList<Tileset *> const * value, int const oldPosition, int const newPosition);
+//    void onTilesetMoved(QList<Tileset *> const * value, int const oldPosition, int const newPosition);
 
     void onEditorRootChanged(QPoint const value);
     void onReferenceOffsetChanged(QPoint const value);

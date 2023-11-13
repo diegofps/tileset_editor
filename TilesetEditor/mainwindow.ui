@@ -165,7 +165,6 @@ QMenu::item:selected {
     <addaction name="action_Execute_BuildTilesets"/>
     <addaction name="action_Execute_BuildTiles"/>
     <addaction name="action_Execute_BuildHDTiles"/>
-    <addaction name="action_Execute_EncodeHDTiles"/>
    </widget>
    <widget class="QMenu" name="menu_Help">
     <property name="title">
@@ -320,14 +319,6 @@ QMenu::item:selected {
    </property>
    <property name="shortcut">
     <string>F6</string>
-   </property>
-  </action>
-  <action name="action_Execute_EncodeHDTiles">
-   <property name="text">
-    <string>&amp;Encode HD Tiles</string>
-   </property>
-   <property name="shortcut">
-    <string>F8</string>
    </property>
   </action>
   <action name="action_Help_About">

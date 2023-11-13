@@ -701,209 +701,209 @@ void IOService::buildHDMasks(IOReport *report)
     _buildMasks(report, "masksets.high", "masks.high");
 }
 
-void IOService::buildEncodedHDTiles(IOReport *report)
-{
-    auto state = App::getState();
+//void IOService::buildEncodedHDTiles(IOReport *report)
+//{
+//    auto state = App::getState();
 
-    // Check the tiles folder exists
-    QDir tilesDir(state->project()->path);
-    char const * tilesFoldername = "tiles.high";
+//    // Check the tiles folder exists
+//    QDir tilesDir(state->project()->path);
+//    char const * tilesFoldername = "tiles.high";
 
-    if (!tilesDir.exists(tilesFoldername))
-        ABORT(QString("Could not find %1 folder").arg(tilesFoldername));
+//    if (!tilesDir.exists(tilesFoldername))
+//        ABORT(QString("Could not find %1 folder").arg(tilesFoldername));
 
-    if (!tilesDir.cd(tilesFoldername))
-        ABORT(QString("Could not access %1 folder").arg(tilesFoldername));
+//    if (!tilesDir.cd(tilesFoldername))
+//        ABORT(QString("Could not access %1 folder").arg(tilesFoldername));
 
-    // Check the tiles folder exists
-    QDir masksDir(state->project()->path);
-    char const * masksFoldername = "masks.high";
+//    // Check the tiles folder exists
+//    QDir masksDir(state->project()->path);
+//    char const * masksFoldername = "masks.high";
 
-    if (!masksDir.exists(masksFoldername))
-        ABORT(QString("Could not find %1 folder").arg(masksFoldername));
+//    if (!masksDir.exists(masksFoldername))
+//        ABORT(QString("Could not find %1 folder").arg(masksFoldername));
 
-    if (!masksDir.cd(masksFoldername))
-        ABORT(QString("Could not access %1 folder").arg(masksFoldername));
+//    if (!masksDir.cd(masksFoldername))
+//        ABORT(QString("Could not access %1 folder").arg(masksFoldername));
 
-    // Check and create the output folder
-    QDir encodedDir(state->project()->path);
-    char const * encodedFoldername = "encoded.high";
+//    // Check and create the output folder
+//    QDir encodedDir(state->project()->path);
+//    char const * encodedFoldername = "encoded.high";
 
-    if (encodedDir.exists(encodedFoldername))
-    {
-        QDir tmp = encodedDir;
-        if (!tmp.cd(encodedFoldername) || !tmp.removeRecursively())
-            ABORT(QString("Could not remove previous %1 output folder").arg(encodedFoldername));
-    }
+//    if (encodedDir.exists(encodedFoldername))
+//    {
+//        QDir tmp = encodedDir;
+//        if (!tmp.cd(encodedFoldername) || !tmp.removeRecursively())
+//            ABORT(QString("Could not remove previous %1 output folder").arg(encodedFoldername));
+//    }
 
-    if (!encodedDir.mkdir(encodedFoldername))
-        ABORT(QString("Could not create new %1 output folder").arg(encodedFoldername));
+//    if (!encodedDir.mkdir(encodedFoldername))
+//        ABORT(QString("Could not create new %1 output folder").arg(encodedFoldername));
 
-    if (!encodedDir.cd(encodedFoldername))
-        ABORT(QString("Could not access new %1 output folder").arg(encodedFoldername));
+//    if (!encodedDir.cd(encodedFoldername))
+//        ABORT(QString("Could not access new %1 output folder").arg(encodedFoldername));
 
-    // Encode all tiles
-    QByteArray dataArray;
+//    // Encode all tiles
+//    QByteArray dataArray;
 
-    for (auto & filename : tilesDir.entryList(QDir::Files))
-    {
-        QString tFilepath { tilesDir.filePath(filename) };
-        QString mFilepath { masksDir.filePath(filename) };
-        bool ok;
+//    for (auto & filename : tilesDir.entryList(QDir::Files))
+//    {
+//        QString tFilepath { tilesDir.filePath(filename) };
+//        QString mFilepath { masksDir.filePath(filename) };
+//        bool ok;
 
-        QFileInfo mInfo(mFilepath);
-        if (!mInfo.exists()) SKIP(QString("Missing mask image for %1.").arg(filename));
+//        QFileInfo mInfo(mFilepath);
+//        if (!mInfo.exists()) SKIP(QString("Missing mask image for %1.").arg(filename));
 
-        QFileInfo tInfo(tFilepath);
-        auto ids = tInfo.baseName().split('_');
-        if (ids.size() != 5) SKIP(QString("Invalid values quantity in filename: %1.").arg(filename));
+//        QFileInfo tInfo(tFilepath);
+//        auto ids = tInfo.baseName().split('_');
+//        if (ids.size() != 5) SKIP(QString("Invalid values quantity in filename: %1.").arg(filename));
 
-        int32_t tileID = ids[0].toInt(&ok);
-        if (!ok) SKIP(QString("Invalid tileID value in filename: %1.").arg(filename));
+//        int32_t tileID = ids[0].toInt(&ok);
+//        if (!ok) SKIP(QString("Invalid tileID value in filename: %1.").arg(filename));
 
-        auto paletteID = ids[1].toInt(&ok);
-        if (!ok) SKIP(QString("Invalid paletteID value in filename: %1.").arg(filename));
+//        auto paletteID = ids[1].toInt(&ok);
+//        if (!ok) SKIP(QString("Invalid paletteID value in filename: %1.").arg(filename));
 
-        bool hFlip = ids[2].toInt(&ok);
-        if (!ok) SKIP(QString("Invalid hFlip value in filename: %1.").arg(filename));
+//        bool hFlip = ids[2].toInt(&ok);
+//        if (!ok) SKIP(QString("Invalid hFlip value in filename: %1.").arg(filename));
 
-        bool vFlip = ids[3].toInt(&ok);
-        if (!ok) SKIP(QString("Invalid vFlip value in filename: %1.").arg(filename));
+//        bool vFlip = ids[3].toInt(&ok);
+//        if (!ok) SKIP(QString("Invalid vFlip value in filename: %1.").arg(filename));
 
-        bool tilesetID = ids[4].toInt(&ok);
-        if (!ok) SKIP(QString("Invalid tilesetID value in filename: %1.").arg(filename));
+//        bool tilesetID = ids[4].toInt(&ok);
+//        if (!ok) SKIP(QString("Invalid tilesetID value in filename: %1.").arg(filename));
 
-        auto tile = state->getTileById(tileID);
-        if (tile == nullptr) SKIP(QString("Invalid tile id=%1 in filename=").arg(tileID).arg(filename));
+//        auto tile = state->getTileById(tileID);
+//        if (tile == nullptr) SKIP(QString("Invalid tile id=%1 in filename=").arg(tileID).arg(filename));
 
-        auto palette = state->getPaletteById(paletteID);
-        if (palette == nullptr) SKIP(QString("Invalid palette id=%1 in filename=").arg(paletteID).arg(filename));
+//        auto palette = state->getPaletteById(paletteID);
+//        if (palette == nullptr) SKIP(QString("Invalid palette id=%1 in filename=").arg(paletteID).arg(filename));
 
-        auto tileset = state->getTilesetById(tilesetID);
-        if (tileset == nullptr) SKIP(QString("Invalid tileset id=%1 in filename=").arg(tilesetID).arg(filename));
+//        auto tileset = state->getTilesetById(tilesetID);
+//        if (tileset == nullptr) SKIP(QString("Invalid tileset id=%1 in filename=").arg(tilesetID).arg(filename));
 
-        QImage bigImg;
-        if (!bigImg.load(tFilepath)) SKIP(QString("Failed to load HD tile from filename %1.").arg(filename));
-        if (bigImg.width() % 8 != 0) SKIP(QString("Invalid input tile in %1. A tile width must be divisible by 8.").arg(filename));
-        if (bigImg.height() % 8 != 0) SKIP(QString("Invalid input tile in %1. A tile height must be divisible by 8.").arg(filename));
+//        QImage bigImg;
+//        if (!bigImg.load(tFilepath)) SKIP(QString("Failed to load HD tile from filename %1.").arg(filename));
+//        if (bigImg.width() % 8 != 0) SKIP(QString("Invalid input tile in %1. A tile width must be divisible by 8.").arg(filename));
+//        if (bigImg.height() % 8 != 0) SKIP(QString("Invalid input tile in %1. A tile height must be divisible by 8.").arg(filename));
 
-        int const gridWidth = bigImg.width() / 8;
-        int const gridHeight = bigImg.height() / 8;
+//        int const gridWidth = bigImg.width() / 8;
+//        int const gridHeight = bigImg.height() / 8;
 
-        QImage hdMask;
-        if (!hdMask.load(mFilepath)) SKIP(QString("Failed to load HD mask from filename %1.").arg(filename));
-        if (hdMask.width() % 8 != 0) SKIP(QString("Invalid input mask in %1. A mask width must be divisible by 8.").arg(filename));
-        if (hdMask.height() % 8 != 0) SKIP(QString("Invalid input mask in %1. A mask height must be divisible by 8.").arg(filename));
+//        QImage hdMask;
+//        if (!hdMask.load(mFilepath)) SKIP(QString("Failed to load HD mask from filename %1.").arg(filename));
+//        if (hdMask.width() % 8 != 0) SKIP(QString("Invalid input mask in %1. A mask width must be divisible by 8.").arg(filename));
+//        if (hdMask.height() % 8 != 0) SKIP(QString("Invalid input mask in %1. A mask height must be divisible by 8.").arg(filename));
 
-        QFile eFile {encodedDir.filePath(QString("%1.bin").arg(tile->id))};
-        if (!eFile.open(QIODevice::WriteOnly)) SKIP(QString("Encode error, could not open the output file: %1").arg(eFile.fileName()));
+//        QFile eFile {encodedDir.filePath(QString("%1.bin").arg(tile->id))};
+//        if (!eFile.open(QIODevice::WriteOnly)) SKIP(QString("Encode error, could not open the output file: %1").arg(eFile.fileName()));
 
-        QImage * tinyImg = App::getOriginalTileCache()->getTileImage(tile, palette, hFlip, vFlip);
-        if (tinyImg == nullptr) SKIP(QString("Could not load tile image for tileID=%1, paletteID=%2, hFlip=%3, vFlip=%4").arg(tile->id).arg(palette->id).arg(hFlip).arg(vFlip));
+//        QImage * tinyImg = App::getOriginalTileCache()->getTileImage(tile, palette, hFlip, vFlip);
+//        if (tinyImg == nullptr) SKIP(QString("Could not load tile image for tileID=%1, paletteID=%2, hFlip=%3, vFlip=%4").arg(tile->id).arg(palette->id).arg(hFlip).arg(vFlip));
 
-        // TODO: Use the transparency mask
-        // TODO: Check if colorIndex is within the palette size
-        // TODO: Save the original pseudoColor and the offset for the HD tile
+//        // TODO: Use the transparency mask
+//        // TODO: Check if colorIndex is within the palette size
+//        // TODO: Save the original pseudoColor and the offset for the HD tile
 
-        dataArray.resize(3 * sizeof(int) + bigImg.width() * bigImg.height() * 4, '\0');
-        uchar * data = (uchar*) dataArray.data();
+//        dataArray.resize(3 * sizeof(int) + bigImg.width() * bigImg.height() * 4, '\0');
+//        uchar * data = (uchar*) dataArray.data();
 
-        QRgb const bgColor = tileset->bgColor.rgba();
+//        QRgb const bgColor = tileset->bgColor.rgba();
 
-        ((int*)data)[0] = bigImg.width();
-        ((int*)data)[1] = bigImg.height();
-        ((int*)data)[2] = bgColor;
-        int k = 3 * sizeof(int);
+//        ((int*)data)[0] = bigImg.width();
+//        ((int*)data)[1] = bigImg.height();
+//        ((int*)data)[2] = bgColor;
+//        int k = 3 * sizeof(int);
 
-        // We must flip it again to make it turn back to the original position
-        int i0,i1,iStep;
-        int j0,j1,jStep;
+//        // We must flip it again to make it turn back to the original position
+//        int i0,i1,iStep;
+//        int j0,j1,jStep;
 
-        if (vFlip) { i0 = bigImg.height()-1; i1 = -1             ; iStep = -1; }
-        else       { i0 = 0                ; i1 = bigImg.height(); iStep = +1; }
+//        if (vFlip) { i0 = bigImg.height()-1; i1 = -1             ; iStep = -1; }
+//        else       { i0 = 0                ; i1 = bigImg.height(); iStep = +1; }
 
-        if (hFlip) { j0 = bigImg.width()-1; j1 = -1            ; jStep = -1; }
-        else       { j0 = 0               ; j1 = bigImg.width(); jStep = +1; }
+//        if (hFlip) { j0 = bigImg.width()-1; j1 = -1            ; jStep = -1; }
+//        else       { j0 = 0               ; j1 = bigImg.width(); jStep = +1; }
 
-        for (int i=i0;i!=i1;i+=iStep)
-        {
-            float const  y = float(i) / float(gridHeight);
-            int   const y1 = y;
-            int   const y2 = tinyImg->height()-1==y1?y1:y1+1;
-            float const yf = y - y1;
+//        for (int i=i0;i!=i1;i+=iStep)
+//        {
+//            float const  y = float(i) / float(gridHeight);
+//            int   const y1 = y;
+//            int   const y2 = tinyImg->height()-1==y1?y1:y1+1;
+//            float const yf = y - y1;
 
-            for (int j=j0;j!=j1;j+=jStep)
-            {
-                float const  x = float(j) / float(gridWidth);
-                int   const x1 = x;
-                int   const x2 = tinyImg->width()-1==x1 ? x1 : x1+1;
-                float const xf = x - x1;
+//            for (int j=j0;j!=j1;j+=jStep)
+//            {
+//                float const  x = float(j) / float(gridWidth);
+//                int   const x1 = x;
+//                int   const x2 = tinyImg->width()-1==x1 ? x1 : x1+1;
+//                float const xf = x - x1;
 
-                uchar hdMaskColor = hdMask.scanLine(i)[j];
+//                uchar hdMaskColor = hdMask.scanLine(i)[j];
 
-                if (hdMaskColor == 0)
-                {
-                    data[k] = 0; ++k;
-                    data[k] = 0; ++k;
-                    data[k] = 0; ++k;
-                    data[k] = 0; ++k;
+//                if (hdMaskColor == 0)
+//                {
+//                    data[k] = 0; ++k;
+//                    data[k] = 0; ++k;
+//                    data[k] = 0; ++k;
+//                    data[k] = 0; ++k;
 
-                    continue;
-                }
+//                    continue;
+//                }
 
-                QRgb A = tinyImg->pixel(x1,y1);
-                QRgb B = tinyImg->pixel(x2,y1);
-                QRgb C = tinyImg->pixel(x1,y2);
-                QRgb D = tinyImg->pixel(x2,y2);
+//                QRgb A = tinyImg->pixel(x1,y1);
+//                QRgb B = tinyImg->pixel(x2,y1);
+//                QRgb C = tinyImg->pixel(x1,y2);
+//                QRgb D = tinyImg->pixel(x2,y2);
 
-                if (qAlpha(A) == 0) A = bgColor;
-                if (qAlpha(B) == 0) B = bgColor;
-                if (qAlpha(C) == 0) C = bgColor;
-                if (qAlpha(D) == 0) D = bgColor;
+//                if (qAlpha(A) == 0) A = bgColor;
+//                if (qAlpha(B) == 0) B = bgColor;
+//                if (qAlpha(C) == 0) C = bgColor;
+//                if (qAlpha(D) == 0) D = bgColor;
 
-                QRgb refColor   = BLEND_COLORS(BLEND_COLORS(A,B,xf),BLEND_COLORS(C,D,xf),yf);
-                QRgb hdImgColor = bigImg.pixel(j,i);
+//                QRgb refColor   = BLEND_COLORS(BLEND_COLORS(A,B,xf),BLEND_COLORS(C,D,xf),yf);
+//                QRgb hdImgColor = bigImg.pixel(j,i);
 
-                encodeHDColor(&data[k], hdImgColor, refColor);
+//                encodeHDColor(&data[k], hdImgColor, refColor);
 
-                auto fHSV = [](QRgb c) {
-                    int h,s,v,a;
-                    auto qc = QColor::fromRgb(c);
-                    qc.getHsv(&h,&s,&v,&a);
-                    return QString("[%1,%2,%3,%4]").arg(h).arg(s).arg(v).arg(a);
-                };
+//                auto fHSV = [](QRgb c) {
+//                    int h,s,v,a;
+//                    auto qc = QColor::fromRgb(c);
+//                    qc.getHsv(&h,&s,&v,&a);
+//                    return QString("[%1,%2,%3,%4]").arg(h).arg(s).arg(v).arg(a);
+//                };
 
-                auto fRGB = [](QRgb c) {
-                    return QString("[%1,%2,%3,%4]").arg(qRed(c)).arg(qGreen(c)).arg(qBlue(c)).arg(qAlpha(c));
-                };
+//                auto fRGB = [](QRgb c) {
+//                    return QString("[%1,%2,%3,%4]").arg(qRed(c)).arg(qGreen(c)).arg(qBlue(c)).arg(qAlpha(c));
+//                };
 
-                if (tile->id == 240 && i==35 && j==63)
-                {
-                    qDebug() << "k:" << k;
-                    qDebug() << "j i:" << j << i;
-                    qDebug() << "x y:" << x << y;
-                    qDebug() << "xf yf:" << xf << yf;
-                    qDebug() << "x1 x2:" << x1 << x2;
-                    qDebug() << "y1 y2:" << y1 << y2;
-                    qDebug() << "A B C D:" << fHSV(A) << fHSV(B) << fHSV(C) << fHSV(D);
-                    qDebug() << "A B C D:" << fRGB(A) << fRGB(B) << fRGB(C) << fRGB(D);
-                    qDebug() << "refColor:" << fHSV(refColor) << "/" << fRGB(refColor);
-                    qDebug() << "hdImgColor:" << fHSV(hdImgColor) << "/" << fRGB(hdImgColor);
-                    qDebug() << "data:" << data[k] << data[k+1] << (int)((char*)data)[k+2] << (int)((char*)data)[k+3];
+//                if (tile->id == 240 && i==35 && j==63)
+//                {
+//                    qDebug() << "k:" << k;
+//                    qDebug() << "j i:" << j << i;
+//                    qDebug() << "x y:" << x << y;
+//                    qDebug() << "xf yf:" << xf << yf;
+//                    qDebug() << "x1 x2:" << x1 << x2;
+//                    qDebug() << "y1 y2:" << y1 << y2;
+//                    qDebug() << "A B C D:" << fHSV(A) << fHSV(B) << fHSV(C) << fHSV(D);
+//                    qDebug() << "A B C D:" << fRGB(A) << fRGB(B) << fRGB(C) << fRGB(D);
+//                    qDebug() << "refColor:" << fHSV(refColor) << "/" << fRGB(refColor);
+//                    qDebug() << "hdImgColor:" << fHSV(hdImgColor) << "/" << fRGB(hdImgColor);
+//                    qDebug() << "data:" << data[k] << data[k+1] << (int)((char*)data)[k+2] << (int)((char*)data)[k+3];
 
-                    qWarning() << "w h hFlip vFlip" << bigImg.width() << bigImg.height() << vFlip << hFlip;
-                    qWarning() << "iRange" << i0 << i1 << iStep;
-                    qWarning() << "jRange" << j0 << j1 << jStep;
-                }
-                k += 4;
-            }
-        }
+//                    qWarning() << "w h hFlip vFlip" << bigImg.width() << bigImg.height() << vFlip << hFlip;
+//                    qWarning() << "iRange" << i0 << i1 << iStep;
+//                    qWarning() << "jRange" << j0 << j1 << jStep;
+//                }
+//                k += 4;
+//            }
+//        }
 
-        eFile.write(dataArray);
-    }
+//        eFile.write(dataArray);
+//    }
 
-    SUCCESS("Encode HD Tiles finished successfully");
-}
+//    SUCCESS("Encode HD Tiles finished successfully");
+//}
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

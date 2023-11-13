@@ -102,37 +102,17 @@ font: 9pt;</string>
          <property name="topMargin">
           <number>0</number>
          </property>
+         <property name="bottomMargin">
+          <number>0</number>
+         </property>
          <item row="0" column="0">
-          <widget class="QLabel" name="lbID">
-           <property name="text">
-            <string>ID</string>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="1">
-          <widget class="QLineEdit" name="leID">
-           <property name="styleSheet">
-            <string notr="true">background-color: #283137;
-border: 0px;
-padding: 3px 8px ;
-border-radius: 10px;</string>
-           </property>
-           <property name="text">
-            <string>80</string>
-           </property>
-           <property name="readOnly">
-            <bool>true</bool>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="0">
           <widget class="QLabel" name="lbName">
            <property name="text">
             <string>Name</string>
            </property>
           </widget>
          </item>
-         <item row="1" column="1">
+         <item row="0" column="1">
           <widget class="QLineEdit" name="leName">
            <property name="styleSheet">
             <string notr="true">background-color: #151515;
@@ -148,14 +128,14 @@ border-radius: 10px;</string>
            </property>
           </widget>
          </item>
-         <item row="2" column="0">
+         <item row="1" column="0">
           <widget class="QLabel" name="lbGridW">
            <property name="text">
             <string>GridW</string>
            </property>
           </widget>
          </item>
-         <item row="2" column="1">
+         <item row="1" column="1">
           <widget class="QSpinBox" name="sbGridW">
            <property name="styleSheet">
             <string notr="true">background-color: #151515;
@@ -168,14 +148,14 @@ border-radius: 10px;</string>
            </property>
           </widget>
          </item>
-         <item row="3" column="0">
+         <item row="2" column="0">
           <widget class="QLabel" name="lbGridH">
            <property name="text">
             <string>GridH</string>
            </property>
           </widget>
          </item>
-         <item row="3" column="1">
+         <item row="2" column="1">
           <widget class="QSpinBox" name="sbGridH">
            <property name="styleSheet">
             <string notr="true">background-color: #151515;
@@ -188,17 +168,40 @@ border-radius: 10px;</string>
            </property>
           </widget>
          </item>
-         <item row="4" column="0">
+         <item row="3" column="0">
           <widget class="QLabel" name="lbBGColor">
            <property name="text">
             <string>BGColor</string>
            </property>
           </widget>
          </item>
-         <item row="4" column="1">
+         <item row="3" column="1">
           <widget class="QPushButton" name="btColor">
            <property name="text">
             <string/>
+           </property>
+          </widget>
+         </item>
+         <item row="4" column="0">
+          <widget class="QLabel" name="lbID">
+           <property name="text">
+            <string>ID</string>
+           </property>
+          </widget>
+         </item>
+         <item row="4" column="1">
+          <widget class="QLineEdit" name="leID">
+           <property name="styleSheet">
+            <string notr="true">background-color: #283137;
+border: 0px;
+padding: 3px 8px ;
+border-radius: 10px;</string>
+           </property>
+           <property name="text">
+            <string>80</string>
+           </property>
+           <property name="readOnly">
+            <bool>true</bool>
            </property>
           </widget>
          </item>

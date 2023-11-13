@@ -148,30 +148,6 @@ font: 9pt;</string>
             </property>
            </widget>
           </item>
-          <item>
-           <widget class="QPushButton" name="btMoveUp">
-            <property name="text">
-             <string/>
-            </property>
-            <property name="icon">
-             <iconset>
-              <normalon>:/icons/angle-up-solid.svg</normalon>
-             </iconset>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QPushButton" name="btMoveDown">
-            <property name="text">
-             <string/>
-            </property>
-            <property name="icon">
-             <iconset>
-              <normalon>:/icons/angle-down-solid.svg</normalon>
-             </iconset>
-            </property>
-           </widget>
-          </item>
          </layout>
         </item>
         <item>

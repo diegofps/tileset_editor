@@ -11,8 +11,6 @@ FragmentTilesets::FragmentTilesets(QWidget *parent) :
 
     ui->btNew->setStyleSheet(App::getStyles()->get("button_click"));
     ui->btRemove->setStyleSheet(App::getStyles()->get("button_click"));
-    ui->btMoveUp->setStyleSheet(App::getStyles()->get("button_click"));
-    ui->btMoveDown->setStyleSheet(App::getStyles()->get("button_click"));
 
     connect(App::getState(), &AppState::onSelectedSceneIDChanged, this, [&](int sceneID)
     {
@@ -63,13 +61,13 @@ FragmentTilesets::FragmentTilesets(QWidget *parent) :
             ui->listTilesets->setCurrentRow(position >= value->size() ? value->size()-1 : position);
     });
 
-    connect(App::getState(), &AppState::onTilesetMoved, this, [&](QList<Tileset*> const * value, int const oldPosition, int const newPosition)
-    {
-        (void)value;
-        (void)oldPosition;
-        updateTilesetsWidget();
-        ui->listTilesets->setCurrentRow(newPosition);
-    });
+//    connect(App::getState(), &AppState::onTilesetMoved, this, [&](QList<Tileset*> const * value, int const oldPosition, int const newPosition)
+//    {
+//        (void)value;
+//        (void)oldPosition;
+//        updateTilesetsWidget();
+//        ui->listTilesets->setCurrentRow(newPosition);
+//    });
 
     connect(ui->btNew, &QPushButton::clicked, this, [&]()
     {
@@ -94,17 +92,17 @@ FragmentTilesets::FragmentTilesets(QWidget *parent) :
             App::getState()->removeTileset(ui->listTilesets->currentRow());
     });
 
-    connect(ui->btMoveUp, &QPushButton::clicked, this, [&]()
-    {
-        if (ui->listTilesets->currentRow() >= 0)
-            App::getState()->moveDownTileset(ui->listTilesets->currentRow());
-    });
+//    connect(ui->btMoveUp, &QPushButton::clicked, this, [&]()
+//    {
+//        if (ui->listTilesets->currentRow() >= 0)
+//            App::getState()->moveDownTileset(ui->listTilesets->currentRow());
+//    });
 
-    connect(ui->btMoveDown, &QPushButton::clicked, this, [&]()
-    {
-        if (ui->listTilesets->currentRow() >= 0)
-            App::getState()->moveUpTileset(ui->listTilesets->currentRow());
-    });
+//    connect(ui->btMoveDown, &QPushButton::clicked, this, [&]()
+//    {
+//        if (ui->listTilesets->currentRow() >= 0)
+//            App::getState()->moveUpTileset(ui->listTilesets->currentRow());
+//    });
 
     connect(ui->listTilesets, &QListWidget::currentRowChanged, this, [&](int position)
     {
